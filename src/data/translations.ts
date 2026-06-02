@@ -19,6 +19,7 @@ export const translations = {
 
     // Team
     "team.heading": "Poznaj nasz Team",
+    "team.buildBoard": "Złóż ich deskę",
 
     // Text & Image Sections
     "tai1.heading": "Zaprojektowane na ulice",
@@ -75,6 +76,7 @@ export const translations = {
 
     // Team
     "team.heading": "Meet the Team",
+    "team.buildBoard": "Build their board",
 
     // Text & Image Sections
     "tai1.heading": "Designed for the streets",
