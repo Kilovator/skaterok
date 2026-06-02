@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(cd \"/d/верстка/next\" && ls -la)",
+      "Read(//d/d/верстка/**)",
+      "WebSearch",
+      "WebFetch(domain:unsplash.com)",
+      "PowerShell(Get-ChildItem -Recurse \"d:\\\\верстка\\\\next\\\\suburbia\\\\public\\\\images\" | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB,0\\)}} | Format-Table -AutoSize)",
+      "PowerShell($img = [System.Drawing.Image]::FromFile\\(\"d:\\\\верстка\\\\next\\\\suburbia\\\\public\\\\skateboard\\\\Deck.webp\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\")",
+      "PowerShell($img = [System.Drawing.Image]::FromFile\\(\"d:\\\\верстка\\\\next\\\\suburbia\\\\public\\\\skateboard\\\\skate1.png\"\\); \"$\\($img.Width\\) x $\\($img.Height\\)\")",
+      "PowerShell(node -e \"const fs=require\\('fs'\\); const s=fs.statSync\\('d:/����⪠/next/suburbia/public/skateboard/skate1.png'\\); console.log\\(s.size\\)\")",
+      "PowerShell(ffmpeg -version 2>&1)",
+      "PowerShell(magick -version 2>&1)",
+      "PowerShell(python --version 2>&1)",
+      "PowerShell(node -e \"require\\('jimp'\\)\" 2>&1)",
+      "PowerShell(node -e \"require\\('sharp'\\)\" 2>&1)",
+      "PowerShell(node -e \"require\\('@napi-rs/canvas'\\)\" 2>&1)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; Write-Host \"OK\")"
+    ]
+  }
+}

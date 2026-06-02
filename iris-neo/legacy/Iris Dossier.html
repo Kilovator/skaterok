@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Iris — Specimen Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --accent: #43c9ff;
+    --accent2: #9a6bff;
+    --ink: #cfe6f5;
+    --dim: #5d7488;
+    --bg0: #04060b;
+    --line: rgba(120,170,210,0.16);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background:
+      radial-gradient(120% 90% at 50% 38%, #0a1320 0%, #060912 45%, var(--bg0) 100%);
+    color: var(--ink);
+    font-family: 'Share Tech Mono', ui-monospace, monospace;
+    overflow: hidden;
+    letter-spacing: 0.02em;
+  }
+  #stage { position: fixed; inset: 0; }
+  #scene { width: 100%; height: 100%; display: block; cursor: grab; }
+  #scene:active { cursor: grabbing; }
+
+  /* faint scientific grid behind */
+  #grid {
+    position: fixed; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px;
+    mask-image: radial-gradient(120% 100% at 50% 45%, transparent 30%, #000 95%);
+    -webkit-mask-image: radial-gradient(120% 100% at 50% 45%, transparent 30%, #000 95%);
+  }
+  #vignette {
+    position: fixed; inset: 0; pointer-events: none;
+    box-shadow: inset 0 0 240px 60px rgba(0,0,0,0.85);
+  }
+
+  /* HUD overlay */
+  #hud { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+  #hud .panel { position: absolute; pointer-events: none; }
+  #hud .ui { pointer-events: auto; }
+
+  .corner { position: fixed; width: 38px; height: 38px; border: 1px solid var(--accent); opacity: 0.55; z-index: 6; }
+  .corner.tl { top: 18px; left: 18px; border-right: none; border-bottom: none; }
+  .corner.tr { top: 18px; right: 18px; border-left: none; border-bottom: none; }
+  .corner.bl { bottom: 18px; left: 18px; border-right: none; border-top: none; }
+  .corner.br { bottom: 18px; right: 18px; border-left: none; border-top: none; }
+
+  .lbl { font-size: 9.5px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.18em; }
+  .val { color: var(--ink); }
+  .accent { color: var(--accent); }
+  .accent2 { color: var(--accent2); }
+  .micro { font-size: 8.5px; line-height: 1.55; color: var(--dim); letter-spacing: 0.04em; }
+  .head {
+    font-family: 'Orbitron', sans-serif; letter-spacing: 0.16em; color: var(--ink);
+  }
+  .rule { height: 1px; background: linear-gradient(90deg, var(--accent), transparent); opacity: 0.5; margin: 6px 0; }
+  .tag {
+    display: inline-block; border: 1px solid var(--line); padding: 1px 6px; font-size: 8px;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.16em;
+  }
+
+  /* title block */
+  #title { top: 30px; left: 34px; max-width: 280px; }
+  #title .big { font-size: 21px; font-weight: 700; }
+  #title .sub { font-size: 10px; color: var(--dim); margin-top: 3px; letter-spacing: 0.22em; text-transform: uppercase; }
+
+  /* paragraph blocks */
+  .para { font-size: 9px; line-height: 1.65; color: #8fa6b8; letter-spacing: 0.03em; }
+  #tr-block { top: 30px; right: 34px; width: 260px; text-align: right; }
+  #ml-block { top: 40%; left: 34px; width: 188px; }
+  #bl-block { bottom: 64px; left: 34px; width: 278px; }
+  #br-block { bottom: 64px; right: 34px; width: 250px; text-align: right; }
+
+  /* charts */
+  .chartcard { width: 230px; }
+  #chart-right { top: 33%; right: 34px; }
+  #chart-left { top: 56%; left: 34px; width: 200px; }
+  svg.chart { display: block; width: 100%; }
+  .chart .axis { stroke: var(--line); stroke-width: 1; }
+  .chart .ln { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+  .chart .ln2 { fill: none; stroke: var(--accent2); stroke-width: 1.1; opacity: 0.8; }
+  .chart .bar { fill: var(--accent); opacity: 0.5; }
+  .chart .fillpath { fill: var(--accent); opacity: 0.08; }
+
+  /* data rows */
+  .drow { display: flex; justify-content: space-between; gap: 16px; font-size: 9px; line-height: 1.5; padding: 3px 0; border-bottom: 1px dashed rgba(120,170,210,0.1); white-space: nowrap; }
+  .drow .k { color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; }
+  .drow .v { color: var(--ink); }
+
+  /* leader-line callouts */
+  .callout { position: absolute; pointer-events: none; }
+  .callout .dot { width: 5px; height: 5px; border: 1px solid var(--accent); border-radius: 50%; position: absolute; }
+  .callout .leader { position: absolute; height: 1px; background: var(--accent); opacity: 0.5; transform-origin: left center; }
+  .callout .ctxt { position: absolute; font-size: 8.5px; color: var(--ink); white-space: nowrap; }
+  .callout .ctxt .cd { color: var(--dim); }
+
+  /* variant switcher */
+  #switcher {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 0; border: 1px solid var(--line); background: rgba(6,10,18,0.7);
+    backdrop-filter: blur(8px); z-index: 8; pointer-events: auto;
+  }
+  #switcher button {
+    background: none; border: none; border-right: 1px solid var(--line);
+    color: var(--dim); font-family: 'Share Tech Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase; padding: 9px 18px; cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+  }
+  #switcher button:last-child { border-right: none; }
+  #switcher button .sm { display: block; font-size: 7.5px; color: var(--dim); letter-spacing: 0.1em; margin-top: 2px; }
+  #switcher button:hover { color: var(--ink); }
+  #switcher button.active { color: #04060b; background: var(--accent); }
+  #switcher button.active .sm { color: rgba(4,6,11,0.7); }
+
+  #scanhint {
+    position: fixed; bottom: 34px; right: 34px; font-size: 8.5px; color: var(--dim);
+    letter-spacing: 0.12em; text-transform: uppercase; z-index: 7; pointer-events: none;
+  }
+  #scanhint .accent { animation: blink 2.4s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* schematic density toggles */
+  body.sch-minimal .para, body.sch-minimal .chartcard,
+  body.sch-minimal .callout, body.sch-minimal #ml-block, body.sch-minimal #br-block,
+  body.sch-minimal .sch-extra, body.sch-minimal .ruler-t, body.sch-minimal .ruler-l,
+  body.sch-minimal .marker { display: none; }
+  body.sch-off #hud .panel, body.sch-off .callout, body.sch-off .marker,
+  body.sch-off .ruler-t, body.sch-off .ruler-l { display: none; }
+
+  /* --- dense instrument layer --- */
+  .ruler-t, .ruler-l { position: fixed; z-index: 6; pointer-events: none; opacity: 0.7; }
+  .ruler-t { left: 0; right: 0; height: 14px; }
+  .ruler-t.top { top: 0; }
+  .ruler-t.bot { bottom: 0; }
+  .ruler-l { top: 0; bottom: 0; width: 14px; left: 0; }
+  .ruler-t svg, .ruler-l svg { width: 100%; height: 100%; display: block; }
+  .tick { stroke: var(--line); stroke-width: 1; }
+  .tickm { stroke: var(--accent); stroke-width: 1; opacity: 0.6; }
+
+  #burst { top: 156px; left: 30px; width: 152px; }
+  #burst svg { width: 152px; height: 120px; display: block; margin-top: 4px; }
+  #tr2 { top: 172px; right: 34px; width: 252px; text-align: right; }
+  #chart-bars { top: 49%; right: 34px; }
+  #chart-scatter { top: 62%; right: 34px; }
+  #optics { top: 76.5%; right: 34px; width: 152px; }
+
+  #topcenter { top: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; }
+
+  .marker { position: absolute; width: 44px; height: 44px; pointer-events: none; }
+  .marker svg { width: 100%; height: 100%; overflow: visible; }
+  .marker .mk { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0.7; }
+  .marker .mtxt { position: absolute; left: 50px; top: 12px; font-size: 8px; color: var(--dim); white-space: nowrap; line-height: 1.4; }
+
+  .barcode { display: flex; gap: 1px; align-items: flex-end; height: 18px; }
+  .barcode i { display: block; width: 2px; background: var(--ink); }
+
+  /* tweaks mount */
+  #tweaks-root { position: fixed; z-index: 50; }
+
+  @media (max-width: 720px) {
+    #tr-block, #ml-block, #bl-block, #br-block, .chartcard, .callout,
+    #burst, #tr2, #optics, #topcenter, .marker, .ruler-l { display: none; }
+    #title .big { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+  <div id="grid"></div>
+  <div id="stage">
+    <canvas id="scene"></canvas>
+  </div>
+  <div id="vignette"></div>
+
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="ruler-t top sch-extra"><svg id="svg-rt" preserveAspectRatio="none"></svg></div>
+  <div class="ruler-t bot sch-extra"><svg id="svg-rb" preserveAspectRatio="none"></svg></div>
+  <div class="ruler-l sch-extra"><svg id="svg-rl" preserveAspectRatio="none"></svg></div>
+
+  <div id="hud">
+    <!-- title -->
+    <div class="panel" id="title">
+      <div class="head big">IRIS</div>
+      <div class="sub">Specimen Dossier · Lumina-class</div>
+      <div class="rule"></div>
+      <div class="micro">
+        SPEC-ID <span class="accent">IR-0xA7·F3</span> &nbsp; REV 12.4<br />
+        GENUS <span class="val">Iris germanica</span> [synth]<br />
+        STATUS <span class="accent">ACTIVE · BLOOM PHASE III</span>
+      </div>
+    </div>
+
+    <!-- top-right analysis -->
+    <div class="panel" id="tr-block">
+      <span class="tag">Spectral Analysis</span>
+      <div class="rule" style="margin-left:auto;width:60%"></div>
+      <p class="para">
+        Photonic lattice within tepal membrane refracts incident flux across a
+        420–680 nm band, yielding the characteristic iridescent cascade. Sub-epidermal
+        microchannels modulate luminance at 7.2 Hz under ambient excitation. Beard
+        filaments register elevated thermal signature consistent with active
+        bio-emission. Structural integrity nominal across all six perianth segments.
+      </p>
+    </div>
+
+    <!-- mid-left -->
+    <div class="panel" id="ml-block">
+      <span class="lbl">Growth Vector</span>
+      <div class="rule"></div>
+      <p class="para">
+        Phototropic stem curvature logged at 4.1°/cycle. Apical bud differentiation
+        nominal. Turgor pressure within tolerance.
+      </p>
+    </div>
+
+    <!-- charts -->
+    <div class="panel chartcard" id="chart-right">
+      <span class="lbl">Luminance Spectrum · 7d</span>
+      <svg class="chart" viewBox="0 0 230 90" id="svg-spectrum"></svg>
+    </div>
+    <div class="panel chartcard" id="chart-left">
+      <span class="lbl">Bloom Maturation</span>
+      <svg class="chart" viewBox="0 0 200 80" id="svg-growth"></svg>
+    </div>
+
+    <!-- bottom-left data -->
+    <div class="panel" id="bl-block">
+      <span class="tag">Morphometrics</span>
+      <div style="margin-top:6px"></div>
+      <div class="drow"><span class="k">Tepal length</span><span class="v">112.4 mm</span></div>
+      <div class="drow"><span class="k">Falls / Standards</span><span class="v">3 / 3</span></div>
+      <div class="drow"><span class="k">Beard density</span><span class="v">2.6 fil/mm²</span></div>
+      <div class="drow"><span class="k">Refractive idx</span><span class="v accent">1.41</span></div>
+      <div class="drow"><span class="k">Emission peak</span><span class="v">486 nm</span></div>
+    </div>
+
+    <!-- bottom-right legend -->
+    <div class="panel" id="br-block">
+      <span class="tag">Telemetry Lock</span>
+      <p class="micro" style="margin-top:6px">
+        LAT 47.36°N · LON 8.55°E<br />
+        CHAMBER 04 · CYCLE 0xF31C<br />
+        CAPTURE φ 38° · θ <span class="accent">auto-orbit</span><br />
+        SIGNAL <span class="accent2">▮▮▮▮▮▮▯▯</span> 74%
+      </p>
+    </div>
+
+    <!-- decorative leader callouts (positions in %) -->
+    <div class="callout" data-x="50" data-y="22" data-len="120" data-ang="-28" data-txt="STANDARD" data-sub="upright tepal"></div>
+    <div class="callout" data-x="58" data-y="44" data-len="150" data-ang="12" data-txt="FALL" data-sub="signal streak"></div>
+    <div class="callout" data-x="46" data-y="40" data-len="130" data-ang="200" data-txt="BEARD" data-sub="bio-emitter"></div>
+    <div class="callout" data-x="52" data-y="70" data-len="140" data-ang="160" data-txt="PEDUNCLE" data-sub="phototropic"></div>
+
+    <!-- top-centre live scan header -->
+    <div class="panel sch-extra" id="topcenter">
+      <span class="tag">Live Scan</span>
+      <div class="barcode" id="barcode"></div>
+      <span class="micro">PERIANTH · 60FPS</span>
+    </div>
+
+    <!-- photonic burst diagram -->
+    <div class="panel sch-extra" id="burst">
+      <span class="lbl">Photonic Lattice · Node Map</span>
+      <svg id="svg-burst" viewBox="0 0 152 120"></svg>
+    </div>
+
+    <!-- second top-right note -->
+    <div class="panel sch-extra" id="tr2">
+      <span class="tag">Phenotype Notes</span>
+      <p class="para">
+        Tepal margin exhibits stochastic frill bifurcation; vein density rises 2.3×
+        toward the signal patch. Beard filaments self-organise into a hexagonal
+        emission array. No chlorosis detected — pigment load stable over 14 cycles.
+      </p>
+    </div>
+
+    <!-- emission bars -->
+    <div class="panel chartcard sch-extra" id="chart-bars">
+      <span class="lbl">Emission Channels · nm</span>
+      <svg class="chart" viewBox="0 0 230 78" id="svg-bars"></svg>
+    </div>
+
+    <!-- refraction scatter -->
+    <div class="panel chartcard sch-extra" id="chart-scatter">
+      <span class="lbl">Refraction Map · θ·φ</span>
+      <svg class="chart" viewBox="0 0 230 88" id="svg-scatter"></svg>
+    </div>
+
+    <!-- optics readout -->
+    <div class="panel sch-extra" id="optics">
+      <div class="drow"><span class="k">Phase shift</span><span class="v">λ/4</span></div>
+      <div class="drow"><span class="k">Coherence</span><span class="v accent">0.92</span></div>
+      <div class="drow"><span class="k">Polarisation</span><span class="v">circ ⟲</span></div>
+      <div class="drow"><span class="k">Q-factor</span><span class="v">1.4k</span></div>
+    </div>
+
+    <!-- crosshair node markers -->
+    <div class="marker sch-extra" style="left:24%;top:58%">
+      <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="9" class="mk"/><line x1="22" y1="0" x2="22" y2="13" class="tickm"/><line x1="22" y1="31" x2="22" y2="44" class="tickm"/><line x1="0" y1="22" x2="13" y2="22" class="tickm"/><line x1="31" y1="22" x2="44" y2="22" class="tickm"/></svg>
+      <div class="mtxt">NODE F-07<br><span style="opacity:.6">x.412 y.330</span></div>
+    </div>
+    <div class="marker sch-extra" style="left:71%;top:21%">
+      <svg viewBox="0 0 44 44"><rect x="13" y="13" width="18" height="18" class="mk"/><line x1="22" y1="0" x2="22" y2="11" class="tickm"/><line x1="0" y1="22" x2="11" y2="22" class="tickm"/></svg>
+      <div class="mtxt">NODE A-12<br><span style="opacity:.6">peak 486nm</span></div>
+    </div>
+  </div>
+
+  <div id="switcher">
+    <button data-variant="spectral" class="active">A<span class="sm">Spectral</span></button>
+    <button data-variant="violet">B<span class="sm">Violet Bloom</span></button>
+    <button data-variant="cyan">C<span class="sm">Cyan Glass</span></button>
+  </div>
+
+  <div id="scanhint"><span class="accent">●</span> AUTO-ORBIT ACTIVE · DRAG TO INSPECT</div>
+
+  <div id="tweaks-root"></div>
+
+  <!-- Three.js -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- variant + accent palette config -->
+  <script>
+    const VARIANT_ACCENTS = {
+      spectral: { a: '#43c9ff', b: '#9a6bff' },
+      violet:   { a: '#b08cff', b: '#ff9e7a' },
+      cyan:     { a: '#39e6cf', b: '#7fd6ff' },
+    };
+    window.IRIS_CONFIG = { palette: 'spectral', bloomCount: 3, glow: 0.35, bloomStrength: 0.62, rotateSpeed: 0.5 };
+
+    function setVariant(name) {
+      window.IRIS_CONFIG.palette = name;
+      const ac = VARIANT_ACCENTS[name];
+      document.documentElement.style.setProperty('--accent', ac.a);
+      document.documentElement.style.setProperty('--accent2', ac.b);
+      document.querySelectorAll('#switcher button').forEach(b =>
+        b.classList.toggle('active', b.dataset.variant === name));
+      window.dispatchEvent(new CustomEvent('sceneconfig', { detail: { palette: name } }));
+      drawCharts();
+    }
+    document.querySelectorAll('#switcher button').forEach(b =>
+      b.addEventListener('click', () => setVariant(b.dataset.variant)));
+
+    // ---- charts ----
+    function path(points) { return points.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' '); }
+    function drawCharts() {
+      const acc = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+      // spectrum: wavy line + faint fill + second line
+      const sp = document.getElementById('svg-spectrum');
+      if (sp) {
+        let p1 = [], p2 = [];
+        for (let i = 0; i <= 46; i++) {
+          const x = (i / 46) * 226 + 2;
+          const y1 = 70 - (28 + 22 * Math.sin(i * 0.5) * Math.cos(i * 0.13) + 8 * Math.sin(i * 0.9));
+          const y2 = 72 - (16 + 14 * Math.sin(i * 0.32 + 1.5));
+          p1.push([x, y1]); p2.push([x, y2]);
+        }
+        const fill = 'M2 72 ' + p1.map(p => 'L' + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ') + ' L228 72 Z';
+        sp.innerHTML =
+          `<line class="axis" x1="2" y1="72" x2="228" y2="72"/>` +
+          `<line class="axis" x1="2" y1="6" x2="2" y2="72"/>` +
+          [18, 36, 54].map(y => `<line class="axis" x1="2" y1="${y}" x2="228" y2="${y}" opacity="0.4"/>`).join('') +
+          `<path class="fillpath" d="${fill}"/>` +
+          `<path class="ln2" d="${path(p2)}"/>` +
+          `<path class="ln" d="${path(p1)}"/>`;
+      }
+      // growth: rising curve + bars
+      const gr = document.getElementById('svg-growth');
+      if (gr) {
+        let pts = [], bars = '';
+        for (let i = 0; i <= 30; i++) {
+          const x = (i / 30) * 196 + 2;
+          const y = 70 - 58 * (1 / (1 + Math.exp(-(i - 15) * 0.35)));
+          pts.push([x, y]);
+        }
+        for (let i = 0; i < 14; i++) {
+          const bx = 4 + i * 14, h = 6 + 44 * Math.abs(Math.sin(i * 0.8 + 1));
+          bars += `<rect class="bar" x="${bx}" y="${72 - h}" width="7" height="${h}"/>`;
+        }
+        gr.innerHTML =
+          `<line class="axis" x1="2" y1="72" x2="198" y2="72"/>` +
+          bars +
+          `<path class="ln" d="${path(pts)}"/>`;
+      }
+    }
+
+    // ---- leader callouts ----
+    function layoutCallouts() {
+      document.querySelectorAll('.callout').forEach(c => {
+        const x = +c.dataset.x, y = +c.dataset.y, len = +c.dataset.len, ang = +c.dataset.ang;
+        c.style.left = x + '%'; c.style.top = y + '%';
+        const rad = ang * Math.PI / 180;
+        const ex = Math.cos(rad) * len, ey = Math.sin(rad) * len;
+        const flip = Math.cos(rad) < 0;
+        c.innerHTML =
+          `<div class="dot" style="left:-2px;top:-2px"></div>` +
+          `<div class="leader" style="width:${len}px;transform:rotate(${ang}deg)"></div>` +
+          `<div class="ctxt" style="left:${ex + (flip ? -6 : 6)}px;top:${ey - 14}px;${flip ? 'transform:translateX(-100%)' : ''}">` +
+          `${c.dataset.txt}<br><span class="cd">${c.dataset.sub}</span></div>`;
+      });
+    }
+    window.addEventListener('resize', layoutCallouts);
+    layoutCallouts();
+    drawCharts();
+    setVariant(window.IRIS_CONFIG.palette);
+  </script>
+
+  <script type="module">
+    import { initIris } from './iris-scene.js';
+    initIris(document.getElementById('scene'));
+  </script>
+
+  <!-- React + Babel for Tweaks panel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "schematic": "full",
+      "glow": 0.35,
+      "bloom": 0.62,
+      "rotateSpeed": 0.5,
+      "bloomCount": 4
+    }/*EDITMODE-END*/;
+
+    function pushConfig(t) {
+      document.body.classList.toggle('sch-minimal', t.schematic === 'minimal');
+      document.body.classList.toggle('sch-off', t.schematic === 'off');
+      window.IRIS_CONFIG.glow = t.glow;
+      window.IRIS_CONFIG.bloomStrength = t.bloom;
+      window.IRIS_CONFIG.rotateSpeed = t.rotateSpeed;
+      window.IRIS_CONFIG.bloomCount = t.bloomCount;
+      window.dispatchEvent(new CustomEvent('sceneconfig', { detail: {
+        glow: t.glow, bloomStrength: t.bloom, rotateSpeed: t.rotateSpeed, bloomCount: t.bloomCount,
+      }}));
+    }
+
+    function App() {
+      const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      React.useEffect(() => { pushConfig(t); });
+      return (
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Schematic" />
+          <TweakRadio label="HUD density" value={t.schematic}
+            options={['full', 'minimal', 'off']}
+            onChange={(v) => setTweak('schematic', v)} />
+          <TweakSection label="Bloom" />
+          <TweakRadio label="Flowers" value={String(t.bloomCount)}
+            options={['3', '4']} onChange={(v) => setTweak('bloomCount', +v)} />
+          <TweakSlider label="Glow" value={t.glow} min={0} max={2} step={0.05}
+            onChange={(v) => setTweak('glow', v)} />
+          <TweakSlider label="Bloom intensity" value={t.bloom} min={0} max={2.2} step={0.05}
+            onChange={(v) => setTweak('bloom', v)} />
+          <TweakSlider label="Rotation speed" value={t.rotateSpeed} min={0} max={1.6} step={0.05}
+            onChange={(v) => setTweak('rotateSpeed', v)} />
+        </TweaksPanel>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<App />);
+  </script>
+
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="#04060b"/>
+      <g stroke="#43c9ff" fill="none" stroke-width="2">
+        <path d="M50 70 C44 55 44 42 50 30 C56 42 56 55 50 70"/>
+        <path d="M50 60 C40 58 33 50 32 40 C44 44 50 52 50 60"/>
+        <path d="M50 60 C60 58 67 50 68 40 C56 44 50 52 50 60"/>
+      </g>
+      <circle cx="50" cy="48" r="3" fill="#ff8a1e"/>
+    </svg>
+  </template>
+</body>
+</html>
