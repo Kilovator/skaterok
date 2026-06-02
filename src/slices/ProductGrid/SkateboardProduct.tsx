@@ -7,6 +7,7 @@ import { HorizontalLine, VerticalLine } from "@/components/Line";
 import { Scribble } from "./Scribble";
 import { type Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Props = {
   product: Product;
@@ -20,6 +21,7 @@ const HORIZONTAL_LINE_CLASSES =
 
 export function SkateboardProduct({ product }: Props) {
   const { addItem } = useCart();
+  const { t } = useLanguage();
   const price = `$${(product.price / 100).toFixed(2)}`;
 
   return (
@@ -54,12 +56,12 @@ export function SkateboardProduct({ product }: Props) {
       </h3>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        <ButtonLink href={product.customizerLink} size="sm">Customize</ButtonLink>
+        <ButtonLink href={product.customizerLink} size="sm">{t("product.customize")}</ButtonLink>
         <button
           onClick={() => addItem(product)}
           className="button-cutout group/btn mx-4 inline-flex items-center gap-2 bg-gradient-to-b from-brand-deep to-brand-amethyst from-25% to-75% bg-[length:100%_400%] px-1 py-2 text-base font-bold text-white transition-[background-position] duration-300 hover:bg-bottom"
         >
-          + Add to cart
+          {t("product.addToCart")}
         </button>
       </div>
     </div>

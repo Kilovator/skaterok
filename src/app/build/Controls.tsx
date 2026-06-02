@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { ComponentProps, ReactNode, useEffect } from "react";
 import { useCustomizerControls } from "./context";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Props = {
   wheels: WheelItem[];
@@ -16,6 +17,7 @@ type Props = {
 
 export default function Controls({ wheels, decks, metals, className }: Props) {
   const router = useRouter();
+  const { t } = useLanguage();
 
   const {
     setBolt, setDeck, setTruck, setWheel,
@@ -33,7 +35,7 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
 
   return (
     <div className={clsx("flex flex-col gap-6", className)}>
-      <Options title="Deck" selectedName={selectedDeck?.uid}>
+      <Options title={t("build.deck")} selectedName={selectedDeck?.uid}>
         {decks.map((deck) => (
           <Option
             key={deck.uid}
@@ -45,7 +47,7 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
           </Option>
         ))}
       </Options>
-      <Options title="Wheels" selectedName={selectedWheel?.uid}>
+      <Options title={t("build.wheels")} selectedName={selectedWheel?.uid}>
         {wheels.map((wheel) => (
           <Option
             key={wheel.uid}
@@ -57,7 +59,7 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
           </Option>
         ))}
       </Options>
-      <Options title="Trucks" selectedName={selectedTruck?.uid}>
+      <Options title={t("build.trucks")} selectedName={selectedTruck?.uid}>
         {metals.map((metal) => (
           <Option
             key={metal.uid}
@@ -69,7 +71,7 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
           </Option>
         ))}
       </Options>
-      <Options title="Bolts" selectedName={selectedBolt?.uid}>
+      <Options title={t("build.bolts")} selectedName={selectedBolt?.uid}>
         {metals.map((metal) => (
           <Option
             key={metal.uid}

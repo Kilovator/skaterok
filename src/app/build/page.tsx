@@ -1,5 +1,3 @@
-import { ButtonLink } from "@/components/ButtonLink";
-import { Heading } from "@/components/Heading";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
 
@@ -7,6 +5,7 @@ import { CustomizerControlsProvider } from "./context";
 import Preview from "./Preview";
 import Controls from "./Controls";
 import Loading from "./Loading";
+import { BuildPageClient } from "./BuildPageClient";
 import { decks, wheels, metals } from "@/data/boardCustomizer";
 
 type SearchParams = {
@@ -49,22 +48,17 @@ export default async function Page(props: {
             <Logo className="h-12 text-white" />
           </Link>
         </div>
-        <div className="grow bg-texture bg-brand-deep text-white ~p-4/6 lg:w-96 lg:shrink-0 lg:grow-0">
-          <Heading as="h1" size="sm" className="mb-6 mt-0">
-            Build your board
-          </Heading>
+        <BuildPageClient>
           <Controls
             wheels={wheels}
             decks={decks}
             metals={metals}
             className="mb-6"
           />
-          <ButtonLink href="" color="orange" icon="plus">
-            Add to cart
-          </ButtonLink>
-        </div>
+        </BuildPageClient>
       </CustomizerControlsProvider>
       <Loading />
     </div>
   );
 }
+

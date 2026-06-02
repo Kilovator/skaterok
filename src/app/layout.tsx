@@ -4,6 +4,7 @@ import { Bowlby_One_SC, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { SVGFilters } from "@/components/SVGFilters";
 import { siteSettings } from "@/data/settings";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const bowlby = Bowlby_One_SC({
   subsets: ["latin"],
@@ -30,11 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pl">
       <body
         className={`${bowlby.variable} ${dmMono.variable} antialiased font-mono font-medium text-zinc-800 bg-brand-black`}
       >
-        <main>{children}</main>
+        <LanguageProvider>
+          <main>{children}</main>
+        </LanguageProvider>
         <SVGFilters />
       </body>
     </html>

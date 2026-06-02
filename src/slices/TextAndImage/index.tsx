@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 
 import { Bounded } from "@/components/Bounded";
@@ -6,6 +8,7 @@ import { Heading } from "@/components/Heading";
 import { SlideIn } from "@/components/SlideIn";
 import { ParallaxImage } from "./ParallaxImage";
 import { type TextAndImageSection } from "@/data/homepage";
+import { useLanguage } from "@/context/LanguageContext";
 
 declare module "react" {
   interface CSSProperties {
@@ -18,7 +21,21 @@ type Props = {
   index: number;
 };
 
+// Map section IDs to their translation key prefix
+const sectionKeyMap: Record<string, string> = {
+  "tai-1": "tai1",
+  "tai-2": "tai2",
+  "tai-3": "tai3",
+};
+
 const TextAndImage = ({ data, index }: Props): JSX.Element => {
+  const { t } = useLanguage();
+  const keyPrefix = sectionKeyMap[data.id] || "";
+
+  const heading = keyPrefix ? t(`${keyPrefix}.heading` as any) : data.heading;
+  const body = keyPrefix ? t(`${keyPrefix}.body` as any) : data.body;
+  const buttonText = keyPrefix ? t(`${keyPrefix}.buttonText` as any) : data.buttonText;
+
   return (
     <Bounded
       className={clsx(
@@ -39,12 +56,12 @@ const TextAndImage = ({ data, index }: Props): JSX.Element => {
         >
           <SlideIn>
             <Heading size="lg" as="h2">
-              {data.heading}
+              {heading}
             </Heading>
           </SlideIn>
           <SlideIn>
             <div className="max-w-md text-lg leading-relaxed">
-              <p>{data.body}</p>
+              <p>{body}</p>
             </div>
           </SlideIn>
           <SlideIn>
@@ -52,7 +69,7 @@ const TextAndImage = ({ data, index }: Props): JSX.Element => {
               href={data.buttonHref}
               color={data.theme === "Lime" ? "purple" : "orange"}
             >
-              {data.buttonText}
+              {buttonText}
             </ButtonLink>
           </SlideIn>
         </div>

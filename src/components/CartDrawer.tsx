@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaCartShopping, FaTrash, FaXmark } from "react-icons/fa6";
 import { useCart } from "@/context/CartContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 /* Jagged SVG strip — amethyst torn left edge of the drawer */
 function TornEdge() {
@@ -36,6 +37,7 @@ function TornEdge() {
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, totalCount, removeItem } = useCart();
+  const { t } = useLanguage();
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
 
   const totalPrice = items.reduce(
@@ -77,7 +79,7 @@ export function CartDrawer() {
 
       {/* ── Drawer container ── */}
       <aside
-        aria-label="Shopping cart"
+        aria-label={t("cart.title")}
         className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -95,7 +97,7 @@ export function CartDrawer() {
           <div className="relative z-10 flex items-center justify-between border-b border-brand-deep/60 px-5 py-4">
             <div className="flex items-baseline gap-2">
               <h2 className="font-sans text-2xl font-bold uppercase tracking-widest text-brand-amethyst">
-                Cart
+                {t("cart.title")}
               </h2>
               {totalCount > 0 && (
                 <span className="font-sans text-base text-white/50">
@@ -105,7 +107,7 @@ export function CartDrawer() {
             </div>
             <button
               onClick={closeCart}
-              aria-label="Close cart"
+              aria-label={t("cart.close")}
               className="group flex size-8 items-center justify-center text-brand-silver transition-colors hover:text-white"
             >
               <FaXmark
@@ -126,7 +128,7 @@ export function CartDrawer() {
                   />
                 </div>
                 <p className="font-sans text-sm uppercase tracking-[0.3em] text-white/25">
-                  Empty
+                  {t("cart.empty")}
                 </p>
               </div>
             ) : (
@@ -163,7 +165,7 @@ export function CartDrawer() {
                         </p>
                         {item.quantity > 1 && (
                           <p className="mt-0.5 font-sans text-xs text-white/35">
-                            qty: {item.quantity}
+                            {t("cart.qty")}: {item.quantity}
                           </p>
                         )}
                       </div>
@@ -171,7 +173,7 @@ export function CartDrawer() {
                       {/* Remove button */}
                       <button
                         onClick={() => handleRemove(item.id)}
-                        aria-label={`Remove ${item.name} from cart`}
+                        aria-label={t("cart.remove").replace("{name}", item.name)}
                         className="group/del shrink-0 p-1 text-brand-deep transition-colors hover:text-red-500"
                       >
                         <FaTrash
@@ -192,7 +194,7 @@ export function CartDrawer() {
               {/* Subtotal row */}
               <div className="mb-4 flex items-baseline justify-between">
                 <span className="font-sans text-xs uppercase tracking-[0.25em] text-white/40">
-                  Total
+                  {t("cart.total")}
                 </span>
                 <span className="font-sans text-xl font-bold text-white">
                   ${(totalPrice / 100).toFixed(2)}
@@ -201,7 +203,7 @@ export function CartDrawer() {
 
               {/* Checkout — full-width button-cutout */}
               <button className="button-cutout w-full bg-gradient-to-b from-brand-amethyst to-brand-pale from-25% to-75% bg-[length:100%_400%] py-3 font-sans text-base font-bold uppercase tracking-widest text-white transition-[background-position] duration-300 hover:bg-bottom hover:text-black">
-                Checkout
+                {t("cart.checkout")}
               </button>
             </div>
           )}

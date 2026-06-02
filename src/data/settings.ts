@@ -2,10 +2,10 @@ export const siteSettings = {
   siteTitle: "SKET-OK",
   metaDescription: "Premium skateboarding for the streets. Built to shred, made to last.",
   navigation: [
-    { label: "Boards", href: "#products" },
-    { label: "Team", href: "#team" },
-    { label: "About", href: "#about" },
-    { label: "Build", href: "/build" },
+    { labelKey: "nav.boards" as const, href: "#products" },
+    { labelKey: "nav.team" as const, href: "#team" },
+    { labelKey: "nav.about" as const, href: "#about" },
+    { labelKey: "nav.build" as const, href: "/build" },
   ],
   // Add your footer skateboard texture paths here
   footerSkateboardTextures: [
