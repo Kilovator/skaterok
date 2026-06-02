@@ -40,8 +40,8 @@ export const textAndImageSections: TextAndImageSection[] = [
     buttonHref: "#products",
     theme: "Blue",
     variation: "default",
-    foregroundImage: { src: "/images/sections/tai-1-fg.jpg", alt: "Skater in action" },
-    backgroundImage: { src: "/images/sections/tai-1-bg.jpg", alt: "" },
+    foregroundImage: { src: "/images/sections/tai-1-fg.png", alt: "Skater in action" },
+    backgroundImage: { src: "/images/sections/paint-background.png", alt: "" },
   },
   {
     id: "tai-2",
@@ -51,8 +51,8 @@ export const textAndImageSections: TextAndImageSection[] = [
     buttonHref: "/build",
     theme: "Orange",
     variation: "imageOnLeft",
-    foregroundImage: { src: "/images/sections/tai-2-fg.jpg", alt: "Skateboard deck" },
-    backgroundImage: { src: "/images/sections/tai-2-bg.jpg", alt: "" },
+    foregroundImage: { src: "/images/sections/tai-2-fg.png", alt: "Skateboard deck" },
+    backgroundImage: { src: "/images/sections/paint-background.png", alt: "" },
   },
   {
     id: "tai-3",
@@ -62,8 +62,8 @@ export const textAndImageSections: TextAndImageSection[] = [
     buttonHref: "#team",
     theme: "Navy",
     variation: "default",
-    foregroundImage: { src: "/images/sections/tai-3-fg.jpg", alt: "Skaters team" },
-    backgroundImage: { src: "/images/sections/tai-3-bg.jpg", alt: "" },
+    foregroundImage: { src: "/images/sections/tai-3-fg.png", alt: "Skaters team" },
+    backgroundImage: { src: "/images/sections/paint-background.png", alt: "" },
   },
 ];
 
