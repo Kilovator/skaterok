@@ -4,6 +4,7 @@ export type Skater = {
   lastName?: string;
   photoBackground: { src: string; alt: string };
   photoForeground: { src: string; alt: string };
+  foregroundScale?: number;
   customizerLink: string;
 };
 
@@ -11,7 +12,7 @@ export const skaters: Skater[] = [
   {
     id: "1",
     firstName: "Carter",
-
+    foregroundScale: 0.82,
     photoBackground: { src: "/images/skaters/carter-back.png", alt: "" },
     photoForeground: { src: "/images/skaters/carter-front.png", alt: "Carter" },
     customizerLink: "/build",
@@ -35,7 +36,7 @@ export const skaters: Skater[] = [
   {
     id: "4",
     firstName: "Sophie",
-
+    foregroundScale: 1.35,
     photoBackground: { src: "/images/skaters/sophie-back.png", alt: "" },
     photoForeground: { src: "/images/skaters/sophie-front.png", alt: "Sophie" },
     customizerLink: "/build",
