@@ -9,6 +9,13 @@ export const siteSettings = {
   ],
   // Add your footer skateboard texture paths here
   footerSkateboardTextures: [
-    "/skateboard/Deck.webp",
+    "/skateboard/skate1.png",
+    "/skateboard/skate2.png",
+    "/skateboard/skate3.png",
+    "/skateboard/skate4.png",
+    "/skateboard/skate5.png",
+    "/skateboard/skate6.png",
+    "/skateboard/skate7.png",
+    "/skateboard/skate8.png",
   ],
 };

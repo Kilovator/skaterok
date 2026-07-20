@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Skateboard } from "./Skateboard";
 import {
   Bodies,
   Engine,
@@ -26,6 +28,7 @@ export function FooterPhysics({
   const engine = useRef(Engine.create());
   // Intersection Observer state
   const [inView, setInView] = useState(false);
+  const [boards, setBoards] = useState<Matter.Body[]>([]);
   // We show fewer boards on mobile
   const [isMobile, setIsMobile] = useState(false);
 
@@ -47,7 +50,7 @@ export function FooterPhysics({
 
   // Fewer boards on mobile
   const limitedBoardTextures = isMobile
-    ? boardTextureURLs.slice(0, 3)
+    ? boardTextureURLs.slice(0, 5)
     : boardTextureURLs;
 
   // Intersection Observer to start/stop the physics simulation
@@ -175,35 +178,94 @@ export function FooterPhysics({
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
-    const boards = limitedBoardTextures.map((texture) => {
+    const boardsArray = limitedBoardTextures.map((texture) => {
       // Randomize board position and rotation
       const x = Math.random() * cw;
       const y = Math.random() * (ch / 2 - 100) + 50;
       const rotation = ((Math.random() * 100 - 50) * Math.PI) / 180;
 
-      return Bodies.rectangle(x, y, 80, 285, {
-        chamfer: { radius: 40 }, // Rounded corners for accurate collision
+      return Bodies.rectangle(x, y, 56, 200, {
+        chamfer: { radius: 28 }, // Rounded corners for accurate collision
         angle: rotation,
         restitution: 0.8, // Bounciness
         friction: 0.005, // minimal friction
         render: {
-          sprite: {
-            texture,
-            xScale: 0.5, // Scale texture down
-            yScale: 0.5,
-          },
+          visible: false, // Hide the 2D sprite
         },
       });
     });
 
-    if (boards.length > 0) {
-      World.add(engine.current.world, boards); // Add boards to the world
+    if (boardsArray.length > 0) {
+      World.add(engine.current.world, boardsArray); // Add boards to the world
+      setBoards(boardsArray);
     }
 
     return () => {
-      World.remove(world, boards);
+      World.remove(world, boardsArray);
+      setBoards([]);
     };
   }, [limitedBoardTextures, inView]);
 
-  return <div ref={scene} className={className} />;
+  return (
+    <div ref={scene} className={className}>
+      {boards.map((body, i) => (
+        <Board3D
+          key={body.id}
+          body={body}
+          textureURL={limitedBoardTextures[i]}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Board3D({
+  body,
+  textureURL,
+}: {
+  body: Matter.Body;
+  textureURL: string;
+}) {
+  const divRef = useRef<HTMLDivElement>(null);
+  
+  // Create a random initial tilt for the 3D board so they don't all look perfectly identical
+  const [randomY] = useState(() => (Math.random() - 0.5) * (Math.PI / 3));
+
+  useEffect(() => {
+    let frameId: number;
+    const update = () => {
+      if (divRef.current) {
+        const { x, y } = body.position;
+        const angle = body.angle;
+        divRef.current.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${angle}rad)`;
+      }
+      frameId = requestAnimationFrame(update);
+    };
+    update();
+    return () => cancelAnimationFrame(frameId);
+  }, [body]);
+
+  return (
+    <div
+      ref={divRef}
+      className="absolute top-0 left-0 w-[120px] h-[350px] pointer-events-none"
+    >
+      <Canvas camera={{ position: [0, 0, 4.5], fov: 45 }} className="pointer-events-none">
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 10]} intensity={1} />
+        {/* Tilt the board to reveal the bottom (trucks, wheels) with a 2.5D perspective */}
+        <group scale={3.5} rotation={[Math.PI / 2 - 0.3, Math.PI / 6 + randomY, 0]}>
+          <Skateboard
+            deckTextureURL={textureURL}
+            deckTextureURLs={[textureURL]}
+            wheelTextureURL="/skateboard/SkateWheel1.png"
+            wheelTextureURLs={["/skateboard/SkateWheel1.png"]}
+            truckColor="#aaaaaa"
+            boltColor="#000000"
+            constantWheelSpin
+          />
+        </group>
+      </Canvas>
+    </div>
+  );
 }

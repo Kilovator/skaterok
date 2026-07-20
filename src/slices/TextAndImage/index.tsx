@@ -50,12 +50,12 @@ const TextAndImage = ({ data, index }: Props): JSX.Element => {
       <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-24">
         <div
           className={clsx(
-            "flex flex-col items-center gap-8 text-center md:items-start md:text-left",
+            "flex min-w-0 flex-col items-center gap-8 text-center md:items-start md:text-left overflow-hidden",
             data.variation === "imageOnLeft" && "md:order-2"
           )}
         >
           <SlideIn>
-            <Heading size="lg" as="h2">
+            <Heading size="lg" as="h2" className="break-words hyphens-auto w-full">
               {heading}
             </Heading>
           </SlideIn>
@@ -77,6 +77,7 @@ const TextAndImage = ({ data, index }: Props): JSX.Element => {
         <ParallaxImage
           foregroundImage={data.foregroundImage}
           backgroundImage={data.backgroundImage}
+          id={data.id}
         />
       </div>
     </Bounded>
