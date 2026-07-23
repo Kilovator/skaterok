@@ -7,6 +7,8 @@ import { SliceZone } from "@prismicio/react";
 
 import { components } from "../../slices";
 
+export const dynamic = "force-dynamic";
+
 export default async function SliceSimulatorPage({
   searchParams,
 }: SliceSimulatorParams) {

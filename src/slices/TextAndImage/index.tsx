@@ -32,9 +32,9 @@ const TextAndImage = ({ data, index }: Props): JSX.Element => {
   const { t } = useLanguage();
   const keyPrefix = sectionKeyMap[data.id] || "";
 
-  const heading = keyPrefix ? t(`${keyPrefix}.heading` as any) : data.heading;
-  const body = keyPrefix ? t(`${keyPrefix}.body` as any) : data.body;
-  const buttonText = keyPrefix ? t(`${keyPrefix}.buttonText` as any) : data.buttonText;
+  const heading = keyPrefix ? t(`${keyPrefix}.heading` as Parameters<typeof t>[0]) : data.heading;
+  const body = keyPrefix ? t(`${keyPrefix}.body` as Parameters<typeof t>[0]) : data.body;
+  const buttonText = keyPrefix ? t(`${keyPrefix}.buttonText` as Parameters<typeof t>[0]) : data.buttonText;
 
   return (
     <Bounded

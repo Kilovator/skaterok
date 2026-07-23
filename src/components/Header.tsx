@@ -6,32 +6,69 @@ import { CartButton } from "./CartButton";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { siteSettings } from "@/data/settings";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
+import { FaRightToBracket } from "react-icons/fa6";
 
 export function Header() {
   const { t } = useLanguage();
+  const { user, isLoggedIn, openAuthModal } = useAuth();
 
   return (
-    <header className="header absolute left-0 right-0 top-0 z-50 ~h-32/48 ~px-4/6 ~py-4/6 hd:h-32 text-white">
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-[auto,auto] items-center gap-6 md:grid-cols-[1fr,auto,1fr]">
-        <Link href="/" className="justify-self-start">
-          <Logo className="text-brand-amethyst ~h-12/20" />
+    <header className="header absolute left-0 right-0 top-0 z-50 ~h-32/48 ~px-4/8 ~py-6/8 hd:h-32 text-white">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap md:flex-nowrap items-center justify-between gap-4 md:gap-8">
+        
+        {/* Left: Logo */}
+        <Link href="/" className="shrink-0">
+          <Logo className="text-brand-amethyst ~h-12/16" />
         </Link>
+
+        {/* Center: Navigation - strictly single horizontal line */}
         <nav
           aria-label="Main"
-          className="col-span-full row-start-2 md:col-span-1 md:col-start-2 md:row-start-1"
+          className="order-3 md:order-2 w-full md:w-auto flex justify-center overflow-x-auto py-1"
         >
-          <ul className="flex flex-wrap items-center justify-center gap-8">
+          <ul className="flex flex-nowrap items-center justify-center gap-6 md:gap-10 whitespace-nowrap">
             {siteSettings.navigation.map((item) => (
-              <li key={item.labelKey}>
-                <Link href={item.href} className="~text-lg/xl hover:text-brand-amethyst transition-colors">
+              <li key={item.labelKey} className="shrink-0">
+                <Link
+                  href={item.href}
+                  className="font-mono text-base md:text-lg font-medium tracking-wide text-white/90 hover:text-brand-amethyst transition-colors"
+                >
                   {t(item.labelKey)}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
-        <div className="flex items-center gap-3 justify-self-end">
+
+        {/* Right: Controls & Account */}
+        <div className="order-2 md:order-3 flex items-center gap-3.5 md:gap-5 shrink-0 justify-self-end">
           <LanguageSwitcher />
+
+          {/* User Account / Login Button */}
+          {isLoggedIn && user ? (
+            <Link
+              href="/account"
+              className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-amethyst/25 hover:bg-brand-amethyst/40 border border-brand-amethyst/50 text-sm font-mono font-medium tracking-wide text-white transition-all shadow-md hover:scale-105 shrink-0 whitespace-nowrap"
+              title={t("nav.account")}
+            >
+              <div className="size-7 rounded-full bg-brand-amethyst text-white flex items-center justify-center text-xs font-mono shrink-0 shadow-inner">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+              <span className="hidden sm:inline max-w-[110px] truncate">
+                {user.name.split(" ")[0]}
+              </span>
+            </Link>
+          ) : (
+            <button
+              onClick={() => openAuthModal("login")}
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-sm font-mono font-medium tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
+            >
+              <FaRightToBracket size={15} className="text-brand-amethyst shrink-0" />
+              <span className="hidden sm:inline">{t("nav.login")}</span>
+            </button>
+          )}
+
           <CartButton />
         </div>
       </div>

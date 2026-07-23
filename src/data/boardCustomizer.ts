@@ -24,6 +24,10 @@ export const decks: DeckItem[] = [
   { uid: "skate-7",       textureUrl: "/skateboard/skate7.png" },
   { uid: "skate-8",       textureUrl: "/skateboard/skate8.png" },
   { uid: "skate-9",       textureUrl: "/skateboard/skate9.png" },
+  { uid: "skate-10",      textureUrl: "/skateboard/skate10.png" },
+  { uid: "skate-11",      textureUrl: "/skateboard/skate11.png" },
+  { uid: "skate-12",      textureUrl: "/skateboard/skate12.png" },
+  { uid: "skate-13",      textureUrl: "/skateboard/skate13.png" },
 ];
 
 export const wheels: WheelItem[] = [
@@ -34,6 +38,9 @@ export const wheels: WheelItem[] = [
   { uid: "wheel-4", textureUrl: "/skateboard/wheel4.png" },
   { uid: "wheel-5", textureUrl: "/skateboard/wheel5.png" },
   { uid: "wheel-6", textureUrl: "/skateboard/wheel6.png" },
+  { uid: "wheel-7", textureUrl: "/skateboard/wheel7.png" },
+  { uid: "wheel-8", textureUrl: "/skateboard/wheel8.png" },
+  { uid: "wheel-9", textureUrl: "/skateboard/wheel9.png" },
 ];
 
 export const metals: MetalItem[] = [

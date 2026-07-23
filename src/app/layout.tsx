@@ -5,6 +5,10 @@ import "./globals.css";
 import { SVGFilters } from "@/components/SVGFilters";
 import { siteSettings } from "@/data/settings";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
+import { CartDrawer } from "@/components/CartDrawer";
+import { AuthModal } from "@/components/AuthModal";
 
 const bowlby = Bowlby_One_SC({
   subsets: ["latin"],
@@ -36,7 +40,13 @@ export default function RootLayout({
         className={`${bowlby.variable} ${dmMono.variable} antialiased font-mono font-medium text-zinc-800 bg-brand-black`}
       >
         <LanguageProvider>
-          <main>{children}</main>
+          <AuthProvider>
+            <CartProvider>
+              <main>{children}</main>
+              <CartDrawer />
+              <AuthModal />
+            </CartProvider>
+          </AuthProvider>
         </LanguageProvider>
         <SVGFilters />
       </body>

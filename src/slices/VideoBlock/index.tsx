@@ -90,52 +90,41 @@ const VideoBlock = (): JSX.Element => {
   return (
     <Bounded className="bg-texture bg-zinc-900">
       <h2 className="sr-only">Video Reel</h2>
-      <div className="relative aspect-video">
+      <div className="group relative aspect-video cursor-pointer">
         {/* Masks / shadow layers */}
         <div
           className={clsx(
             MASK_CLASSES,
-            "bg-brand-amethyst absolute inset-0 ~translate-x-2/3 ~translate-y-2/3"
+            "bg-brand-amethyst absolute inset-0 ~translate-x-2/3 ~translate-y-2/3 transition-transform duration-300 group-hover:~translate-x-1/3 group-hover:~translate-y-1/3"
           )}
         />
         <div
           className={clsx(
             MASK_CLASSES,
-            "bg-white absolute inset-0 ~translate-x-1/3 ~translate-y-1/2"
+            "bg-white absolute inset-0 ~translate-x-1/3 ~translate-y-1/2 transition-transform duration-300 group-hover:~translate-x-1/4 group-hover:~translate-y-1/4"
           )}
         />
         <div
           className={clsx(
             MASK_CLASSES,
-            "bg-white absolute inset-0 ~translate-x-1/2 ~-translate-y-1/3"
+            "bg-white absolute inset-0 ~translate-x-1/2 ~-translate-y-1/3 transition-transform duration-300 group-hover:~translate-x-1/4 group-hover:~-translate-y-1/4"
           )}
         />
 
-        {/* GIFs inside the mask */}
-        <div className={clsx(MASK_CLASSES, "relative h-full bg-zinc-900")}>
-          <GifPlayer />
+        {/* Purple border mimicking the mask shape, reacting to mouse, with micro-jitters */}
+        <div className="absolute inset-0 animate-squiggle pointer-events-none">
+          <div
+            className={clsx(
+              MASK_CLASSES,
+              "bg-brand-amethyst absolute inset-0 scale-[1.02] transition-transform duration-300 group-hover:scale-[1.05]"
+            )}
+          />
         </div>
 
-        {/* Animated squiggle border — same effect as on skater cards */}
-        <svg
-          viewBox="0 0 800 450"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="animate-squiggle pointer-events-none absolute inset-0 h-full w-full text-brand-amethyst"
-          preserveAspectRatio="none"
-        >
-          <rect
-            x="6"
-            y="6"
-            width="788"
-            height="438"
-            rx="12"
-            stroke="currentColor"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        {/* GIFs inside the mask */}
+        <div className={clsx(MASK_CLASSES, "relative h-full bg-zinc-900 transition-transform duration-300 group-hover:scale-[1.03]")}>
+          <GifPlayer />
+        </div>
       </div>
     </Bounded>
   );

@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { Skateboard } from "./Skateboard";
 import {
   Bodies,
+  Body,
   Engine,
   Mouse,
   MouseConstraint,
@@ -14,7 +13,7 @@ import {
 } from "matter-js";
 
 type FooterPhysicsProps = {
-  boardTextureURLs: string[];
+  boardTextureURLs?: string[];
   className?: string;
 };
 
@@ -22,17 +21,12 @@ export function FooterPhysics({
   boardTextureURLs = [],
   className,
 }: FooterPhysicsProps) {
-  // The div we'll inject our canvas into
   const scene = useRef<HTMLDivElement>(null);
-  // Engine handles the physics simulations
   const engine = useRef(Engine.create());
-  // Intersection Observer state
   const [inView, setInView] = useState(false);
-  const [boards, setBoards] = useState<Matter.Body[]>([]);
-  // We show fewer boards on mobile
   const [isMobile, setIsMobile] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Record<string, HTMLImageElement>>({});
 
-  // Handle mobile detection
   useEffect(() => {
     const handleResize = () => {
       if (typeof window !== "undefined") {
@@ -48,12 +42,38 @@ export function FooterPhysics({
     };
   }, []);
 
-  // Fewer boards on mobile
   const limitedBoardTextures = isMobile
-    ? boardTextureURLs.slice(0, 5)
+    ? boardTextureURLs.slice(0, 3)
     : boardTextureURLs;
 
-  // Intersection Observer to start/stop the physics simulation
+  // Pre-load all textures before initializing the physics engine
+  useEffect(() => {
+    if (limitedBoardTextures.length === 0) return;
+
+    let loadedCount = 0;
+    const textures = limitedBoardTextures;
+    const newLoadedImages: Record<string, HTMLImageElement> = {};
+
+    textures.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        newLoadedImages[src] = img;
+        loadedCount++;
+        if (loadedCount === textures.length) {
+          setLoadedImages(newLoadedImages);
+        }
+      };
+      img.onerror = () => {
+        // Still count it to prevent blocking
+        loadedCount++;
+        if (loadedCount === textures.length) {
+          setLoadedImages(newLoadedImages);
+        }
+      };
+    });
+  }, [limitedBoardTextures]);
+
   useEffect(() => {
     const currentScene = scene.current;
 
@@ -61,7 +81,7 @@ export function FooterPhysics({
       ([entry]) => {
         setInView(entry.isIntersecting);
       },
-      { threshold: 0.5 } // Trigger at 50% so users see the boards drop
+      { threshold: 0.5 },
     );
 
     if (currentScene) observer.observe(currentScene);
@@ -71,23 +91,22 @@ export function FooterPhysics({
     };
   }, []);
 
+  // Main physics loop - wait until inView and all textures are loaded
   useEffect(() => {
-    if (!scene.current || !inView) return;
+    if (!scene.current || !inView || Object.keys(loadedImages).length === 0) return;
 
-    // If the user prefers reduced motion, don't run the physics simulation
     const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
+      "(prefers-reduced-motion: reduce)",
     ).matches;
     if (prefersReducedMotion) return;
 
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
-    engine.current.gravity.y = 0.5; // Gravity on vertical axis
+    engine.current.gravity.y = 0.5;
 
-    // Create Matter.js renderer
     const render = Render.create({
-      element: scene.current, // attach to our scene div
+      element: scene.current,
       engine: engine.current,
       options: {
         width: cw,
@@ -98,14 +117,20 @@ export function FooterPhysics({
       },
     });
 
-    // Add boundaries to the scene
+    // Populate the texture cache to prevent matter-js drawImage crash on async load
+    Object.entries(loadedImages).forEach(([src, img]) => {
+      render.textures[src] = img;
+    });
+
     let boundaries = createBoundaries(cw, ch);
     World.add(engine.current.world, boundaries);
 
-    // Add mouse interaction for dragging boards
     const mouse = Mouse.create(render.canvas);
-    // @ts-expect-error - matter.js has incorrect types
+    // @ts-expect-error - matter-js has incorrect types
     mouse.element.removeEventListener("wheel", mouse.mousewheel);
+
+    // Set pixel ratio on mouse to align with High-DPI rendering (fixes offset click boxes)
+    mouse.pixelRatio = window.devicePixelRatio;
 
     const mouseConstraint = MouseConstraint.create(engine.current, {
       mouse,
@@ -124,38 +149,35 @@ export function FooterPhysics({
       const cw = scene.current.clientWidth;
       const ch = scene.current.clientHeight;
 
-      // Update canvas and renderer dimensions
       render.canvas.width = cw;
       render.canvas.height = ch;
       render.options.width = cw;
       render.options.height = ch;
       Render.setPixelRatio(render, window.devicePixelRatio);
+      mouse.pixelRatio = window.devicePixelRatio;
 
       World.remove(engine.current.world, boundaries);
       boundaries = createBoundaries(cw, ch);
       World.add(engine.current.world, boundaries);
     }
 
-    // Create walls/boundaries around the scene to keep boards in
     function createBoundaries(width: number, height: number) {
       return [
-        Bodies.rectangle(width / 2, -10, width, 20, { isStatic: true }), // Top
-        Bodies.rectangle(-10, height / 2, 20, height, { isStatic: true }), // Left
-        Bodies.rectangle(width / 2, height + 10, width, 20, { isStatic: true }), // Bottom
+        Bodies.rectangle(width / 2, -10, width, 20, { isStatic: true }),
+        Bodies.rectangle(-10, height / 2, 20, height, { isStatic: true }),
+        Bodies.rectangle(width / 2, height + 10, width, 20, { isStatic: true }),
         Bodies.rectangle(width + 10, height / 2, 20, height, {
           isStatic: true,
-        }), // Right
+        }),
       ];
     }
 
-    // Runner manages the animation loop and updates engine 60 times per second
     const runner = Runner.create();
     Runner.run(runner, engine.current);
     Render.run(render);
 
     const currentEngine = engine.current;
 
-    // Clean up
     return () => {
       window.removeEventListener("resize", onResize);
 
@@ -168,104 +190,70 @@ export function FooterPhysics({
       render.canvas.remove();
       render.textures = {};
     };
-  }, [inView]);
+  }, [inView, loadedImages]);
 
-  // Add boards to the scene
+  // Create bodies once textures are loaded and physics is ready
   useEffect(() => {
-    if (!scene.current || !inView) return;
+    if (!scene.current || !inView || Object.keys(loadedImages).length === 0) return;
 
     const world = engine.current.world;
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
-    const boardsArray = limitedBoardTextures.map((texture) => {
-      // Randomize board position and rotation
+    // Only render textures that successfully loaded to prevent crashes
+    const activeTextures = limitedBoardTextures.filter((src) => loadedImages[src]);
+
+    const boards = activeTextures.map((texture) => {
       const x = Math.random() * cw;
       const y = Math.random() * (ch / 2 - 100) + 50;
       const rotation = ((Math.random() * 100 - 50) * Math.PI) / 180;
 
-      return Bodies.rectangle(x, y, 56, 200, {
-        chamfer: { radius: 28 }, // Rounded corners for accurate collision
+      const img = loadedImages[texture];
+      const imgWidth = img ? img.naturalWidth : 1;
+      const imgHeight = img ? img.naturalHeight : 1;
+
+      // Standardize the physical body size for all skateboards (makes them identical in size)
+      // Increased size from 300x75 to 370x92 to make them look like collectible toys rather than tiny boards
+      const bodyWidth = 370;
+      const bodyHeight = 92;
+      
+      // Calculate sprite scale dynamically to fit the standard size.
+      // We scale the visual sprite slightly larger (8-15%) than the physical body 
+      // so they can overlap organically without looking like they are separated by invisible walls.
+      const xScale = (bodyWidth * 1.08) / imgWidth;
+      const yScale = (bodyHeight * 1.15) / imgHeight;
+
+      const body = Bodies.rectangle(x, y, bodyWidth, bodyHeight, {
+        // Chamfer radius rounds the corners of the rectangle
+        chamfer: { radius: bodyHeight * 0.48 },
         angle: rotation,
-        restitution: 0.8, // Bounciness
-        friction: 0.005, // minimal friction
+        restitution: 0.7 + Math.random() * 0.2, // Randomize bounciness slightly
+        friction: 0.001 + Math.random() * 0.009, // Randomize friction slightly
+        frictionAir: 0.005 + Math.random() * 0.015, // Randomize air resistance
         render: {
-          visible: false, // Hide the 2D sprite
+          sprite: {
+            texture,
+            xScale,
+            yScale,
+          },
         },
       });
+
+      // Apply a random initial spin and horizontal nudge to make them unpredictable
+      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.15);
+      Body.setVelocity(body, { x: (Math.random() - 0.5) * 3, y: 0 });
+
+      return body;
     });
 
-    if (boardsArray.length > 0) {
-      World.add(engine.current.world, boardsArray); // Add boards to the world
-      setBoards(boardsArray);
+    if (boards.length > 0) {
+      World.add(engine.current.world, boards);
     }
 
     return () => {
-      World.remove(world, boardsArray);
-      setBoards([]);
+      World.remove(world, boards);
     };
-  }, [limitedBoardTextures, inView]);
+  }, [limitedBoardTextures, inView, loadedImages]);
 
-  return (
-    <div ref={scene} className={className}>
-      {boards.map((body, i) => (
-        <Board3D
-          key={body.id}
-          body={body}
-          textureURL={limitedBoardTextures[i]}
-        />
-      ))}
-    </div>
-  );
-}
-
-function Board3D({
-  body,
-  textureURL,
-}: {
-  body: Matter.Body;
-  textureURL: string;
-}) {
-  const divRef = useRef<HTMLDivElement>(null);
-  
-  // Create a random initial tilt for the 3D board so they don't all look perfectly identical
-  const [randomY] = useState(() => (Math.random() - 0.5) * (Math.PI / 3));
-
-  useEffect(() => {
-    let frameId: number;
-    const update = () => {
-      if (divRef.current) {
-        const { x, y } = body.position;
-        const angle = body.angle;
-        divRef.current.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${angle}rad)`;
-      }
-      frameId = requestAnimationFrame(update);
-    };
-    update();
-    return () => cancelAnimationFrame(frameId);
-  }, [body]);
-
-  return (
-    <div
-      ref={divRef}
-      className="absolute top-0 left-0 w-[120px] h-[350px] pointer-events-none"
-    >
-      <Canvas camera={{ position: [0, 0, 4.5], fov: 45 }} className="pointer-events-none">
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 10]} intensity={1} />
-        {/* Tilt the board to reveal the bottom (trucks, wheels) with a 2.5D perspective */}
-        <group scale={3.5} rotation={[Math.PI / 2 - 0.3, Math.PI / 6 + randomY, 0]}>
-          <Skateboard
-            deckTextureURL={textureURL}
-            deckTextureURLs={[textureURL]}
-            wheelTextureURL="/skateboard/SkateWheel1.png"
-            wheelTextureURLs={["/skateboard/SkateWheel1.png"]}
-            truckColor="#aaaaaa"
-            boltColor="#000000"
-            constantWheelSpin
-          />
-        </group>
-      </Canvas>
-    </div>
-  );
+  return <div ref={scene} className={className} />;
 }

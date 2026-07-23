@@ -14,7 +14,7 @@ export function LanguageSwitcher() {
           onClick={() => setLanguage("pl")}
           className={`px-4 py-1.5 rounded-full font-bold uppercase tracking-wide transition-all duration-300 cursor-pointer flex items-center justify-center min-w-[3.5rem] ${
             language === "pl"
-              ? "bg-brand-amethyst text-white shadow-[0_0_15px_rgba(123,114,181,0.6)] scale-100"
+              ? "bg-brand-amethyst text-white shadow-[0_2px_8px_rgba(123,114,181,0.3)] scale-100"
               : "text-white/50 hover:text-white hover:bg-white/10"
           }`}
           title="Polski"
@@ -25,7 +25,7 @@ export function LanguageSwitcher() {
           onClick={() => setLanguage("en")}
           className={`px-4 py-1.5 rounded-full font-bold uppercase tracking-wide transition-all duration-300 cursor-pointer flex items-center justify-center min-w-[3.5rem] ${
             language === "en"
-              ? "bg-brand-amethyst text-white shadow-[0_0_15px_rgba(123,114,181,0.6)] scale-100"
+              ? "bg-brand-amethyst text-white shadow-[0_2px_8px_rgba(123,114,181,0.3)] scale-100"
               : "text-white/50 hover:text-white hover:bg-white/10"
           }`}
           title="English"

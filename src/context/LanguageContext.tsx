@@ -13,7 +13,6 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("pl");
-  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     // Read from localStorage on mount
@@ -21,7 +20,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (savedLanguage === "pl" || savedLanguage === "en") {
       setLanguageState(savedLanguage);
     }
-    setIsHydrated(true);
   }, []);
 
   const setLanguage = (lang: Language) => {
@@ -30,7 +28,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const t = (key: keyof typeof translations["pl"]): string => {
-    // Falls back to "pl" if translation not found
     const translationSet = translations[language] || translations["pl"];
     return translationSet[key] || translations["pl"][key] || String(key);
   };

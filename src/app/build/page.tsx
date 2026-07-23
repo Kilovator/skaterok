@@ -16,9 +16,9 @@ type SearchParams = {
 };
 
 export default async function Page(props: {
-  searchParams: Promise<SearchParams>;
+  searchParams?: Promise<SearchParams>;
 }) {
-  const searchParams = await props.searchParams;
+  const searchParams = props.searchParams ? await props.searchParams : {};
 
   const defaultWheel = wheels.find((w) => w.uid === searchParams.wheel) ?? wheels[0];
   const defaultDeck = decks.find((d) => d.uid === searchParams.deck) ?? decks[0];
@@ -61,4 +61,3 @@ export default async function Page(props: {
     </div>
   );
 }
-

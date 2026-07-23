@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { FaCartShopping, FaTrash, FaXmark } from "react-icons/fa6";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -202,9 +203,13 @@ export function CartDrawer() {
               </div>
 
               {/* Checkout — full-width button-cutout */}
-              <button className="button-cutout w-full bg-gradient-to-b from-brand-amethyst to-brand-pale from-25% to-75% bg-[length:100%_400%] py-3 font-sans text-base font-bold uppercase tracking-widest text-white transition-[background-position] duration-300 hover:bg-bottom hover:text-black">
+              <Link
+                href="/checkout"
+                onClick={closeCart}
+                className="button-cutout block w-full text-center bg-gradient-to-b from-brand-amethyst to-brand-pale from-25% to-75% bg-[length:100%_400%] py-3 font-sans text-base font-bold uppercase tracking-widest text-white transition-[background-position] duration-300 hover:bg-bottom hover:text-black"
+              >
                 {t("cart.checkout")}
-              </button>
+              </Link>
             </div>
           )}
         </div>

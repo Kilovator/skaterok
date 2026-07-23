@@ -25,12 +25,18 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
   } = useCustomizerControls();
 
   useEffect(() => {
-    const url = new URL(window.location.href);
-    if (selectedWheel?.uid) url.searchParams.set("wheel", selectedWheel.uid);
-    if (selectedDeck?.uid) url.searchParams.set("deck", selectedDeck.uid);
-    if (selectedTruck?.uid) url.searchParams.set("truck", selectedTruck.uid);
-    if (selectedBolt?.uid) url.searchParams.set("bolt", selectedBolt.uid);
-    router.replace(url.href);
+    const timer = setTimeout(() => {
+      const url = new URL(window.location.href);
+      
+      if (selectedWheel?.uid) url.searchParams.set("wheel", selectedWheel.uid);
+      if (selectedDeck?.uid) url.searchParams.set("deck", selectedDeck.uid);
+      if (selectedTruck?.uid) url.searchParams.set("truck", selectedTruck.uid);
+      if (selectedBolt?.uid) url.searchParams.set("bolt", selectedBolt.uid);
+      
+      router.replace(url.href, { scroll: false });
+    }, 300);
+    
+    return () => clearTimeout(timer);
   }, [router, selectedWheel, selectedDeck, selectedTruck, selectedBolt]);
 
   return (
@@ -42,6 +48,7 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
             imageSrc={deck.textureUrl}
             selected={deck.uid === selectedDeck?.uid}
             onClick={() => setDeck(deck)}
+            isDeck
           >
             {deck.uid.replace(/-/g, " ")}
           </Option>
@@ -70,6 +77,10 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
             {metal.uid.replace(/-/g, " ")}
           </Option>
         ))}
+        <PaletteButton 
+          selected={selectedTruck?.uid?.startsWith("#") ?? false} 
+          onClick={(color) => setTruck({ uid: color, color })}
+        />
       </Options>
       <Options title={t("build.bolts")} selectedName={selectedBolt?.uid}>
         {metals.map((metal) => (
@@ -82,6 +93,10 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
             {metal.uid.replace(/-/g, " ")}
           </Option>
         ))}
+        <PaletteButton 
+          selected={selectedBolt?.uid?.startsWith("#") ?? false} 
+          onClick={(color) => setBolt({ uid: color, color })}
+        />
       </Options>
     </div>
   );
@@ -115,9 +130,10 @@ type OptionProps = Omit<ComponentProps<"button">, "children"> & {
   selected: boolean;
   children: ReactNode;
   onClick: () => void;
+  isDeck?: boolean;
 } & ({ imageSrc: string; color?: never } | { color: string; imageSrc?: never });
 
-function Option({ children, selected, imageSrc, color, onClick }: OptionProps) {
+function Option({ children, selected, imageSrc, color, onClick, isDeck }: OptionProps) {
   return (
     <li>
       <button
@@ -128,12 +144,20 @@ function Option({ children, selected, imageSrc, color, onClick }: OptionProps) {
         onClick={onClick}
       >
         {imageSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imageSrc}
-            className="pointer-events-none h-full w-full rounded-full object-cover"
-            alt=""
-          />
+          <div className="relative h-full w-full overflow-hidden rounded-full bg-brand-black">
+            {isDeck && (
+              <div 
+                className="absolute inset-0 bg-cover bg-center" 
+                style={{ backgroundImage: 'url(/skateboard/Deck.webp)' }}
+              />
+            )}
+            <img
+              src={imageSrc}
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+              style={isDeck ? { clipPath: "inset(0 50% 0 0)" } : {}}
+              alt=""
+            />
+          </div>
         ) : (
           <div
             className="h-full w-full rounded-full"
@@ -142,6 +166,28 @@ function Option({ children, selected, imageSrc, color, onClick }: OptionProps) {
         )}
         <span className="sr-only">{children}</span>
       </button>
+    </li>
+  );
+}
+
+function PaletteButton({ onClick, selected }: { onClick: (color: string) => void, selected: boolean }) {
+  return (
+    <li>
+      <div
+        className={clsx(
+          "relative size-10 cursor-pointer rounded-full p-0.5 outline-2 outline-brand-amethyst",
+          selected && "outline"
+        )}
+      >
+        <div
+          className="h-full w-full rounded-full bg-gradient-to-tr from-red-500 via-yellow-500 via-green-500 to-blue-500"
+        />
+        <input
+          type="color"
+          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          onChange={(e) => onClick(e.target.value)}
+        />
+      </div>
     </li>
   );
 }
