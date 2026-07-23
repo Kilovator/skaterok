@@ -21,7 +21,7 @@ export function SlideIn({ children, delay = 0, duration = 0.6 }: Props) {
           observer.unobserve(element);
         }
       },
-      { threshold: 0, rootMargin: "-150px" }
+      { threshold: 0, rootMargin: "-20px" }
     );
 
     observer.observe(element);

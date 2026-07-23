@@ -32,16 +32,16 @@ export default function CheckoutPage() {
 
   const [fullName, setFullName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [phone, setPhone] = useState("+48 600 123 456");
-  const [address, setAddress] = useState("Marszałkowska 45/12");
-  const [city, setCity] = useState("Warszawa");
-  const [postalCode, setPostalCode] = useState("00-001");
-  const [paczkomatId, setPaczkomatId] = useState("WAW01M (Marszałkowska 100)");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [paczkomatId, setPaczkomatId] = useState("");
 
   // Payment details
-  const [cardNumber, setCardNumber] = useState("4532 •••• •••• 8892");
-  const [cardExp, setCardExp] = useState("12/28");
-  const [cardCvc, setCardCvc] = useState("777");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExp, setCardExp] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
   const [blikCode, setBlikCode] = useState("");
 
   // Result state
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
             
             {/* 1. Shipping Method */}
             <div className="rounded-3xl border border-white/15 bg-white/5 p-6 backdrop-blur-xl">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-wider text-white mb-5 flex items-center gap-3">
+              <h2 className="font-display text-xl font-bold uppercase tracking-wider text-white mb-5 flex items-center gap-3">
                 <span className="size-7 rounded-full bg-brand-amethyst text-white text-xs font-mono flex items-center justify-center">
                   1
                 </span>
@@ -375,7 +375,7 @@ export default function CheckoutPage() {
 
             {/* 2. Payment Method */}
             <div className="rounded-3xl border border-white/15 bg-white/5 p-6 backdrop-blur-xl">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-wider text-white mb-5 flex items-center gap-3">
+              <h2 className="font-display text-xl font-bold uppercase tracking-wider text-white mb-5 flex items-center gap-3">
                 <span className="size-7 rounded-full bg-brand-amethyst text-white text-xs font-mono flex items-center justify-center">
                   2
                 </span>
@@ -457,6 +457,7 @@ export default function CheckoutPage() {
                       required
                       value={cardNumber}
                       onChange={(e) => setCardNumber(e.target.value)}
+                      placeholder="4532 0000 0000 8892"
                       className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst"
                     />
                   </div>
@@ -470,6 +471,7 @@ export default function CheckoutPage() {
                         required
                         value={cardExp}
                         onChange={(e) => setCardExp(e.target.value)}
+                        placeholder="12/28"
                         className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst"
                       />
                     </div>
@@ -482,6 +484,7 @@ export default function CheckoutPage() {
                         required
                         value={cardCvc}
                         onChange={(e) => setCardCvc(e.target.value)}
+                        placeholder="777"
                         className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst"
                       />
                     </div>
@@ -530,7 +533,7 @@ export default function CheckoutPage() {
           {/* Right Column: Order Summary */}
           <div className="lg:col-span-5">
             <div className="sticky top-32 rounded-3xl border border-brand-amethyst/30 bg-white/5 p-6 backdrop-blur-xl shadow-2xl">
-              <h2 className="font-sans text-xl font-bold uppercase tracking-wider text-white mb-5">
+              <h2 className="font-display text-xl font-bold uppercase tracking-wider text-white mb-5">
                 {t("checkout.summaryTitle")}
               </h2>
 
@@ -571,7 +574,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-lg font-bold text-white pt-3 border-t border-white/10">
                   <span>{t("account.total")}</span>
-                  <span className="text-brand-lime">
+                  <span className="text-emerald-400">
                     ${(finalTotal / 100).toFixed(2)}
                   </span>
                 </div>
@@ -581,7 +584,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="button-cutout w-full bg-gradient-to-b from-brand-lime to-lime-500 from-25% to-75% bg-[length:100%_400%] py-4 font-sans text-sm font-bold uppercase tracking-widest text-black transition-[background-position] duration-300 hover:bg-bottom cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+                className="button-cutout w-full bg-gradient-to-b from-emerald-600 to-emerald-400 from-25% to-75% bg-[length:100%_400%] py-4 font-sans text-sm font-bold uppercase tracking-widest text-white hover:text-black transition-[background-position] duration-300 hover:bg-bottom cursor-pointer flex items-center justify-center gap-2 shadow-lg"
               >
                 <FaLock size={14} />
                 {isSubmitting ? "Processing..." : t("checkout.placeOrder")}

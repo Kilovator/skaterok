@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bowlby_One_SC, DM_Mono } from "next/font/google";
+import { Bowlby_One_SC, DM_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
 import { SVGFilters } from "@/components/SVGFilters";
@@ -24,6 +24,12 @@ const dmMono = DM_Mono({
   weight: "500",
 });
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-plus-jakarta-sans",
+});
+
 export const metadata: Metadata = {
   title: siteSettings.siteTitle,
   description: siteSettings.metaDescription,
@@ -37,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body
-        className={`${bowlby.variable} ${dmMono.variable} antialiased font-mono font-medium text-zinc-800 bg-brand-black`}
+        className={`${bowlby.variable} ${dmMono.variable} ${plusJakartaSans.variable} antialiased font-sans font-medium text-zinc-800 bg-brand-black`}
       >
         <LanguageProvider>
           <AuthProvider>

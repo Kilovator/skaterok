@@ -14,20 +14,20 @@ export function Header() {
   const { user, isLoggedIn, openAuthModal } = useAuth();
 
   return (
-    <header className="header absolute left-0 right-0 top-0 z-50 ~h-32/48 ~px-4/8 ~py-6/8 hd:h-32 text-white">
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap md:flex-nowrap items-center justify-between gap-4 md:gap-8">
+    <header className="header absolute left-0 right-0 top-0 z-50 px-4 py-3 lg:py-6 text-white">
+      <div className="mx-auto flex w-full max-w-7xl flex-col lg:flex-row items-center justify-between gap-2.5 lg:gap-8">
         
         {/* Left: Logo */}
         <Link href="/" className="shrink-0">
-          <Logo className="text-brand-amethyst ~h-12/16" />
+          <Logo className="text-brand-amethyst h-8 lg:h-12" />
         </Link>
 
-        {/* Center: Navigation - strictly single horizontal line */}
+        {/* Center: Navigation - wrap on mobile to avoid scrollbar, horizontal on desktop */}
         <nav
           aria-label="Main"
-          className="order-3 md:order-2 w-full md:w-auto flex justify-center overflow-x-auto py-1"
+          className="order-3 lg:order-2 w-full lg:w-auto flex justify-center py-1"
         >
-          <ul className="flex flex-nowrap items-center justify-center gap-6 md:gap-10 whitespace-nowrap">
+          <ul className="flex flex-wrap lg:flex-nowrap items-center justify-center gap-x-6 gap-y-3 md:gap-x-10">
             {siteSettings.navigation.map((item) => (
               <li key={item.labelKey} className="shrink-0">
                 <Link
@@ -42,7 +42,7 @@ export function Header() {
         </nav>
 
         {/* Right: Controls & Account */}
-        <div className="order-2 md:order-3 flex items-center gap-3.5 md:gap-5 shrink-0 justify-self-end">
+        <div className="order-2 lg:order-3 flex items-center justify-center gap-6 lg:gap-5 shrink-0 w-full lg:w-auto">
           <LanguageSwitcher />
 
           {/* User Account / Login Button */}

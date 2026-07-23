@@ -24,8 +24,9 @@ export default {
     fontSize,
     extend: {
       fontFamily: {
-        sans: ["var(--font-bowlby-sc)"],
-        mono: ["var(--font-dm-mono)"],
+        sans: ["var(--font-plus-jakarta-sans)", "sans-serif"],
+        display: ["var(--font-bowlby-sc)", "cursive"],
+        mono: ["var(--font-dm-mono)", "monospace"],
       },
       colors: {
         "brand-amethyst": "#7B72B5",

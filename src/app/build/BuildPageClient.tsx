@@ -70,10 +70,10 @@ export function BuildPageClient({ children }: Props) {
         {children}
       </div>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-3 relative">
         {/* Toast alert for build saved */}
         {saveSuccess && (
-          <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-sans text-xs flex items-center gap-2 animate-fade-in">
+          <div className="absolute -top-14 left-0 right-0 p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-sans text-xs flex items-center gap-2 animate-fade-in z-50 backdrop-blur-md">
             <FaCheck className="size-4 shrink-0" />
             <span>{t("build.savedSuccess")}</span>
           </div>

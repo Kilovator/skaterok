@@ -2,7 +2,7 @@
 
 import * as THREE from "three";
 import { Skateboard } from "@/components/Skateboard";
-import { ContactShadows, Environment, Html } from "@react-three/drei";
+import { ContactShadows, Environment, Html as DreiHtml } from "@react-three/drei";
 import { Canvas, ThreeEvent, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
@@ -241,14 +241,14 @@ function Scene({
         position={[0, -0.09, -0.5]}
         scale={[0.2, 0.2, 0.2]}
       >
-        <Html
+        <DreiHtml
           wrapperClass="pointer-events-none"
           transform
           zIndexRange={[1, 0]}
           occlude="blending"
         >
           <WavyPaths />
-        </Html>
+        </DreiHtml>
       </group>
     </group>
   );

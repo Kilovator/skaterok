@@ -19,12 +19,12 @@ const Hero = (): JSX.Element => {
         <TallLogo className="w-full text-brand-amethyst opacity-30 mix-blend-overlay lg:hidden" />
       </div>
 
-      <div className="absolute inset-0 mx-auto mt-24 grid max-w-6xl grid-rows-[1fr,auto] place-items-end px-6 ~py-10/16">
-        <Heading className="relative max-w-2xl place-self-start">
+      <div className="absolute inset-0 mx-auto mt-44 sm:mt-32 lg:mt-24 grid max-w-6xl grid-rows-[1fr,auto] place-items-end px-6 ~py-10/16 z-30 pointer-events-none">
+        <Heading className="relative max-w-2xl place-self-start pointer-events-auto drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
           {t("hero.heading")}
         </Heading>
-        <div className="flex relative w-full flex-col items-center justify-between ~gap-2/4 lg:flex-row">
-          <div className="max-w-[45ch] font-semibold ~text-lg/xl">
+        <div className="flex relative w-full flex-col items-center justify-between ~gap-2/4 lg:flex-row pointer-events-auto drop-shadow-md">
+          <div className="max-w-[45ch] font-semibold ~text-lg/xl drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
             <p>{t("hero.body")}</p>
           </div>
           <ButtonLink

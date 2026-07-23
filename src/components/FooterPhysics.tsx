@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bodies,
   Body,
@@ -26,6 +26,7 @@ export function FooterPhysics({
   const [inView, setInView] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Record<string, HTMLImageElement>>({});
+  const [randomMobileTextures, setRandomMobileTextures] = useState<string[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,9 +43,18 @@ export function FooterPhysics({
     };
   }, []);
 
-  const limitedBoardTextures = isMobile
-    ? boardTextureURLs.slice(0, 3)
-    : boardTextureURLs;
+  useEffect(() => {
+    if (boardTextureURLs.length > 0 && isMobile && randomMobileTextures.length === 0) {
+      const shuffled = [...boardTextureURLs].sort(() => 0.5 - Math.random());
+      setRandomMobileTextures(shuffled.slice(0, Math.min(2, shuffled.length)));
+    }
+  }, [boardTextureURLs, isMobile, randomMobileTextures]);
+
+  const limitedBoardTextures = useMemo(() => {
+    return isMobile
+      ? randomMobileTextures
+      : boardTextureURLs;
+  }, [isMobile, randomMobileTextures, boardTextureURLs]);
 
   // Pre-load all textures before initializing the physics engine
   useEffect(() => {
@@ -212,10 +222,9 @@ export function FooterPhysics({
       const imgWidth = img ? img.naturalWidth : 1;
       const imgHeight = img ? img.naturalHeight : 1;
 
-      // Standardize the physical body size for all skateboards (makes them identical in size)
-      // Increased size from 300x75 to 370x92 to make them look like collectible toys rather than tiny boards
-      const bodyWidth = 370;
-      const bodyHeight = 92;
+      const scaleFactor = isMobile ? 0.55 : 1;
+      const bodyWidth = 370 * scaleFactor;
+      const bodyHeight = 92 * scaleFactor;
       
       // Calculate sprite scale dynamically to fit the standard size.
       // We scale the visual sprite slightly larger (8-15%) than the physical body 
@@ -227,9 +236,9 @@ export function FooterPhysics({
         // Chamfer radius rounds the corners of the rectangle
         chamfer: { radius: bodyHeight * 0.48 },
         angle: rotation,
-        restitution: 0.7 + Math.random() * 0.2, // Randomize bounciness slightly
+        restitution: isMobile ? 0.15 : 0.7 + Math.random() * 0.2, // Less bouncy on mobile
         friction: 0.001 + Math.random() * 0.009, // Randomize friction slightly
-        frictionAir: 0.005 + Math.random() * 0.015, // Randomize air resistance
+        frictionAir: isMobile ? 0.05 : 0.005 + Math.random() * 0.015, // More air resistance on mobile to slow it down
         render: {
           sprite: {
             texture,
@@ -240,8 +249,9 @@ export function FooterPhysics({
       });
 
       // Apply a random initial spin and horizontal nudge to make them unpredictable
-      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.15);
-      Body.setVelocity(body, { x: (Math.random() - 0.5) * 3, y: 0 });
+      const speedScale = isMobile ? 0.2 : 1;
+      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.15 * speedScale);
+      Body.setVelocity(body, { x: (Math.random() - 0.5) * 3 * speedScale, y: 0 });
 
       return body;
     });
@@ -253,7 +263,7 @@ export function FooterPhysics({
     return () => {
       World.remove(world, boards);
     };
-  }, [limitedBoardTextures, inView, loadedImages]);
+  }, [limitedBoardTextures, inView, loadedImages, isMobile]);
 
   return <div ref={scene} className={className} />;
 }

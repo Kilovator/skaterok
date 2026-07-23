@@ -22,9 +22,9 @@ export function ButtonLink({
     <Link
       href={href}
       className={clsx(
-        "button-cutout group mx-4 inline-flex items-center bg-gradient-to-b from-25% to-75% bg-[length:100%_400%] font-bold transition-[filter,background-position] duration-300 hover:bg-bottom",
+        "button-cutout group mx-2 md:mx-4 inline-flex items-center bg-gradient-to-b from-25% to-75% bg-[length:100%_400%] font-bold transition-[filter,background-position] duration-300 hover:bg-bottom",
         size === "sm" && "gap-2.5 py-2 text-base",
-        size === "md" && "gap-3 px-1 text-lg ~py-2.5/3",
+        size === "md" && "gap-2 md:gap-3 px-1 text-base md:text-lg ~py-2.5/3",
         size === "lg" && "~text-lg/2xl ~gap-3/4 ~px-1/2 ~py-3/4",
         color === "orange" &&
           "from-brand-amethyst to-brand-pale text-white hover:text-black",
@@ -40,7 +40,7 @@ export function ButtonLink({
         <>
           <div
             className={clsx(
-              "flex size-6 items-center justify-center transition-transform group-hover:-rotate-[25deg] [&>svg]:h-full [&>svg]:w-full",
+              "hidden sm:flex items-center justify-center transition-transform group-hover:-rotate-[25deg] [&>svg]:h-full [&>svg]:w-full shrink-0",
               size === "sm" && "size-5",
               size === "md" && "size-6",
               size === "lg" && "~size-6/8"
@@ -50,10 +50,10 @@ export function ButtonLink({
             {icon === "skateboard" && <SkateboardIcon />}
             {icon === "plus" && <FaPlus />}
           </div>
-          <div className="w-px self-stretch bg-black/25" />
+          <div className="hidden sm:block w-px self-stretch bg-black/25 shrink-0" />
         </>
       ) : null}
-      {children}
+      <span className="text-center w-full">{children}</span>
     </Link>
   );
 }

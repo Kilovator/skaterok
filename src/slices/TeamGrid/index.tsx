@@ -20,7 +20,7 @@ const TeamGrid = (): JSX.Element => {
           {t("team.heading")}
         </Heading>
       </SlideIn>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:gap-8 md:grid-cols-4">
         {skaters.map((skater, index) => (
           <SlideIn key={skater.id}>
             <Skater index={index} skater={skater} />

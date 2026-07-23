@@ -97,7 +97,7 @@ export function CartDrawer() {
           {/* ── Header ── */}
           <div className="relative z-10 flex items-center justify-between border-b border-brand-deep/60 px-5 py-4">
             <div className="flex items-baseline gap-2">
-              <h2 className="font-sans text-2xl font-bold uppercase tracking-widest text-brand-amethyst">
+              <h2 className="font-display text-2xl font-bold uppercase tracking-widest text-brand-amethyst">
                 {t("cart.title")}
               </h2>
               {totalCount > 0 && (
@@ -152,6 +152,7 @@ export function CartDrawer() {
                           src={item.image.src}
                           alt={item.image.alt}
                           fill
+                          sizes="40px"
                           className="object-cover object-top"
                         />
                       </div>
