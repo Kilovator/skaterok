@@ -33,6 +33,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: siteSettings.siteTitle,
   description: siteSettings.metaDescription,
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

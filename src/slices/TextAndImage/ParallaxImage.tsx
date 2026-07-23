@@ -144,19 +144,20 @@ export function ParallaxImage({
       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl opacity-50 pointer-events-none" />
       <div
         ref={backgroundRef}
-        className="col-start-1 row-start-1 transition-transform relative z-0"
+        className="col-start-1 row-start-1 transition-transform relative z-0 pointer-events-none"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={backgroundImage.src}
           alt={backgroundImage.alt}
-          className="w-11/12 drop-shadow-lg opacity-80 transition-opacity duration-500 group-hover:opacity-100"
+          onError={() => {}}
+          className="w-11/12 drop-shadow-lg opacity-80 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none"
         />
       </div>
 
       <div
         ref={foregroundRef}
-        className="col-start-1 row-start-1 transition-transform h-full w-full place-items-center relative z-10 flex justify-center items-center"
+        className="col-start-1 row-start-1 transition-transform h-full w-full place-items-center relative z-10 flex justify-center items-center pointer-events-none"
       >
         {useGifs ? (
           gifSrc && (
@@ -164,6 +165,7 @@ export function ParallaxImage({
             <img
               src={gifSrc}
               alt="skateboard trick"
+              onError={() => {}}
               className={clsx(imgClassName, "transition-opacity duration-300")}
               style={{ opacity: gifOpacity }}
             />
@@ -173,6 +175,7 @@ export function ParallaxImage({
           <img
             src={foregroundImage.src}
             alt={foregroundImage.alt}
+            onError={() => {}}
             className={imgClassName}
           />
         )}

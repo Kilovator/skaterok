@@ -11,16 +11,17 @@ const MASK_CLASSES =
 const GIFS: { src: string; durationMs: number }[] = [
   { src: "/gif/1a3X.gif", durationMs: 1600 },
   { src: "/gif/1FAL.gif", durationMs: 3650 },
+  { src: "/gif/1kAo.gif", durationMs: 2500 },
   { src: "/gif/1pB8.gif", durationMs: 3520 },
   { src: "/gif/2D9k.gif", durationMs: 1300 },
-  { src: "/gif/3INl.gif", durationMs: 15120 },
   { src: "/gif/4CpC.gif", durationMs: 2800 },
+  { src: "/gif/4Hnl.gif", durationMs: 2500 },
   { src: "/gif/4HnT.gif", durationMs: 2400 },
+  { src: "/gif/5Gcg.gif", durationMs: 2500 },
   { src: "/gif/7EeB.gif", durationMs: 2400 },
   { src: "/gif/7f1H.gif", durationMs: 3060 },
   { src: "/gif/AsXD.gif", durationMs: 1760 },
   { src: "/gif/FgLG.gif", durationMs: 3800 },
-  { src: "/gif/IGCe.gif", durationMs: 3000 },
   { src: "/gif/PJc.gif",  durationMs: 900  },
   { src: "/gif/QtRA.gif", durationMs: 1200 },
   { src: "/gif/Y6Jn.gif", durationMs: 3300 },
@@ -80,6 +81,7 @@ function GifPlayer() {
     <img
       src={gifSrc}
       alt="skateboard trick"
+      onError={() => {}}
       className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
       style={{ opacity }}
     />
