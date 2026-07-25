@@ -62,9 +62,11 @@ export function BuildPageClient({ children }: Props) {
   }
 
   return (
-    <div className="grow bg-texture bg-brand-deep text-white ~p-4/6 lg:w-96 lg:shrink-0 lg:grow-0 flex flex-col justify-between">
+    <div className="relative z-20 -mt-6 lg:mt-0 rounded-t-3xl lg:rounded-none bg-texture bg-brand-deep text-white p-5 lg:p-6 lg:w-96 lg:shrink-0 lg:grow-0 flex flex-col justify-between shadow-[0_-12px_40px_rgba(0,0,0,0.7)] border-t border-white/15 lg:border-t-0 min-h-[58vh] lg:min-h-screen">
+      {/* Mobile Bottom Sheet Drag Handle */}
+      <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-4 lg:hidden shrink-0" />
       <div>
-        <Heading as="h1" size="sm" className="mb-6 mt-0">
+        <Heading as="h1" size="sm" className="mb-4 lg:mb-6 mt-0 text-center lg:text-left">
           {t("build.heading")}
         </Heading>
         {children}

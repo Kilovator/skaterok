@@ -36,7 +36,8 @@ export default async function Page(props: {
         defaultTruck={defaultTruck}
         defaultBolt={defaultBolt}
       >
-        <div className="relative aspect-square shrink-0 bg-brand-black lg:aspect-auto lg:grow">
+        {/* 3D Preview Viewport: Sticky header on mobile, full-screen column on desktop */}
+        <div className="sticky top-0 z-10 h-[42vh] sm:h-[48vh] w-full shrink-0 bg-brand-black lg:relative lg:top-auto lg:z-0 lg:h-screen lg:w-auto lg:grow">
           <div className="absolute inset-0">
             <Preview
               deckTextureURLs={deckTextureURLs}
@@ -44,8 +45,8 @@ export default async function Page(props: {
             />
           </div>
 
-          <Link href="/" className="absolute left-6 top-6">
-            <Logo className="h-12 text-white" />
+          <Link href="/" className="absolute left-4 top-4 z-20 md:left-6 md:top-6">
+            <Logo className="h-7 sm:h-9 md:h-12 text-white drop-shadow-md" />
           </Link>
         </div>
         <BuildPageClient>

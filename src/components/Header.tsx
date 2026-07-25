@@ -9,9 +9,13 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { FaRightToBracket } from "react-icons/fa6";
 
+import { usePathname } from "next/navigation";
+
 export function Header() {
   const { t } = useLanguage();
   const { user, isLoggedIn, openAuthModal } = useAuth();
+  const pathname = usePathname();
+  const isMapPage = pathname === "/mapa";
 
   return (
     <header className="header absolute left-0 right-0 top-0 z-50 px-4 py-3 lg:py-6 text-white">
@@ -69,7 +73,7 @@ export function Header() {
             </button>
           )}
 
-          <CartButton />
+          {!isMapPage && <CartButton />}
         </div>
       </div>
     </header>

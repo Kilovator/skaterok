@@ -153,7 +153,11 @@ function Option({ children, selected, imageSrc, color, onClick, isDeck }: Option
             )}
             <img
               src={imageSrc}
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+              onError={() => {}}
+              className={clsx(
+                "pointer-events-none absolute inset-0 h-full w-full object-cover",
+                isDeck ? "object-[28%_center] scale-110" : "object-center"
+              )}
               style={isDeck ? { clipPath: "inset(0 50% 0 0)" } : {}}
               alt=""
             />

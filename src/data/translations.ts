@@ -4,11 +4,31 @@ export const translations = {
   pl: {
     // Navigation
     "nav.boards": "Deski",
+    "nav.map": "Mapa",
     "nav.team": "Team",
     "nav.about": "O nas",
     "nav.build": "Kreator",
     "nav.account": "Konto",
     "nav.login": "Zaloguj się",
+
+    // Skate Map
+    "map.heading": "Mapa Deskorolkowa",
+    "map.subheading": "Odkrywaj najlepsze spoty, wydarzenia i twórz społeczność z innymi riderami",
+    "map.modeSpots": "Spoty i Wydarzenia",
+    "map.modeEditor": "Edytor i Społeczność",
+    "map.all": "Wszystkie",
+    "map.skateparks": "Skateparki",
+    "map.street": "Street Spoty",
+    "map.events": "Wydarzenia & Schodki",
+    "map.addSpotBtn": "+ Dodaj Spot na Mapie",
+    "map.clickToPlace": "Kliknij w dowolne miejsce na mapie, aby dodać nowy spot!",
+    "map.spotName": "Nazwa Spotu / Wydarzenia",
+    "map.spotType": "Typ Miejsca",
+    "map.spotDescription": "Opis i Wskazówki",
+    "map.addReviewTitle": "Zostaw opinię / эмоцию",
+    "map.writeComment": "Napisz komentarz lub opinię...",
+    "map.sendReview": "Wyślij",
+    "map.buildBoardHere": "Złóż deskę na ten spot",
 
     // Hero
     "hero.heading": "Twoja deska, Twój styl",
@@ -120,11 +140,31 @@ export const translations = {
   en: {
     // Navigation
     "nav.boards": "Boards",
+    "nav.map": "Map",
     "nav.team": "Team",
     "nav.about": "About",
     "nav.build": "Build",
     "nav.account": "Account",
     "nav.login": "Sign In",
+
+    // Skate Map
+    "map.heading": "Skate Map",
+    "map.subheading": "Discover top spots, events, and build the skate community",
+    "map.modeSpots": "Spots & Events",
+    "map.modeEditor": "Editor & Community",
+    "map.all": "All",
+    "map.skateparks": "Skateparks",
+    "map.street": "Street Spots",
+    "map.events": "Events & Meetups",
+    "map.addSpotBtn": "+ Add Spot on Map",
+    "map.clickToPlace": "Click anywhere on the map to add a new spot!",
+    "map.spotName": "Spot / Event Name",
+    "map.spotType": "Type",
+    "map.spotDescription": "Description & Tips",
+    "map.addReviewTitle": "Leave a review / reaction",
+    "map.writeComment": "Write a comment or feedback...",
+    "map.sendReview": "Send",
+    "map.buildBoardHere": "Build board for this spot",
 
     // Hero
     "hero.heading": "Your board, your way",
