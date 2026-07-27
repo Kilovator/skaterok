@@ -29,6 +29,8 @@ export const translations = {
     "map.writeComment": "Napisz komentarz lub opinię...",
     "map.sendReview": "Wyślij",
     "map.buildBoardHere": "Złóż deskę na ten spot",
+    "map.geoBannerText": "Chcielibyśmy wiedzieć, gdzie lubisz jeździć na desce! 🛹",
+    "map.enableGeoBtn": "Udostępnij lokalizację",
 
     // Hero
     "hero.heading": "Twoja deska, Twój styl",
@@ -77,6 +79,15 @@ export const translations = {
     "build.addToCart": "Dodaj do koszyka",
     "build.saveBuild": "Zapisz zestaw",
     "build.savedSuccess": "Zestaw zapisany w koncie!",
+    "build.photoTitle": "Dopasuj zdjęcie na desce",
+    "build.photoScale": "Skala / Rozmiar",
+    "build.photoPosX": "Pozycja X (Lewo / Prawo)",
+    "build.photoPosY": "Pozycja Y (Góra / Dół)",
+    "build.photoRotation": "Obrót",
+    "build.photoReset": "Resetuj",
+    "build.colorTitle": "Wybierz kolor",
+    "build.uploadPhoto": "Wgraj własne zdjęcie na deskę",
+    "build.yourPattern": "Twój własny wzór",
 
     // Product Card
     "product.customize": "Dostosuj",
@@ -87,14 +98,17 @@ export const translations = {
     "auth.register": "Rejestracja",
     "auth.email": "Adres E-mail",
     "auth.password": "Hasło",
-    "auth.name": "Imię i nazwisko",
+    "auth.name": "Nick Ridera (Twój Nick)",
     "auth.submitLogin": "Zaloguj się",
     "auth.submitRegister": "Utwórz konto",
     "auth.noAccount": "Nie masz konta? Zarejestruj się",
     "auth.hasAccount": "Masz już konto? Zaloguj się",
     "auth.logout": "Wyloguj się",
     "auth.welcome": "Witaj,",
-    "auth.demoBtn": "Użyj konta demo",
+    "auth.invalidEmail": "Wprowadź poprawny adres e-mail (np. rider@sket-ok.com)",
+    "auth.invalidPassword": "Hasło musi mieć co najmniej 8 znaków i zawierać wielką literę (A-Z)",
+    "auth.passMinChars": "Co najmniej 8 znaków",
+    "auth.passUppercase": "Co najmniej jedna wielka litera (A-Z)",
 
     // Account Page
     "account.title": "Twoje Konto",
@@ -165,6 +179,8 @@ export const translations = {
     "map.writeComment": "Write a comment or feedback...",
     "map.sendReview": "Send",
     "map.buildBoardHere": "Build board for this spot",
+    "map.geoBannerText": "We'd love to know where you love to skate! 🛹",
+    "map.enableGeoBtn": "Share Location",
 
     // Hero
     "hero.heading": "Your board, your way",
@@ -213,6 +229,15 @@ export const translations = {
     "build.addToCart": "Add to cart",
     "build.saveBuild": "Save Setup",
     "build.savedSuccess": "Setup saved to account!",
+    "build.photoTitle": "Adjust photo on board",
+    "build.photoScale": "Scale / Size",
+    "build.photoPosX": "Position X (Left / Right)",
+    "build.photoPosY": "Position Y (Up / Down)",
+    "build.photoRotation": "Rotation",
+    "build.photoReset": "Reset",
+    "build.colorTitle": "Choose color",
+    "build.uploadPhoto": "Upload custom photo on deck",
+    "build.yourPattern": "Your custom design",
 
     // Product Card
     "product.customize": "Customize",
@@ -223,14 +248,17 @@ export const translations = {
     "auth.register": "Create Account",
     "auth.email": "Email Address",
     "auth.password": "Password",
-    "auth.name": "Full Name",
+    "auth.name": "Rider Nick (Your Nick)",
     "auth.submitLogin": "Log In",
     "auth.submitRegister": "Sign Up",
     "auth.noAccount": "Don't have an account? Sign up",
     "auth.hasAccount": "Already have an account? Log in",
     "auth.logout": "Log Out",
     "auth.welcome": "Welcome,",
-    "auth.demoBtn": "Use Demo Account",
+    "auth.invalidEmail": "Please enter a valid email address (e.g. rider@sket-ok.com)",
+    "auth.invalidPassword": "Password must be at least 8 characters and contain an uppercase letter (A-Z)",
+    "auth.passMinChars": "At least 8 characters",
+    "auth.passUppercase": "At least one uppercase letter (A-Z)",
 
     // Account Page
     "account.title": "Your Account",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { FaCartShopping, FaTrash, FaXmark } from "react-icons/fa6";
 import { useCart } from "@/context/CartContext";
@@ -146,14 +145,13 @@ export function CartDrawer() {
                         style={{ backgroundColor: item.dominantColor }}
                       />
 
-                      {/* Product image */}
-                      <div className="relative h-[72px] w-10 shrink-0 overflow-hidden">
-                        <Image
+                      {/* Product image - Circular Swatch Style matching Photo 2 */}
+                      <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-zinc-900 border border-white/20 shadow-md flex items-center justify-center">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                           src={item.image.src}
                           alt={item.image.alt}
-                          fill
-                          sizes="40px"
-                          className="object-cover object-top"
+                          className="pointer-events-none absolute inset-0 h-full w-full object-cover scale-[1.65] translate-x-[34%] translate-y-[5%] object-center"
                         />
                       </div>
 

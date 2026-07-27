@@ -22,10 +22,11 @@ import {
   FaMoneyBill1,
   FaCheck,
   FaClock,
+  FaCamera,
 } from "react-icons/fa6";
 
 export default function AccountPage() {
-  const { user, isLoggedIn, savedBuilds, orders, logout, deleteBuild, openAuthModal } = useAuth();
+  const { user, isLoggedIn, savedBuilds, orders, logout, deleteBuild, openAuthModal, updateAvatar } = useAuth();
   const { t } = useLanguage();
   const { addItem } = useCart();
 
@@ -82,9 +83,34 @@ export default function AccountPage() {
           
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              <div className="size-16 md:size-20 rounded-2xl bg-gradient-to-tr from-brand-amethyst to-purple-500 text-white flex items-center justify-center text-2xl md:text-3xl font-bold font-sans shadow-lg shadow-brand-amethyst/30 border border-white/20">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
+              <label
+                title="Zmień avatar / Change Avatar"
+                className="relative size-16 md:size-20 rounded-2xl bg-gradient-to-tr from-brand-amethyst to-purple-500 text-white flex items-center justify-center text-2xl md:text-3xl font-bold font-sans shadow-lg shadow-brand-amethyst/30 border border-white/20 overflow-hidden cursor-pointer group shrink-0"
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      updateAvatar(url);
+                    }
+                  }}
+                />
+                {user.avatar ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={user.avatar} alt={user.name} className="size-full object-cover" />
+                ) : (
+                  user.name.charAt(0).toUpperCase()
+                )}
+                {/* Hover Camera Overlay Badge */}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white">
+                  <FaCamera className="size-5 md:size-6 mb-0.5" />
+                  <span className="text-[9px] font-sans uppercase font-bold tracking-tight">Zmień</span>
+                </div>
+              </label>
               <div>
                 <h1 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-wider text-white">
                   {user.name}
@@ -145,10 +171,10 @@ export default function AccountPage() {
                 </p>
                 <Link
                   href="/build"
-                  className="button-cutout inline-flex items-center gap-2 bg-gradient-to-b from-brand-lime to-lime-500 from-25% to-75% bg-[length:100%_400%] px-6 py-3 font-sans text-xs font-bold uppercase tracking-widest text-black transition-[background-position] duration-300 hover:bg-bottom"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-brand-amethyst to-purple-600 hover:from-purple-600 hover:to-brand-amethyst border border-brand-amethyst/60 font-sans text-xs font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-brand-amethyst/30 hover:shadow-brand-amethyst/50 hover:scale-105"
                 >
                   {t("hero.buttonText")}
-                  <FaArrowRight size={12} />
+                  <FaArrowRight size={12} className="text-white" />
                 </Link>
               </div>
             ) : (

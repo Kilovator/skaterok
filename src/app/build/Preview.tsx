@@ -27,7 +27,7 @@ export default function Preview({ wheelTextureURLs, deckTextureURLs }: Props) {
   const cameraControls = useRef<CameraControls>(null);
   const floorRef = useRef<THREE.Mesh>(null);
 
-  const { selectedWheel, selectedBolt, selectedDeck, selectedTruck } =
+  const { selectedWheel, selectedBolt, selectedDeck, selectedTruck, deckTransform } =
     useCustomizerControls();
 
   const wheelTexureURL = selectedWheel?.textureUrl ?? DEFAULT_WHEEL_TEXTURE;
@@ -110,6 +110,7 @@ export default function Preview({ wheelTextureURLs, deckTextureURLs }: Props) {
           deckTextureURL={deckTexureURL}
           truckColor={truckColor}
           boltColor={boltColor}
+          deckTransform={deckTransform}
           pose="side"
         />
         <CameraControls

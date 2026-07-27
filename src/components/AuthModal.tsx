@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaXmark, FaUser, FaEnvelope, FaLock, FaKey, FaShieldHalved } from "react-icons/fa6";
+import { FaXmark, FaUser, FaEnvelope, FaLock, FaShieldHalved, FaCheck, FaCamera } from "react-icons/fa6";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -12,10 +12,15 @@ export function AuthModal() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   if (!isAuthModalOpen) return null;
+
+  const hasMinLength = password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(password);
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,6 +28,12 @@ export function AuthModal() {
     setLoading(true);
 
     try {
+      if (!isValidEmail) {
+        setError(t("auth.invalidEmail"));
+        setLoading(false);
+        return;
+      }
+
       if (authModalMode === "login") {
         const res = await login(email, password);
         if (!res.success) {
@@ -30,11 +41,16 @@ export function AuthModal() {
         }
       } else {
         if (!name.trim()) {
-          setError("Please enter your name");
+          setError("Wprowadź swój Nick / Enter your Nick");
           setLoading(false);
           return;
         }
-        const res = await register(name, email, password);
+        if (!hasMinLength || !hasUppercase) {
+          setError(t("auth.invalidPassword"));
+          setLoading(false);
+          return;
+        }
+        const res = await register(name, email, password, avatarUrl);
         if (!res.success) {
           setError(res.error || "Registration failed");
         }
@@ -44,13 +60,6 @@ export function AuthModal() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleDemoLogin() {
-    setEmail("rider@sket-ok.com");
-    setPassword("skate123");
-    setError(null);
-    login("rider@sket-ok.com", "skate123");
   }
 
   return (
@@ -70,7 +79,7 @@ export function AuthModal() {
         {/* Close Button */}
         <button
           onClick={closeAuthModal}
-          className="absolute right-4 top-4 text-white/50 hover:text-white transition-colors p-2"
+          className="absolute right-4 top-4 text-white/50 hover:text-white transition-colors p-2 cursor-pointer"
           aria-label="Close modal"
         >
           <FaXmark size={20} />
@@ -101,7 +110,7 @@ export function AuthModal() {
                 setError(null);
                 openAuthModal("login");
               }}
-              className={`py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+              className={`py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
                 authModalMode === "login"
                   ? "bg-brand-amethyst text-white shadow-md"
                   : "text-white/60 hover:text-white"
@@ -115,7 +124,7 @@ export function AuthModal() {
                 setError(null);
                 openAuthModal("register");
               }}
-              className={`py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+              className={`py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
                 authModalMode === "register"
                   ? "bg-brand-amethyst text-white shadow-md"
                   : "text-white/60 hover:text-white"
@@ -135,20 +144,44 @@ export function AuthModal() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {authModalMode === "register" && (
-              <div>
-                <label className="block text-xs font-sans font-bold uppercase tracking-wider text-white/70 mb-1.5">
-                  {t("auth.name")}
-                </label>
-                <div className="relative">
-                  <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 size-4" />
+              <div className="flex items-center gap-3">
+                <label
+                  title="Wgraj swój Avatar / Upload Avatar"
+                  className="relative size-11 rounded-full bg-white/10 border border-white/20 hover:border-brand-amethyst flex items-center justify-center cursor-pointer shrink-0 overflow-hidden group shadow-md mt-4"
+                >
                   <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Alex Rider"
-                    className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst focus:ring-1 focus:ring-brand-amethyst transition-all font-mono"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setAvatarUrl(URL.createObjectURL(file));
+                      }
+                    }}
                   />
+                  {avatarUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={avatarUrl} alt="Avatar" className="size-full object-cover" />
+                  ) : (
+                    <FaCamera className="size-4 text-white/60 group-hover:text-brand-amethyst group-hover:scale-110 transition-all" />
+                  )}
+                </label>
+                <div className="grow">
+                  <label className="block text-xs font-sans font-bold uppercase tracking-wider text-white/70 mb-1.5">
+                    {t("auth.name")}
+                  </label>
+                  <div className="relative">
+                    <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 size-4" />
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="skater99"
+                      className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst focus:ring-1 focus:ring-brand-amethyst transition-all font-mono"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -185,6 +218,20 @@ export function AuthModal() {
                   className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst focus:ring-1 focus:ring-brand-amethyst transition-all font-mono"
                 />
               </div>
+
+              {/* Password Requirement Indicators (Registration Mode) */}
+              {authModalMode === "register" && (
+                <div className="mt-2.5 space-y-1 text-[11px] font-sans">
+                  <div className={`flex items-center gap-1.5 transition-colors ${hasMinLength ? "text-emerald-400 font-bold" : "text-white/40"}`}>
+                    {hasMinLength ? <FaCheck className="size-3 text-emerald-400 shrink-0" /> : <span className="font-mono text-xs text-white/30">○</span>}
+                    <span>{t("auth.passMinChars")}</span>
+                  </div>
+                  <div className={`flex items-center gap-1.5 transition-colors ${hasUppercase ? "text-emerald-400 font-bold" : "text-white/40"}`}>
+                    {hasUppercase ? <FaCheck className="size-3 text-emerald-400 shrink-0" /> : <span className="font-mono text-xs text-white/30">○</span>}
+                    <span>{t("auth.passUppercase")}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <button
@@ -199,18 +246,6 @@ export function AuthModal() {
                 : t("auth.submitRegister")}
             </button>
           </form>
-
-          {/* Quick Demo Login Option */}
-          <div className="mt-6 pt-4 border-t border-white/10 text-center">
-            <button
-              type="button"
-              onClick={handleDemoLogin}
-              className="inline-flex items-center gap-2 text-xs font-sans text-brand-amethyst hover:text-white transition-colors py-1 px-3 rounded-lg bg-brand-amethyst/10 hover:bg-brand-amethyst/20 border border-brand-amethyst/30"
-            >
-              <FaKey size={12} />
-              {t("auth.demoBtn")} (Alex Rider)
-            </button>
-          </div>
 
         </div>
       </div>

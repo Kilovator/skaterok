@@ -5,7 +5,7 @@ import { CustomizerControlsProvider } from "./context";
 import Preview from "./Preview";
 import Controls from "./Controls";
 import Loading from "./Loading";
-import { BuildPageClient } from "./BuildPageClient";
+import { BuildPageClient, FloatingCartButtons } from "./BuildPageClient";
 import { decks, wheels, metals } from "@/data/boardCustomizer";
 
 type SearchParams = {
@@ -29,15 +29,15 @@ export default async function Page(props: {
   const deckTextureURLs = decks.map((d) => d.textureUrl);
 
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
+    <div className="flex h-screen overflow-hidden flex-col lg:flex-row w-full">
       <CustomizerControlsProvider
         defaultWheel={defaultWheel}
         defaultDeck={defaultDeck}
         defaultTruck={defaultTruck}
         defaultBolt={defaultBolt}
       >
-        {/* 3D Preview Viewport: Sticky header on mobile, full-screen column on desktop */}
-        <div className="sticky top-0 z-10 h-[42vh] sm:h-[48vh] w-full shrink-0 bg-brand-black lg:relative lg:top-auto lg:z-0 lg:h-screen lg:w-auto lg:grow">
+        {/* 3D Preview Viewport */}
+        <div className="relative h-[45vh] lg:h-full w-full lg:w-auto lg:grow bg-brand-black shrink-0">
           <div className="absolute inset-0">
             <Preview
               deckTextureURLs={deckTextureURLs}
@@ -48,13 +48,17 @@ export default async function Page(props: {
           <Link href="/" className="absolute left-4 top-4 z-20 md:left-6 md:top-6">
             <Logo className="h-7 sm:h-9 md:h-12 text-white drop-shadow-md" />
           </Link>
+
+          {/* Floating Cart & Save Action Buttons */}
+          <FloatingCartButtons />
         </div>
+
         <BuildPageClient>
           <Controls
             wheels={wheels}
             decks={decks}
             metals={metals}
-            className="mb-6"
+            className="mb-2"
           />
         </BuildPageClient>
       </CustomizerControlsProvider>

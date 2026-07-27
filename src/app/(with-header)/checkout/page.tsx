@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -11,7 +11,6 @@ import { Bounded } from "@/components/Bounded";
 import {
   FaTruckFast,
   FaBox,
-  FaEnvelope,
   FaCreditCard,
   FaMobileScreenButton,
   FaMoneyBill1,
@@ -19,7 +18,20 @@ import {
   FaLock,
   FaArrowLeft,
   FaCircleCheck,
+  FaLocationDot,
+  FaCheck,
 } from "react-icons/fa6";
+
+const PACZKOMATY = [
+  { id: "WAW01M", city: "Warszawa", address: "ul. Marszałkowska 100", info: "24/7 • przy Metro Centrum" },
+  { id: "WAW44A", city: "Warszawa", address: "ul. Aleje Jerozolimskie 54", info: "24/7 • Złote Tarasy" },
+  { id: "KRA02A", city: "Kraków", address: "ul. Floriańska 12", info: "24/7 • Rynek Główny" },
+  { id: "WRO09B", city: "Wrocław", address: "ul. Świdnicka 8", info: "24/7 • Galeria Dominikańska" },
+  { id: "GDA15C", city: "Gdańsk", address: "ul. Długa 42", info: "24/7 • Stare Miasto" },
+  { id: "POZ03M", city: "Poznań", address: "ul. Półwiejska 18", info: "24/7 • Stary Browar" },
+  { id: "KAT08A", city: "Katowice", address: "ul. Stawowa 5", info: "24/7 • Dworzec PKP" },
+  { id: "LOD12B", city: "Łódź", address: "ul. Piotrkowska 104", info: "24/7 • Off Piotrkowska" },
+];
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
@@ -36,7 +48,9 @@ export default function CheckoutPage() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  const [paczkomatId, setPaczkomatId] = useState("");
+  const [paczkomatId, setPaczkomatId] = useState("WAW01M (Marszałkowska 100, Warszawa)");
+  const [selectedPaczkomatCode, setSelectedPaczkomatCode] = useState("WAW01M");
+  const [paczkomatSearch, setPaczkomatSearch] = useState("");
 
   // Payment details
   const [cardNumber, setCardNumber] = useState("");
@@ -48,8 +62,35 @@ export default function CheckoutPage() {
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Auto-populate user email and name if logged in
+  useEffect(() => {
+    if (user) {
+      if (user.email) setEmail(user.email);
+      if (user.name) setFullName(user.name);
+    }
+  }, [user]);
+
+  // If paczkomat is selected, switch away from Cash payment if currently selected
+  useEffect(() => {
+    if (shippingMethod === "paczkomat" && paymentMethod === "cash") {
+      setPaymentMethod("card");
+    }
+  }, [shippingMethod, paymentMethod]);
+
   const shippingFee = shippingMethod === "paczkomat" ? 1000 : 1500; // $10 or $15
   const finalTotal = totalPrice + (items.length > 0 ? shippingFee : 0);
+
+  const filteredPaczkomaty = PACZKOMATY.filter(
+    (p) =>
+      p.city.toLowerCase().includes(paczkomatSearch.toLowerCase()) ||
+      p.address.toLowerCase().includes(paczkomatSearch.toLowerCase()) ||
+      p.id.toLowerCase().includes(paczkomatSearch.toLowerCase())
+  );
+
+  function handleSelectPaczkomat(p: typeof PACZKOMATY[0]) {
+    setSelectedPaczkomatCode(p.id);
+    setPaczkomatId(`${p.id} (${p.address}, ${p.city})`);
+  }
 
   function handleSubmitOrder(e: React.FormEvent) {
     e.preventDefault();
@@ -69,7 +110,7 @@ export default function CheckoutPage() {
           email,
           phone,
           address: shippingMethod !== "paczkomat" ? address : undefined,
-          city,
+          city: shippingMethod !== "paczkomat" ? city : undefined,
           postalCode: shippingMethod !== "paczkomat" ? postalCode : undefined,
           paczkomatId: shippingMethod === "paczkomat" ? paczkomatId : undefined,
         },
@@ -209,8 +250,8 @@ export default function CheckoutPage() {
                 {t("checkout.shippingTitle")}
               </h2>
 
-              {/* Shipping Radio Tabs */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+              {/* Shipping Radio Tabs — 2 Methods: Courier & Paczkomat */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <button
                   type="button"
                   onClick={() => setShippingMethod("courier")}
@@ -222,10 +263,10 @@ export default function CheckoutPage() {
                 >
                   <FaTruckFast size={22} className="mb-2 text-brand-amethyst" />
                   <p className="font-sans text-xs font-bold uppercase tracking-wider text-white">
-                    Courier
+                    Courier / Kurier
                   </p>
                   <p className="font-mono text-[11px] text-white/50 mt-1">
-                    $15.00 • 24h
+                    $15.00 • 24h dostawa
                   </p>
                 </button>
 
@@ -240,28 +281,10 @@ export default function CheckoutPage() {
                 >
                   <FaBox size={22} className="mb-2 text-brand-amethyst" />
                   <p className="font-sans text-xs font-bold uppercase tracking-wider text-white">
-                    Paczkomat
+                    Paczkomat InPost
                   </p>
                   <p className="font-mono text-[11px] text-white/50 mt-1">
-                    $10.00 • InPost
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShippingMethod("postal")}
-                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-                    shippingMethod === "postal"
-                      ? "border-brand-amethyst bg-brand-amethyst/20 text-white shadow-lg shadow-brand-amethyst/10"
-                      : "border-white/10 bg-white/5 text-white/60 hover:border-white/30"
-                  }`}
-                >
-                  <FaEnvelope size={22} className="mb-2 text-brand-amethyst" />
-                  <p className="font-sans text-xs font-bold uppercase tracking-wider text-white">
-                    Post
-                  </p>
-                  <p className="font-mono text-[11px] text-white/50 mt-1">
-                    $15.00 • 2-3 days
+                    $10.00 • Odbiór w punkcie
                   </p>
                 </button>
               </div>
@@ -311,21 +334,66 @@ export default function CheckoutPage() {
                   />
                 </div>
 
+                {/* PACZKOMAT MAP & SELECTOR */}
                 {shippingMethod === "paczkomat" ? (
-                  <div>
-                    <label className="block text-xs font-sans font-bold uppercase tracking-wider text-white/70 mb-1">
-                      InPost Paczkomat ID & Location
-                    </label>
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-sans font-bold uppercase tracking-wider text-brand-amethyst flex items-center gap-1.5">
+                        <FaLocationDot className="size-3.5" />
+                        Wybierz Paczkomat na mapie / liście
+                      </label>
+                      <span className="text-[11px] text-white/40">InPost 24/7</span>
+                    </div>
+
+                    {/* Search Paczkomaty */}
                     <input
                       type="text"
-                      required
-                      value={paczkomatId}
-                      onChange={(e) => setPaczkomatId(e.target.value)}
-                      placeholder="WAW01M (Marszałkowska 100, Warszawa)"
-                      className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white placeholder-white/20 focus:outline-none focus:border-brand-amethyst"
+                      value={paczkomatSearch}
+                      onChange={(e) => setPaczkomatSearch(e.target.value)}
+                      placeholder="Szukaj miasta, ulicy lub kodu (np. Warszawa, Marszałkowska)..."
+                      className="w-full bg-white/5 border border-white/15 rounded-xl py-2 px-3 text-xs text-white placeholder-white/30 focus:outline-none focus:border-brand-amethyst"
                     />
+
+                    {/* Interactive Paczkomaty Grid List */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1 p-1">
+                      {filteredPaczkomaty.map((p) => {
+                        const isSelected = selectedPaczkomatCode === p.id;
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => handleSelectPaczkomat(p)}
+                            className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between ${
+                              isSelected
+                                ? "border-emerald-400 bg-emerald-500/15 text-white shadow-md shadow-emerald-500/10"
+                                : "border-white/10 bg-white/5 text-white/70 hover:border-white/30 hover:bg-white/10"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <span className="font-sans font-bold text-xs text-white uppercase block">
+                                  {p.id} • {p.city}
+                                </span>
+                                <span className="font-mono text-[11px] text-white/60 block mt-0.5">
+                                  {p.address}
+                                </span>
+                              </div>
+                              {isSelected && (
+                                <span className="size-5 rounded-full bg-emerald-400 text-black flex items-center justify-center shrink-0 shadow">
+                                  <FaCheck size={10} />
+                                </span>
+                              )}
+                            </div>
+                            <span className="font-mono text-[10px] text-brand-amethyst mt-1">
+                              {p.info}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 ) : (
+                  /* COURIER ADDRESS FIELDS */
                   <>
                     <div>
                       <label className="block text-xs font-sans font-bold uppercase tracking-wider text-white/70 mb-1">
@@ -395,7 +463,7 @@ export default function CheckoutPage() {
                 >
                   <FaCreditCard size={20} className="mx-auto mb-1 text-brand-lime" />
                   <span className="font-sans text-xs font-bold uppercase tracking-wider">
-                    Card
+                    Karta
                   </span>
                 </button>
 
@@ -414,20 +482,36 @@ export default function CheckoutPage() {
                   </span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("cash")}
-                  className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
-                    paymentMethod === "cash"
-                      ? "border-brand-amethyst bg-brand-amethyst/20 text-white shadow-lg shadow-brand-amethyst/10"
-                      : "border-white/10 bg-white/5 text-white/60 hover:border-white/30"
-                  }`}
-                >
-                  <FaMoneyBill1 size={20} className="mx-auto mb-1 text-brand-lime" />
-                  <span className="font-sans text-xs font-bold uppercase tracking-wider">
-                    Cash
-                  </span>
-                </button>
+                {/* CASH PAYMENT — ONLY AVAILABLE WHEN COURIER IS SELECTED */}
+                {shippingMethod === "courier" ? (
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("cash")}
+                    className={`p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                      paymentMethod === "cash"
+                        ? "border-brand-amethyst bg-brand-amethyst/20 text-white shadow-lg shadow-brand-amethyst/10"
+                        : "border-white/10 bg-white/5 text-white/60 hover:border-white/30"
+                    }`}
+                  >
+                    <FaMoneyBill1 size={20} className="mx-auto mb-1 text-brand-lime" />
+                    <span className="font-sans text-xs font-bold uppercase tracking-wider">
+                      Gotówka
+                    </span>
+                  </button>
+                ) : (
+                  <div
+                    title="Płatność gotówką przy odbiorze dostępna tylko dla kuriera"
+                    className="p-3 rounded-2xl border border-white/5 bg-white/[0.02] text-center opacity-40 cursor-not-allowed relative"
+                  >
+                    <FaMoneyBill1 size={20} className="mx-auto mb-1 text-white/30" />
+                    <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/30 block">
+                      Gotówka
+                    </span>
+                    <span className="font-mono text-[9px] text-amber-400 block mt-0.5">
+                      Tylko Kurier
+                    </span>
+                  </div>
+                )}
 
                 <button
                   type="button"
@@ -513,7 +597,7 @@ export default function CheckoutPage() {
                 <div className="p-4 rounded-2xl bg-black/20 border border-white/10 font-mono text-xs text-white/70 flex items-center gap-3">
                   <FaMoneyBill1 size={24} className="text-brand-lime shrink-0" />
                   <span>
-                    Pay directly to the courier in cash or terminal when your order arrives.
+                    Zapłać bezporednio kurierowi gotówką lub kartą przy odbiorze przesyłki.
                   </span>
                 </div>
               )}
@@ -522,7 +606,7 @@ export default function CheckoutPage() {
                 <div className="p-4 rounded-2xl bg-black/20 border border-white/10 font-mono text-xs text-white/70 flex items-center gap-3">
                   <FaApple size={24} className="text-white shrink-0" />
                   <span>
-                    Apple Pay / Google Pay authentication will prompt upon clicking confirm.
+                    Autoryzacja Apple Pay / Google Pay nastąpi po kliknięciu przycisku potwierdzenia.
                   </span>
                 </div>
               )}
@@ -569,7 +653,7 @@ export default function CheckoutPage() {
                   <span>${(totalPrice / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-white/60">
-                  <span>Shipping</span>
+                  <span>Shipping ({shippingMethod === "paczkomat" ? "Paczkomat" : "Courier"})</span>
                   <span>${(shippingFee / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold text-white pt-3 border-t border-white/10">

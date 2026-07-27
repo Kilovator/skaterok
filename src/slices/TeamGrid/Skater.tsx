@@ -80,7 +80,7 @@ export function Skater({ skater, index }: Props) {
             skater.firstName === "Carter" && "object-bottom scale-[1.20] md:group-hover:scale-[1.25]",
             skater.firstName === "Dylan" && "object-right scale-[1.00] md:group-hover:scale-[1.05]",
             skater.firstName === "Jordan" && "object-bottom scale-[0.98] md:group-hover:scale-[1.03]",
-            skater.firstName === "Sophie" && "object-bottom scale-[0.92] md:group-hover:scale-[0.97]"
+            skater.firstName === "Sophie" && "object-top scale-[1.42] brightness-110 md:group-hover:scale-[1.47] md:group-hover:brightness-115 !origin-top"
           )}
         />
         <div className="relative z-30 h-48 w-full place-self-end bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>

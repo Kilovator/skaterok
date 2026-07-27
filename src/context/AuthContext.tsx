@@ -31,8 +31,9 @@ type AuthContextType = {
   openAuthModal: (mode?: AuthModalMode) => void;
   closeAuthModal: () => void;
   login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
-  register: (name: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, pass: string, avatar?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
+  updateAvatar: (avatarUrl: string) => void;
   saveBuild: (build: {
     name?: string;
     deck: DeckItem;
@@ -110,18 +111,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true };
   };
 
-  const register = async (name: string, email: string, pass: string) => {
+  const register = async (name: string, email: string, pass: string, avatar?: string) => {
     const existing = db.getUserByEmail(email);
     if (existing) {
       return { success: false, error: "User with this email already exists" };
     }
-    const newUser = db.createUser(name, email, pass);
+    const newUser = db.createUser(name, email, pass, avatar);
     setUser(newUser);
     localStorage.setItem(CURRENT_USER_SESSION_KEY, newUser.email);
     setSavedBuilds(db.getSavedBuilds(newUser.id));
     setOrders(db.getUserOrders(newUser.id));
     setIsAuthModalOpen(false);
     return { success: true };
+  };
+
+  const updateAvatar = (avatarUrl: string) => {
+    if (!user) return;
+    const updated = db.updateUserAvatar(user.id, avatarUrl);
+    if (updated) {
+      setUser({ ...updated });
+    }
   };
 
   const logout = () => {
@@ -186,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        updateAvatar,
         saveBuild,
         deleteBuild,
         placeOrder,

@@ -9,6 +9,8 @@ import { GLTF } from "three-stdlib";
 import { useFrame } from "@react-three/fiber";
 import gsap from "gsap";
 
+import { DeckTransform } from "@/app/build/context";
+
 type SkateboardProps = {
   wheelTextureURLs: string[];
   wheelTextureURL: string;
@@ -16,6 +18,7 @@ type SkateboardProps = {
   deckTextureURL: string;
   truckColor: string;
   boltColor: string;
+  deckTransform?: DeckTransform;
   constantWheelSpin?: boolean;
   pose?: "upright" | "side";
 };
@@ -43,6 +46,7 @@ export function Skateboard({
   deckTextureURLs,
   truckColor,
   boltColor,
+  deckTransform,
   constantWheelSpin = false,
   pose = "upright",
 }: SkateboardProps) {
@@ -66,11 +70,42 @@ export function Skateboard({
   deckTextures.forEach((texture) => {
     texture.flipY = false;
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.center.set(0, 0);
+    texture.offset.set(0, 0);
+    texture.repeat.set(1, 1);
+    texture.rotation = 0;
   });
   const deckTextureIndex = deckTextureURLs.findIndex(
     (url) => url === deckTextureURL
   );
-  const deckTexture = deckTextures[deckTextureIndex];
+  const predefinedDeckTexture = deckTextures[deckTextureIndex];
+
+  const isCustomTexture = deckTextureURL.startsWith("blob:") || deckTextureURL.startsWith("data:") || deckTextureIndex === -1;
+  const customUploadedTexture = useTexture(isCustomTexture ? deckTextureURL : "/skateboard/Deck.webp");
+  
+  if (isCustomTexture && customUploadedTexture) {
+    customUploadedTexture.flipY = false;
+    customUploadedTexture.colorSpace = THREE.SRGBColorSpace;
+  }
+
+  const deckTexture = isCustomTexture ? customUploadedTexture : predefinedDeckTexture;
+
+  // Apply photo offset, scaling, and rotation ONLY to custom user uploaded texture
+  useEffect(() => {
+    if (isCustomTexture && customUploadedTexture) {
+      customUploadedTexture.center.set(0.5, 0.5);
+      if (deckTransform) {
+        customUploadedTexture.offset.set(-deckTransform.offsetX, deckTransform.offsetY);
+        customUploadedTexture.repeat.set(1 / deckTransform.scale, 1 / deckTransform.scale);
+        customUploadedTexture.rotation = (deckTransform.rotation * Math.PI) / 180;
+      } else {
+        customUploadedTexture.offset.set(0, 0);
+        customUploadedTexture.repeat.set(1, 1);
+        customUploadedTexture.rotation = 0;
+      }
+      customUploadedTexture.needsUpdate = true;
+    }
+  }, [customUploadedTexture, deckTransform, isCustomTexture]);
 
   const gripTapeDiffuse = useTexture("/skateboard/griptape-diffuse.webp");
   const gripTapeRoughness = useTexture("/skateboard/griptape-roughness.webp");

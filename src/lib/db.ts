@@ -7,6 +7,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
+  avatar?: string;
   passwordHash: string;
   createdAt: string;
 };
@@ -23,7 +24,7 @@ export type SavedBuild = {
   createdAt: string;
 };
 
-export type ShippingMethod = "courier" | "paczkomat" | "postal";
+export type ShippingMethod = "courier" | "paczkomat";
 export type PaymentMethod = "card" | "blik" | "cash" | "applepay";
 
 export type ShippingDetails = {
@@ -130,25 +131,31 @@ const SEED_DATA: DBStructure = {
   ],
 };
 
+let cachedDB: DBStructure | null = null;
+
 function getDB(): DBStructure {
   if (typeof window === "undefined") return SEED_DATA;
+  if (cachedDB) return cachedDB;
   try {
     const raw = localStorage.getItem(DB_KEY);
     if (!raw) {
       localStorage.setItem(DB_KEY, JSON.stringify(SEED_DATA));
+      cachedDB = SEED_DATA;
       return SEED_DATA;
     }
-    return JSON.parse(raw);
+    cachedDB = JSON.parse(raw);
+    return cachedDB!;
   } catch (e) {
     console.error("Failed to read DB from localStorage", e);
     return SEED_DATA;
   }
 }
 
-function saveDB(db: DBStructure): void {
+function saveDB(dbData: DBStructure): void {
+  cachedDB = dbData;
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(DB_KEY, JSON.stringify(db));
+    localStorage.setItem(DB_KEY, JSON.stringify(dbData));
   } catch (e) {
     console.error("Failed to save DB to localStorage", e);
   }
@@ -164,18 +171,30 @@ export const db = {
     );
   },
 
-  createUser(name: string, email: string, passwordHash: string): User {
+  createUser(name: string, email: string, passwordHash: string, avatar?: string): User {
     const data = getDB();
     const newUser: User = {
       id: "usr_" + Math.random().toString(36).substring(2, 9),
       name: name.trim(),
       email: email.toLowerCase().trim(),
+      avatar,
       passwordHash,
       createdAt: new Date().toISOString(),
     };
     data.users.push(newUser);
     saveDB(data);
     return newUser;
+  },
+
+  updateUserAvatar(userId: string, avatarUrl: string): User | null {
+    const data = getDB();
+    const userIndex = data.users.findIndex((u) => u.id === userId);
+    if (userIndex !== -1) {
+      data.users[userIndex].avatar = avatarUrl;
+      saveDB(data);
+      return data.users[userIndex];
+    }
+    return null;
   },
 
   verifyUser(email: string, passwordHash: string): User | null {

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { Bounded } from "./Bounded";
 import { FooterPhysics } from "./FooterPhysics";
@@ -9,6 +10,9 @@ import { useLanguage } from "@/context/LanguageContext";
 
 export function Footer() {
   const { t } = useLanguage();
+  const pathname = usePathname();
+
+  if (pathname === "/checkout") return null;
 
   return (
     <footer className="bg-texture bg-zinc-900 text-white overflow-hidden">

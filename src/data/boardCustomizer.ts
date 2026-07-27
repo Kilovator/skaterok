@@ -27,7 +27,7 @@ export const decks: DeckItem[] = [
   { uid: "skate-10",      textureUrl: "/skateboard/skate10.png" },
   { uid: "skate-11",      textureUrl: "/skateboard/skate11.png" },
   { uid: "skate-12",      textureUrl: "/skateboard/skate12.png" },
-  { uid: "skate-13",      textureUrl: "/skateboard/skate13.png" },
+  { uid: "skate-14",      textureUrl: "/skateboard/skate14.png" },
 ];
 
 export const wheels: WheelItem[] = [

@@ -16,13 +16,14 @@ export type SkateSpot = {
   category: SpotCategory;
   lat: number;
   lng: number;
-  city: string;
+  city?: string;
   address: string;
   rating: number;
   activeRidersCount: number;
   description: string;
   image: string;
   eventDate?: string;
+  expiresAt?: number; // Expiration timestamp in ms for temporary events/meetups
   reactions: {
     fire: number;
     skate: number;
@@ -41,7 +42,6 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     category: "skatepark",
     lat: 52.2035,
     lng: 20.9412,
-    city: "Warszawa",
     address: "ul. Jutrzenki 156, Warszawa",
     rating: 4.9,
     activeRidersCount: 24,
@@ -73,7 +73,6 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     category: "street",
     lat: 52.2319,
     lng: 21.0067,
-    city: "Warszawa",
     address: "Plac Defilad / Marszałkowska",
     rating: 4.7,
     activeRidersCount: 18,
@@ -93,15 +92,15 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
   },
   {
     id: "spot-3",
-    name: "Warsaw Street Session & Best Trick 2026",
+    name: "Warsaw Night Street Session & Best Trick",
     category: "event",
     lat: 52.2396,
     lng: 21.0122,
-    city: "Warszawa",
     address: "Bulwary Wiślane przy Moście Świętokrzyskim",
     rating: 5.0,
     activeRidersCount: 65,
-    eventDate: "Sobota, 17:00 — Wstęp wolny",
+    eventDate: "Dzisiaj, do 23:00 — Wstęp wolny",
+    expiresAt: Date.now() + 6 * 3600 * 1000, // Active for 6 hours
     description: "Ogromna сходка i zawody Best Trick! Muzyka z DJ trucka, darmowa woskownica, napoje i nagrody od SKET-OK.",
     image: "https://images.unsplash.com/photo-1564982752979-3f7bc974d29a?auto=format&fit=crop&w=800&q=80",
     reactions: { fire: 230, skate: 310, shaka: 180, lightning: 95, trophy: 110 },
@@ -117,12 +116,36 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     ],
   },
   {
+    id: "spot-archived-1",
+    name: "Otwarcie Sezonu Skate Jam 2026 (Zakończone)",
+    category: "event",
+    lat: 52.2150,
+    lng: 21.0350,
+    address: "Stadion Narodowy Plaza",
+    rating: 4.9,
+    activeRidersCount: 0,
+    eventDate: "Minione wydarzenie",
+    expiresAt: Date.now() - 24 * 3600 * 1000, // Already expired (Archived)
+    description: "Poprzednia сходка sezonowa. Wydarzenie zakończone i przeniesione do archiwum.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 180, skate: 240, shaka: 110, lightning: 60, trophy: 75 },
+    reviews: [
+      {
+        id: "r5",
+        author: "Tomek 'Ollie'",
+        text: "Świetna сходка была! Czekamy na kolejną edycję!",
+        date: "Tydzień temu",
+        emoji: "🔥",
+        rating: 5,
+      },
+    ],
+  },
+  {
     id: "spot-4",
     name: "Park Jordana Bowl & Plaza",
     category: "skatepark",
     lat: 50.0617,
     lng: 19.9173,
-    city: "Kraków",
     address: "Park im. Henryka Jordana, Kraków",
     rating: 4.8,
     activeRidersCount: 30,
@@ -137,7 +160,6 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     category: "diy",
     lat: 54.3982,
     lng: 18.6015,
-    city: "Gdańsk",
     address: "al. Rzeczypospolitej, Gdańsk",
     rating: 4.6,
     activeRidersCount: 12,
@@ -152,7 +174,6 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     category: "street",
     lat: 41.3832,
     lng: 2.1668,
-    city: "Barcelona",
     address: "Plaça dels Àngels, Barcelona, Hiszpania",
     rating: 5.0,
     activeRidersCount: 120,

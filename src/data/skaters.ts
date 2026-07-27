@@ -39,6 +39,6 @@ export const skaters: Skater[] = [
     foregroundScale: 1.35,
     photoBackground: { src: "/images/skaters/sophie-back.png", alt: "" },
     photoForeground: { src: "/images/skaters/sophie-front.png", alt: "Sophie" },
-    customizerLink: "/build?deck=skate-10&wheel=wheel-1&truck=silver&bolt=silver",
+    customizerLink: "/build?deck=skate-2&wheel=wheel-1&truck=silver&bolt=purple",
   },
 ];

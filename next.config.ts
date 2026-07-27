@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       // Disable Webpack disk caching to prevent ENOENT/file lock errors on Windows with non-ASCII paths

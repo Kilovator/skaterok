@@ -3,6 +3,13 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { type DeckItem, type WheelItem, type MetalItem } from "@/data/boardCustomizer";
 
+export type DeckTransform = {
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+  rotation: number;
+};
+
 type CustomizerControlsContext = {
   selectedWheel?: WheelItem;
   setWheel: (wheel: WheelItem) => void;
@@ -12,6 +19,15 @@ type CustomizerControlsContext = {
   setTruck: (truck: MetalItem) => void;
   selectedBolt?: MetalItem;
   setBolt: (bolt: MetalItem) => void;
+  deckTransform: DeckTransform;
+  setDeckTransform: React.Dispatch<React.SetStateAction<DeckTransform>>;
+};
+
+const defaultDeckTransform: DeckTransform = {
+  scale: 1.0,
+  offsetX: 0,
+  offsetY: 0,
+  rotation: 0,
 };
 
 const defaultContext: CustomizerControlsContext = {
@@ -19,6 +35,8 @@ const defaultContext: CustomizerControlsContext = {
   setDeck: () => {},
   setTruck: () => {},
   setBolt: () => {},
+  deckTransform: defaultDeckTransform,
+  setDeckTransform: () => {},
 };
 
 const CustomizerControlsContext = createContext(defaultContext);
@@ -42,10 +60,17 @@ export function CustomizerControlsProvider({
   const [selectedDeck, setDeck] = useState(defaultDeck);
   const [selectedTruck, setTruck] = useState(defaultTruck);
   const [selectedBolt, setBolt] = useState(defaultBolt);
+  const [deckTransform, setDeckTransform] = useState<DeckTransform>(defaultDeckTransform);
 
   const value = useMemo(
-    () => ({ selectedWheel, setWheel, selectedDeck, setDeck, selectedTruck, setTruck, selectedBolt, setBolt }),
-    [selectedWheel, selectedDeck, selectedTruck, selectedBolt]
+    () => ({
+      selectedWheel, setWheel,
+      selectedDeck, setDeck,
+      selectedTruck, setTruck,
+      selectedBolt, setBolt,
+      deckTransform, setDeckTransform,
+    }),
+    [selectedWheel, selectedDeck, selectedTruck, selectedBolt, deckTransform]
   );
 
   return (

@@ -56,8 +56,13 @@ export function Header() {
               className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-amethyst/25 hover:bg-brand-amethyst/40 border border-brand-amethyst/50 text-sm font-mono font-medium tracking-wide text-white transition-all shadow-md hover:scale-105 shrink-0 whitespace-nowrap"
               title={t("nav.account")}
             >
-              <div className="size-7 rounded-full bg-brand-amethyst text-white flex items-center justify-center text-xs font-mono shrink-0 shadow-inner">
-                {user.name.charAt(0).toUpperCase()}
+              <div className="size-7 rounded-full bg-brand-amethyst text-white flex items-center justify-center text-xs font-mono shrink-0 shadow-inner overflow-hidden border border-white/20">
+                {user.avatar ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={user.avatar} alt="" className="size-full object-cover" />
+                ) : (
+                  user.name.charAt(0).toUpperCase()
+                )}
               </div>
               <span className="hidden sm:inline max-w-[110px] truncate">
                 {user.name.split(" ")[0]}
