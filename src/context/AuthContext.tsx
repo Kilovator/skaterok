@@ -19,7 +19,7 @@ import {
 import { DeckItem, WheelItem, MetalItem } from "@/data/boardCustomizer";
 import { CartItem } from "@/context/CartContext";
 
-type AuthModalMode = "login" | "register";
+type AuthModalMode = "login" | "register" | "forgot_password";
 
 type AuthContextType = {
   user: User | null;
@@ -32,6 +32,7 @@ type AuthContextType = {
   closeAuthModal: () => void;
   login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   register: (name: string, email: string, pass: string, avatar?: string) => Promise<{ success: boolean; error?: string }>;
+  resetPassword: (email: string, newPass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateAvatar: (avatarUrl: string) => void;
   saveBuild: (build: {
@@ -125,6 +126,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true };
   };
 
+  const resetPassword = async (email: string, newPass: string) => {
+    const updated = db.updateUserPassword(email, newPass);
+    if (!updated) {
+      return { success: false, error: "Nie znaleziono konta z tym adresem e-mail." };
+    }
+    return { success: true };
+  };
+
   const updateAvatar = (avatarUrl: string) => {
     if (!user) return;
     const updated = db.updateUserAvatar(user.id, avatarUrl);
@@ -194,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         closeAuthModal,
         login,
         register,
+        resetPassword,
         logout,
         updateAvatar,
         saveBuild,

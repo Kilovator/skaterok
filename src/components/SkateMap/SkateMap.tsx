@@ -23,14 +23,21 @@ import {
   FaChevronRight,
   FaFilter,
   FaMagnifyingGlass,
-  FaCity
+  FaCity,
+  FaTrash,
+  FaPenToSquare,
+  FaShieldHalved,
+  FaUser
 } from "react-icons/fa6";
 import clsx from "clsx";
+import { useAuth } from "@/context/AuthContext";
 
 const LOCAL_STORAGE_SPOTS_KEY = "sket_ok_custom_skate_spots";
+const ADMIN_EMAIL = "dimonkrasula5@gmail.com";
 
 export function SkateMap() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersGroupRef = useRef<L.LayerGroup | null>(null);
@@ -70,6 +77,15 @@ export function SkateMap() {
   const [newReviewAuthor, setNewReviewAuthor] = useState("");
   const [newReviewEmoji, setNewReviewEmoji] = useState("🔥");
 
+  // Live 1-second ticker for real-time UTC countdown
+  const [, setTicker] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTicker((t) => t + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Cycle cat animation frames every 350ms
   useEffect(() => {
     const interval = setInterval(() => {
@@ -77,6 +93,116 @@ export function SkateMap() {
     }, 350);
     return () => clearInterval(interval);
   }, [catImages.length]);
+
+  // Dynamic Authorized Admin Emails List State (Saved in localStorage)
+  const [adminEmails, setAdminEmails] = useState<string[]>([ADMIN_EMAIL]);
+  const [newAdminEmailInput, setNewAdminEmailInput] = useState("");
+  const [adminManageError, setAdminManageError] = useState("");
+
+  // Restore Authorized Admin Emails from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("sket_ok_authorized_admin_emails");
+      if (stored) {
+        const parsed: string[] = JSON.parse(stored);
+        if (!parsed.map(e => e.toLowerCase()).includes(ADMIN_EMAIL)) {
+          parsed.push(ADMIN_EMAIL);
+        }
+        setAdminEmails(parsed);
+      }
+    } catch {
+      setAdminEmails([ADMIN_EMAIL]);
+    }
+  }, []);
+
+  // Save Admin Emails to localStorage
+  function saveAdminEmails(emails: string[]) {
+    setAdminEmails(emails);
+    try {
+      localStorage.setItem("sket_ok_authorized_admin_emails", JSON.stringify(emails));
+    } catch (e) {
+      console.error("Failed to save admin emails to localStorage", e);
+    }
+  }
+
+  // Check if current logged-in user is an authorized admin
+  const currentEmailClean = user?.email?.toLowerCase().trim();
+  const isAdmin = !!currentEmailClean && adminEmails.some((e) => e.toLowerCase().trim() === currentEmailClean);
+
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
+  // Edit Spot Modal state (Admin)
+  const [editingSpot, setEditingSpot] = useState<SkateSpot | null>(null);
+
+  // Add new email to Admin list
+  function handleAddAdminEmail(e: React.FormEvent) {
+    e.preventDefault();
+    setAdminManageError("");
+    const cleanInput = newAdminEmailInput.toLowerCase().trim();
+    if (!cleanInput || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanInput)) {
+      setAdminManageError("Wpisz poprawny adres e-mail.");
+      return;
+    }
+    if (adminEmails.map(e => e.toLowerCase()).includes(cleanInput)) {
+      setAdminManageError("Ten adres e-mail już posiada uprawnienia Admina.");
+      return;
+    }
+    const updated = [...adminEmails, cleanInput];
+    saveAdminEmails(updated);
+    setNewAdminEmailInput("");
+  }
+
+  // Remove email from Admin list
+  function handleRemoveAdminEmail(emailToRemove: string) {
+    if (emailToRemove.toLowerCase().trim() === ADMIN_EMAIL) {
+      alert("Nie możesz usunąć głównego administratora (Dimonkrasula5@gmail.com).");
+      return;
+    }
+    const updated = adminEmails.filter((e) => e.toLowerCase().trim() !== emailToRemove.toLowerCase().trim());
+    saveAdminEmails(updated);
+  }
+
+  // Admin: Delete spot / event
+  function handleDeleteSpot(spotId: string) {
+    if (!isAdmin) return;
+    const updated = spots.filter((s) => s.id !== spotId);
+    saveSpots(updated);
+    if (selectedSpot?.id === spotId) {
+      setSelectedSpot(null);
+    }
+  }
+
+  // Admin: Delete review / comment
+  function handleDeleteReview(spotId: string, reviewId: string) {
+    if (!isAdmin) return;
+    const updated = spots.map((s) => {
+      if (s.id === spotId) {
+        return {
+          ...s,
+          reviews: s.reviews.filter((r) => r.id !== reviewId),
+        };
+      }
+      return s;
+    });
+    saveSpots(updated);
+    if (selectedSpot?.id === spotId) {
+      setSelectedSpot({
+        ...selectedSpot,
+        reviews: selectedSpot.reviews.filter((r) => r.id !== reviewId),
+      });
+    }
+  }
+
+  // Admin: Save edited spot
+  function handleSaveSpotEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingSpot || !isAdmin) return;
+
+    const updated = spots.map((s) => (s.id === editingSpot.id ? editingSpot : s));
+    saveSpots(updated);
+    setSelectedSpot(editingSpot);
+    setEditingSpot(null);
+  }
 
   // Load spots from localStorage on mount
   useEffect(() => {
@@ -207,7 +333,7 @@ export function SkateMap() {
     if (!map) return;
 
     function handleMapClick(e: L.LeafletMouseEvent) {
-      if (activeMode === "editor") {
+      if (activeMode === "editor" && isAdmin) {
         setNewSpotCoords({ lat: e.latlng.lat, lng: e.latlng.lng });
         setIsAddSpotModalOpen(true);
       }
@@ -217,7 +343,7 @@ export function SkateMap() {
     return () => {
       map.off("click", handleMapClick);
     };
-  }, [activeMode]);
+  }, [activeMode, isAdmin]);
 
   // Filter spots into Active vs Archived
   const now = Date.now();
@@ -288,8 +414,10 @@ export function SkateMap() {
             return { icon: "🏙️", bg: "bg-purple-600", border: "border-brand-amethyst" };
           case "event":
             return { icon: "🔥", bg: "bg-rose-500", border: "border-rose-400" };
-          case "diy":
-            return { icon: "🛠️", bg: "bg-amber-500", border: "border-amber-400" };
+          case "shop":
+            return { icon: "🏬", bg: "bg-cyan-500", border: "border-cyan-400" };
+          default:
+            return { icon: "📍", bg: "bg-purple-600", border: "border-brand-amethyst" };
         }
       };
 
@@ -386,14 +514,43 @@ export function SkateMap() {
     });
   }
 
+  // Check-in / Join Session at spot
+  const [checkedInSpots, setCheckedInSpots] = useState<Record<string, boolean>>({});
+
+  function handleCheckIn(spot: SkateSpot) {
+    if (checkedInSpots[spot.id]) return;
+
+    const updatedSpots = spots.map((s) => {
+      if (s.id === spot.id) {
+        return {
+          ...s,
+          activeRidersCount: s.activeRidersCount + 1,
+        };
+      }
+      return s;
+    });
+
+    saveSpots(updatedSpots);
+    setSelectedSpot({
+      ...spot,
+      activeRidersCount: spot.activeRidersCount + 1,
+    });
+
+    setCheckedInSpots((prev) => ({ ...prev, [spot.id]: true }));
+  }
+
   // Handle submitting new review
   function handleAddReview(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedSpot || !newReviewText.trim()) return;
 
+    const authorName = user ? user.name : (newReviewAuthor.trim() || "Rider SKET-OK");
+    const authorAvatar = user ? user.avatar : undefined;
+
     const newRev: SpotReview = {
       id: `rev-${Date.now()}`,
-      author: newReviewAuthor.trim() || "Rider SKET-OK",
+      author: authorName,
+      avatar: authorAvatar,
       text: newReviewText,
       date: "Przed chwilą",
       emoji: newReviewEmoji,
@@ -420,18 +577,19 @@ export function SkateMap() {
     setNewReviewAuthor("");
   }
 
-  // Format remaining time for temporary events
+  // Format remaining time for temporary events tied to global UTC clock
   function formatRemainingTime(expiresAt?: number) {
     if (!expiresAt) return null;
     const diff = expiresAt - Date.now();
     if (diff <= 0) return "Wydarzenie zakończone (W archiwum)";
     const hours = Math.floor(diff / (1000 * 3600));
     const mins = Math.floor((diff % (1000 * 3600)) / (1000 * 60));
+    const secs = Math.floor((diff % (1000 * 60)) / 1000);
     if (hours > 24) {
       const days = Math.floor(hours / 24);
-      return `Zostało: ${days} d. ${hours % 24}h`;
+      return `Zostało: ${days} d. ${hours % 24}h ${mins}m`;
     }
-    return `Zostało: ${hours}h ${mins}m`;
+    return `Zostało: ${hours}h ${mins}m ${secs}s`;
   }
 
   // Select spot from Live Feed drawer
@@ -467,18 +625,32 @@ export function SkateMap() {
             <span>{t("map.modeSpots")}</span>
           </button>
 
-          <button
-            onClick={() => setActiveMode("editor")}
-            className={clsx(
-              "flex items-center gap-2 px-5 py-2 rounded-full font-sans text-xs md:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer",
-              activeMode === "editor"
-                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/40"
-                : "text-white/70 hover:text-white hover:bg-white/10"
-            )}
-          >
-            <FaPlus className="text-amber-300" />
-            <span>{t("map.modeEditor")}</span>
-          </button>
+          {/* Editor mode button (ONLY VISIBLE FOR AUTHORIZED ADMIN EMAILS) */}
+          {isAdmin && (
+            <button
+              onClick={() => setActiveMode("editor")}
+              className={clsx(
+                "flex items-center gap-2 px-5 py-2 rounded-full font-sans text-xs md:text-sm font-bold uppercase tracking-wider transition-all cursor-pointer",
+                activeMode === "editor"
+                  ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/40"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
+              )}
+            >
+              <FaPlus className="text-amber-300" />
+              <span>{t("map.modeEditor")}</span>
+            </button>
+          )}
+
+          {/* Admin Moderation Mode Button (ONLY VISIBLE FOR AUTHORIZED ADMIN EMAILS) */}
+          {isAdmin && (
+            <button
+              onClick={() => setIsAdminModalOpen(true)}
+              title={`Aktywny Tryb Admina (${user?.email})`}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full font-sans text-xs font-bold uppercase tracking-wider transition-all cursor-pointer border bg-rose-600/30 text-rose-300 border-rose-500/60 shadow-lg animate-pulse"
+            >
+              <span>👑 Admin ON</span>
+            </button>
+          )}
         </div>
 
         {/* Category Filters + Archive Filter (Spots Mode) */}
@@ -489,6 +661,7 @@ export function SkateMap() {
               { id: "skatepark", label: t("map.skateparks"), icon: "🛹" },
               { id: "street", label: t("map.street"), icon: "🏙️" },
               { id: "event", label: t("map.events"), icon: "🔥" },
+              { id: "shop", label: "🏬 Skateshopy & Serwis", icon: "🏬" },
             ].map((cat) => (
               <button
                 key={cat.id}
@@ -654,6 +827,7 @@ export function SkateMap() {
                   { id: "event", label: "🔥 Wydarzenia" },
                   { id: "skatepark", label: "🛹 Skateparki" },
                   { id: "street", label: "🏙️ Street" },
+                  { id: "shop", label: "🏬 Skateshopy" },
                 ].map((cat) => (
                   <button
                     key={cat.id}
@@ -792,7 +966,7 @@ export function SkateMap() {
               )}>
                 <div className="flex items-center gap-2">
                   <FaFire className="text-rose-400 size-4 shrink-0" />
-                  <span>Wydarzenie / Сходка</span>
+                  <span>Wydarzenie Spotowe</span>
                 </div>
                 {selectedSpot.expiresAt && (
                   <div className="flex items-center gap-1.5 text-[11px] text-amber-300 mt-0.5">
@@ -800,6 +974,66 @@ export function SkateMap() {
                     <span>{formatRemainingTime(selectedSpot.expiresAt)}</span>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Action Buttons: Check-in / Join Session & Google Maps Navigation */}
+            <div className="grid grid-cols-2 gap-2.5 mb-4">
+              <button
+                onClick={() => handleCheckIn(selectedSpot)}
+                disabled={checkedInSpots[selectedSpot.id]}
+                className={clsx(
+                  "py-2.5 px-3 rounded-xl font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md",
+                  checkedInSpots[selectedSpot.id]
+                    ? "bg-emerald-500/20 border border-emerald-500/50 text-emerald-300"
+                    : "bg-gradient-to-r from-brand-amethyst to-purple-600 hover:from-purple-600 hover:to-brand-amethyst text-white border border-brand-amethyst/50 hover:scale-[1.02]"
+                )}
+              >
+                <FaUsers className="size-3.5" />
+                <span>{checkedInSpots[selectedSpot.id] ? "Jestem na spocie! ✓" : "Dołącz do Sesji"}</span>
+              </button>
+
+              <button
+                onClick={() =>
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${selectedSpot.lat},${selectedSpot.lng}`,
+                    "_blank"
+                  )
+                }
+                className="py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.02]"
+              >
+                <FaLocationCrosshairs className="size-3.5 text-cyan-400" />
+                <span>Nawiguj (Nawigacja)</span>
+              </button>
+            </div>
+
+            {/* Admin Moderation Control Panel (Only visible when Admin Mode ON) */}
+            {isAdmin && (
+              <div className="p-3 mb-4 rounded-2xl bg-rose-950/60 border border-rose-500/50 text-white flex flex-col gap-2 shadow-xl animate-fade-in">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-300 uppercase tracking-wider">
+                  <FaShieldHalved className="size-4" />
+                  <span>Panel Moderacji Admina</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <button
+                    onClick={() => setEditingSpot({ ...selectedSpot })}
+                    className="py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <FaPenToSquare className="size-3.5 text-amber-300" />
+                    <span>Edytuj Spot</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm(`Czy na pewno chcesz usunąć spot "${selectedSpot.name}"?`)) {
+                        handleDeleteSpot(selectedSpot.id);
+                      }
+                    }}
+                    className="py-2 px-3 rounded-xl bg-rose-600/40 hover:bg-rose-600/60 border border-rose-500/70 text-rose-100 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <FaTrash className="size-3.5 text-rose-300" />
+                    <span>Usuń Spot</span>
+                  </button>
+                </div>
               </div>
             )}
 
@@ -846,15 +1080,33 @@ export function SkateMap() {
               ) : (
                 <div className="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-1">
                   {selectedSpot.reviews.map((rev) => (
-                    <div key={rev.id} className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+                    <div key={rev.id} className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs relative group">
                       <div className="flex items-center justify-between text-white/70 mb-1">
-                        <span className="font-bold text-white flex items-center gap-1.5">
-                          <span>{rev.emoji}</span>
+                        <span className="font-bold text-white flex items-center gap-2">
+                          {rev.avatar ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={rev.avatar} alt={rev.author} className="size-6 rounded-full object-cover border border-brand-amethyst/60 shadow-sm shrink-0" />
+                          ) : (
+                            <div className="size-6 rounded-full bg-brand-amethyst/25 border border-brand-amethyst/50 flex items-center justify-center text-xs shrink-0 font-bold">
+                              {rev.emoji || "🛹"}
+                            </div>
+                          )}
                           <span>{rev.author}</span>
                         </span>
-                        <span className="text-[10px] text-white/40">{rev.date}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-white/40">{rev.date}</span>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleDeleteReview(selectedSpot.id, rev.id)}
+                              title="Usuń komentarz (Admin)"
+                              className="text-rose-400 hover:text-rose-300 p-0.5 transition-colors cursor-pointer"
+                            >
+                              <FaTrash className="size-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-white/80">{rev.text}</p>
+                      <p className="text-white/80 pl-8">{rev.text}</p>
                     </div>
                   ))}
                 </div>
@@ -862,13 +1114,26 @@ export function SkateMap() {
 
               {/* Add Review Form */}
               <form onSubmit={handleAddReview} className="mt-3 flex flex-col gap-2">
-                <input
-                  type="text"
-                  placeholder="Twoje imię / nick"
-                  value={newReviewAuthor}
-                  onChange={(e) => setNewReviewAuthor(e.target.value)}
-                  className="w-full bg-white/5 border border-white/15 rounded-xl py-2 px-3 text-xs text-white placeholder-white/30 focus:outline-none focus:border-brand-amethyst"
-                />
+                {!user ? (
+                  <input
+                    type="text"
+                    placeholder="Twoje imię / nick"
+                    value={newReviewAuthor}
+                    onChange={(e) => setNewReviewAuthor(e.target.value)}
+                    className="w-full bg-white/5 border border-white/15 rounded-xl py-2 px-3 text-xs text-white placeholder-white/30 focus:outline-none focus:border-brand-amethyst"
+                  />
+                ) : (
+                  <div className="flex items-center gap-2 py-1.5 px-3 rounded-xl bg-brand-amethyst/15 border border-brand-amethyst/30 text-xs">
+                    {user.avatar ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={user.avatar} alt={user.name} className="size-5 rounded-full object-cover border border-brand-amethyst" />
+                    ) : (
+                      <FaUser className="size-3 text-brand-amethyst" />
+                    )}
+                    <span className="text-white/70">Komentujesz jako:</span>
+                    <span className="font-bold text-white">{user.name}</span>
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -902,8 +1167,8 @@ export function SkateMap() {
         </div>
       )}
 
-      {/* Modal: Add New Spot (Editor Mode - WITHOUT CITY INPUT) */}
-      {isAddSpotModalOpen && (
+      {/* Modal: Add New Spot (Editor Mode - ONLY FOR ADMINS) */}
+      {isAddSpotModalOpen && isAdmin && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-md bg-texture bg-brand-black border border-white/20 rounded-3xl p-6 shadow-2xl text-white">
             <button
@@ -946,24 +1211,24 @@ export function SkateMap() {
                 >
                   <option value="skatepark">🛹 Skatepark / Bowl</option>
                   <option value="street">🏙️ Street Spot / Murki</option>
-                  <option value="event">🔥 Wydarzenie / Сходка (Czasowe)</option>
+                  <option value="event">🔥 Wydarzenie Spotowe (Czasowe)</option>
                   <option value="diy">🛠️ DIY Spot</option>
                 </select>
               </div>
 
-              {/* Event Expiration Picker (Only shown when category is Event/Сходка) */}
+              {/* Event Expiration Picker (Only shown when category is Event) */}
               {newSpotCategory === "event" && (
                 <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
                   <label className="block text-xs font-bold uppercase text-amber-300 mb-1.5 flex items-center gap-1.5">
                     <FaCalendarDays className="size-3.5" />
-                    <span>Czas trwania сходки (Wygasa i trafia do archiwum)</span>
+                    <span>Czas trwania wydarzenia (Wygasa i trafia do archiwum)</span>
                   </label>
                   <select
                     value={eventDurationHours}
                     onChange={(e) => setEventDurationHours(Number(e.target.value))}
                     className="w-full bg-brand-black border border-amber-500/40 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-amber-400"
                   >
-                    <option value={3}>3 godziny (Szybka сходка)</option>
+                    <option value={3}>3 godziny (Szybkie wydarzenie)</option>
                     <option value={6}>6 godzin (Popołudniowa sesja)</option>
                     <option value={12}>12 godzin (Cały dzień)</option>
                     <option value={24}>24 godziny (1 dzień)</option>
@@ -979,7 +1244,7 @@ export function SkateMap() {
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Opisz nawierzchnię, przeszkody, godziny lub zorganizowaną сходkę..."
+                  placeholder="Opisz nawierzchnię, przeszkody, godziny lub zorganizowane wydarzenie..."
                   value={newSpotDesc}
                   onChange={(e) => setNewSpotDesc(e.target.value)}
                   className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white placeholder-white/30 focus:outline-none focus:border-amber-400 resize-none"
@@ -991,6 +1256,207 @@ export function SkateMap() {
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 font-sans text-sm font-bold uppercase tracking-wider text-white shadow-lg cursor-pointer hover:scale-[1.02] transition-transform mt-2"
               >
                 Dodaj Spot do Mapy
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Admin Access Management Panel */}
+      {isAdminModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-md bg-texture bg-brand-black border border-rose-500/40 rounded-3xl p-6 shadow-2xl text-white">
+            <button
+              onClick={() => {
+                setIsAdminModalOpen(false);
+                setAdminManageError("");
+              }}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+            >
+              <FaXmark size={18} />
+            </button>
+
+            <div className="flex items-center gap-2 mb-2 text-rose-400">
+              <FaShieldHalved className="size-6" />
+              <h2 className="text-xl font-bold font-sans text-white">
+                Zarządzanie Dostępem Adminów
+              </h2>
+            </div>
+            <p className="text-xs text-white/60 mb-5 leading-relaxed">
+              Jesteś zalogowany jako administrator (<strong className="text-rose-300 font-mono">{user?.email}</strong>). Możesz przyznawać i odbierać uprawnienia moderacji innym użytkownikom według ich adresu e-mail.
+            </p>
+
+            {adminManageError && (
+              <div className="p-3 mb-4 rounded-xl bg-rose-900/60 border border-rose-500/60 text-rose-200 text-xs font-bold">
+                {adminManageError}
+              </div>
+            )}
+
+            {/* Form to grant admin access to new email */}
+            <form onSubmit={handleAddAdminEmail} className="mb-6 space-y-2">
+              <label className="block text-xs font-bold uppercase text-white/70">
+                Nadaj Dostęp Nowemu Adminowi (E-mail)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  placeholder="np. kolega@gmail.com"
+                  value={newAdminEmailInput}
+                  onChange={(e) => setNewAdminEmailInput(e.target.value)}
+                  className="grow bg-white/5 border border-white/15 rounded-xl py-2 px-3 text-xs text-white placeholder-white/30 focus:outline-none focus:border-rose-500 font-mono"
+                />
+                <button
+                  type="submit"
+                  className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-sans text-xs font-bold uppercase transition-all cursor-pointer shrink-0 shadow-md"
+                >
+                  Dodaj
+                </button>
+              </div>
+            </form>
+
+            {/* List of currently authorized Admin Emails */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-white/70 mb-2">
+                Uprawnione Konta Adminów ({adminEmails.length})
+              </h3>
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                {adminEmails.map((emailItem) => {
+                  const isMainAdmin = emailItem.toLowerCase().trim() === ADMIN_EMAIL;
+                  return (
+                    <div
+                      key={emailItem}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-amber-400">{isMainAdmin ? "👑" : "👤"}</span>
+                        <span className={isMainAdmin ? "text-amber-300 font-bold" : "text-white/90"}>
+                          {emailItem}
+                        </span>
+                        {isMainAdmin && (
+                          <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-sans font-bold">
+                            SUPER ADMIN
+                          </span>
+                        )}
+                      </div>
+                      {!isMainAdmin && (
+                        <button
+                          onClick={() => handleRemoveAdminEmail(emailItem)}
+                          title="Odbierz dostęp admina"
+                          className="p-1 rounded bg-rose-600/30 hover:bg-rose-600/60 text-rose-300 transition-colors cursor-pointer"
+                        >
+                          <FaTrash className="size-3" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Admin Edit Spot */}
+      {editingSpot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-md bg-texture bg-brand-black border border-amber-500/40 rounded-3xl p-6 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setEditingSpot(null)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+            >
+              <FaXmark size={18} />
+            </button>
+
+            <h2 className="text-xl font-bold font-sans text-amber-300 mb-4 flex items-center gap-2">
+              <FaPenToSquare className="size-5" />
+              <span>Edycja Spotu (Admin)</span>
+            </h2>
+
+            <form onSubmit={handleSaveSpotEdit} className="flex flex-col gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-1">
+                  Nazwa Spotu
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingSpot.name}
+                  onChange={(e) => setEditingSpot({ ...editingSpot, name: e.target.value })}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-1">
+                  Miasto
+                </label>
+                <input
+                  type="text"
+                  value={editingSpot.city || ""}
+                  onChange={(e) => setEditingSpot({ ...editingSpot, city: e.target.value })}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-1">
+                  Adres
+                </label>
+                <input
+                  type="text"
+                  value={editingSpot.address}
+                  onChange={(e) => setEditingSpot({ ...editingSpot, address: e.target.value })}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-1">
+                  Kategoria
+                </label>
+                <select
+                  value={editingSpot.category}
+                  onChange={(e) => setEditingSpot({ ...editingSpot, category: e.target.value as SpotCategory })}
+                  className="w-full bg-brand-black border border-white/15 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400"
+                >
+                  <option value="skatepark">🛹 Skatepark / Bowl</option>
+                  <option value="street">🏙️ Street Spot</option>
+                  <option value="event">🔥 Wydarzenie Spotowe</option>
+                  <option value="diy">🛠️ DIY Spot</option>
+                  <option value="shop">🏬 Skateshop & Serwis</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-1">
+                  URL Zdjęcia (Image URL)
+                </label>
+                <input
+                  type="text"
+                  value={editingSpot.image}
+                  onChange={(e) => setEditingSpot({ ...editingSpot, image: e.target.value })}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-white/70 mb-1">
+                  Opis Spotu
+                </label>
+                <textarea
+                  rows={3}
+                  value={editingSpot.description}
+                  onChange={(e) => setEditingSpot({ ...editingSpot, description: e.target.value })}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl py-2.5 px-3.5 text-white focus:outline-none focus:border-amber-400 resize-none text-xs"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 font-sans text-xs font-bold uppercase tracking-wider text-white shadow-lg cursor-pointer hover:scale-[1.02] transition-transform mt-2"
+              >
+                Zapisz Zmiany (Save Spot)
               </button>
             </form>
           </div>

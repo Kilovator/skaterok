@@ -94,8 +94,13 @@ export default function AccountPage() {
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      const url = URL.createObjectURL(file);
-                      updateAvatar(url);
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        if (event.target?.result) {
+                          updateAvatar(event.target.result as string);
+                        }
+                      };
+                      reader.readAsDataURL(file);
                     }
                   }}
                 />

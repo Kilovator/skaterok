@@ -197,6 +197,19 @@ export const db = {
     return null;
   },
 
+  updateUserPassword(email: string, newPasswordHash: string): boolean {
+    const data = getDB();
+    const userIndex = data.users.findIndex(
+      (u) => u.email.toLowerCase() === email.toLowerCase().trim()
+    );
+    if (userIndex !== -1) {
+      data.users[userIndex].passwordHash = newPasswordHash;
+      saveDB(data);
+      return true;
+    }
+    return false;
+  },
+
   verifyUser(email: string, passwordHash: string): User | null {
     const user = this.getUserByEmail(email);
     if (user && user.passwordHash === passwordHash) {
@@ -205,7 +218,7 @@ export const db = {
     return null;
   },
 
-  // Saved Custom Builds
+  // Saved Custom Builds=
   getSavedBuilds(userId: string): SavedBuild[] {
     const data = getDB();
     return data.savedBuilds.filter((b) => b.userId === userId);

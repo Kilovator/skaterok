@@ -4,6 +4,7 @@ export const translations = {
   pl: {
     // Navigation
     "nav.boards": "Deski",
+    "nav.sklep": "Sklep Elektro",
     "nav.map": "Mapa",
     "nav.team": "Team",
     "nav.about": "O nas",
@@ -19,13 +20,13 @@ export const translations = {
     "map.all": "Wszystkie",
     "map.skateparks": "Skateparki",
     "map.street": "Street Spoty",
-    "map.events": "Wydarzenia & Schodki",
+    "map.events": "Wydarzenia Spotowe",
     "map.addSpotBtn": "+ Dodaj Spot na Mapie",
     "map.clickToPlace": "Kliknij w dowolne miejsce na mapie, aby dodać nowy spot!",
     "map.spotName": "Nazwa Spotu / Wydarzenia",
     "map.spotType": "Typ Miejsca",
     "map.spotDescription": "Opis i Wskazówki",
-    "map.addReviewTitle": "Zostaw opinię / эмоцию",
+    "map.addReviewTitle": "Zostaw opinię / reakcję",
     "map.writeComment": "Napisz komentarz lub opinię...",
     "map.sendReview": "Wyślij",
     "map.buildBoardHere": "Złóż deskę na ten spot",
@@ -37,9 +38,9 @@ export const translations = {
     "hero.body": "Deskorolki premium na ulice. Stworzone do jazdy, stworzone by trwać.",
     "hero.buttonText": "Złóż swoją deskę",
 
-    // Products
-    "products.heading": "Nasze Deski",
-    "products.body": "Każda deska starannie dobrana pod kątem jakości, stylu i wydajności na ulicy.",
+    // Products / Electric Alternative
+    "products.heading": "ELEKTRYCZNA ALTERNATYWA DLA NASZYCH DESEK",
+    "products.body": "Nowoczesne pojazdy elektryczne: hulajnogi, deskorolki elektryczne, żyroskopy i monocykle dla fanów prędkości i stylu!",
 
     // Team
     "team.heading": "Poznaj nasz Team",
@@ -154,6 +155,7 @@ export const translations = {
   en: {
     // Navigation
     "nav.boards": "Boards",
+    "nav.sklep": "Electric Store",
     "nav.map": "Map",
     "nav.team": "Team",
     "nav.about": "About",

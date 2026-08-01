@@ -4,7 +4,7 @@ import { Bounded } from "@/components/Bounded";
 import { Heading } from "@/components/Heading";
 import { SkateboardProduct } from "./SkateboardProduct";
 import { SlideIn } from "@/components/SlideIn";
-import { products } from "@/data/products";
+import { electricCategories } from "@/data/products";
 import { useLanguage } from "@/context/LanguageContext";
 
 const ProductGrid = (): JSX.Element => {
@@ -21,13 +21,20 @@ const ProductGrid = (): JSX.Element => {
         </Heading>
       </SlideIn>
       <SlideIn>
-        <div className="text-center ~mb-6/10">
-          <p>{t("products.body")}</p>
+        <div className="text-center ~mb-6/10 max-w-2xl mx-auto">
+          <p className="text-stone-600 font-sans text-sm md:text-base leading-relaxed">
+            {t("products.body")}
+          </p>
         </div>
       </SlideIn>
-      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {products.map((product) => (
-          <SkateboardProduct key={product.id} product={product} />
+
+      {/* 3 Electric Category Blocks */}
+      <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+        {electricCategories.map((cat) => (
+          <SkateboardProduct
+            key={cat.id}
+            category={cat}
+          />
         ))}
       </div>
     </Bounded>
