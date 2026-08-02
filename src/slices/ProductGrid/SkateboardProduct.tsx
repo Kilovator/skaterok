@@ -30,17 +30,17 @@ export function SkateboardProduct({ category }: Props) {
         </span>
       </div>
 
-      {/* Image container with original 3D scale animation */}
-      <div className="-mb-1 overflow-hidden py-4 relative h-72">
+      {/* Image container with elegant drop-shadow and smooth 3D hover */}
+      <div className="-mb-1 overflow-hidden py-4 relative h-72 flex items-center justify-center">
         <Scribble
-          className="absolute inset-0 h-full w-full"
+          className="absolute inset-0 h-full w-full opacity-90"
           color={category.dominantColor}
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={category.image.src}
           alt={category.image.alt}
-          className="mx-auto h-full w-[65%] object-cover rounded-2xl origin-top transform-gpu transition-transform duration-500 ease-in-out group-hover:scale-150 shadow-xl"
+          className="relative z-10 max-h-56 w-auto max-w-[85%] object-contain rounded-2xl filter drop-shadow-2xl transform-gpu transition-transform duration-500 ease-out group-hover:scale-110"
         />
       </div>
 

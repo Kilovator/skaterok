@@ -4,7 +4,7 @@ export const translations = {
   pl: {
     // Navigation
     "nav.boards": "Deski",
-    "nav.sklep": "Sklep Elektro",
+    "nav.sklep": "Elektro Sklep ",
     "nav.map": "Mapa",
     "nav.team": "Team",
     "nav.about": "O nas",

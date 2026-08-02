@@ -88,7 +88,7 @@ function SklepContent() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <span className="inline-block px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-2">
-                ⚡ OFICJALNY SKLEP ELEKTRO SKET-OK
+                ⚡ OFICJALNY ELEKTRO SKLEP SKET-OK
               </span>
               <h1 className="text-3xl md:text-5xl font-black uppercase tracking-wider text-white">
                 Pojazdy Elektryczne
@@ -289,14 +289,14 @@ function ProductCardItem({
         {/* 5-Photo Carousel Container */}
         <div
           onClick={() => onOpenLightbox(gallery, currentIdx, product.name)}
-          className="relative aspect-video rounded-2xl overflow-hidden mb-4 bg-black/60 border border-white/10 group/img cursor-pointer p-2 flex items-center justify-center"
+          className="relative aspect-video rounded-2xl overflow-hidden mb-4 bg-gradient-to-b from-black/80 to-black/60 border border-white/15 group/img cursor-pointer p-3 flex items-center justify-center shadow-inner"
         >
           {/* Main Image */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={gallery[currentIdx]}
             alt={`${product.name} photo ${currentIdx + 1}`}
-            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover/img:scale-105"
+            className="max-h-full max-w-full object-contain filter drop-shadow-xl transition-transform duration-500 ease-out group-hover/img:scale-105"
           />
 
           {/* Price & Counter Badge */}
