@@ -52,14 +52,14 @@ function ProductCard({
         {/* 5-Photo Carousel Container */}
         <div
           onClick={() => onOpenLightbox(gallery, currentIdx, product.name)}
-          className="relative aspect-video rounded-xl overflow-hidden mb-3 bg-black/40 border border-white/10 group/img cursor-pointer"
+          className="relative aspect-video rounded-xl overflow-hidden mb-3 bg-black/60 border border-white/10 group/img cursor-pointer p-2 flex items-center justify-center"
         >
           {/* Main Displayed Image */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={gallery[currentIdx]}
             alt={`${product.name} photo ${currentIdx + 1}`}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
+            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover/img:scale-105"
           />
 
           {/* Photo Counter Badge */}
@@ -133,7 +133,7 @@ function ProductCard({
                 }`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imgUrl} alt="mini" className="w-full h-full object-cover" />
+                <img src={imgUrl} alt="mini" className="w-full h-full object-contain p-0.5" />
               </button>
             ))}
           </div>
