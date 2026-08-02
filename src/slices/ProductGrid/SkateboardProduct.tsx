@@ -30,7 +30,7 @@ export function SkateboardProduct({ category }: Props) {
         </span>
       </div>
 
-      {/* Image container with elegant drop-shadow and smooth 3D hover */}
+      {/* Image container */}
       <div className="-mb-1 overflow-hidden py-4 relative h-72 flex items-center justify-center">
         <Scribble
           className="absolute inset-0 h-full w-full opacity-90"
@@ -40,7 +40,7 @@ export function SkateboardProduct({ category }: Props) {
         <img
           src={category.image.src}
           alt={category.image.alt}
-          className="relative z-10 max-h-56 w-auto max-w-[85%] object-contain rounded-2xl filter drop-shadow-2xl transform-gpu transition-transform duration-500 ease-out group-hover:scale-110"
+          className="relative z-0 max-h-56 w-auto max-w-[85%] object-contain rounded-2xl filter drop-shadow-2xl transition-transform duration-300"
         />
       </div>
 
@@ -50,11 +50,11 @@ export function SkateboardProduct({ category }: Props) {
         {category.name}
       </h3>
 
-      {/* Hover Overlay: ONLY ONE BUTTON "PRZEJDŹ DO TOWARÓW" -> Navigates to /sklep */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center p-4 bg-black/60 backdrop-blur-sm rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      {/* Hover Overlay: ONLY ONE BUTTON "PRZEJDŹ DO TOWARÓW" -> High z-index, no backdrop blur */}
+      <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-4 bg-black/70 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <Link
           href={`/sklep?cat=${category.id}`}
-          className="button-cutout group/btn mx-2 inline-flex items-center justify-center gap-2 bg-gradient-to-b from-brand-amethyst to-purple-700 from-25% to-75% bg-[length:100%_400%] px-4 py-3 text-sm font-bold text-white transition-[background-position] duration-300 hover:bg-bottom shadow-2xl cursor-pointer uppercase tracking-wider text-center"
+          className="button-cutout group/btn mx-2 inline-flex items-center justify-center gap-2 bg-gradient-to-b from-brand-amethyst to-purple-700 from-25% to-75% bg-[length:100%_400%] px-5 py-3.5 text-sm font-bold text-white transition-[background-position] duration-300 hover:bg-bottom shadow-2xl cursor-pointer uppercase tracking-wider text-center"
         >
           <span>Przejdź do Towarów</span>
           <FaArrowRight className="size-4 group-hover/btn:translate-x-1 transition-transform" />
