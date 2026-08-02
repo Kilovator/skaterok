@@ -38,7 +38,9 @@ export type SkateSpot = {
 };
 
 export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
-  // --- WARSZAWA ---
+  // ==========================================
+  // --- 1. WARSZAWA & MAZOWSZE ---
+  // ==========================================
   {
     id: "spot-1",
     name: "Skatepark Jutrzenka Warsaw",
@@ -147,8 +149,57 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reactions: { fire: 220, skate: 310, shaka: 140, lightning: 85, trophy: 60 },
     reviews: [],
   },
+  {
+    id: "spot-wawa-kepna",
+    name: "Skatepark Kępna Praga-Północ",
+    category: "skatepark",
+    lat: 52.2514,
+    lng: 21.0372,
+    city: "Warszawa",
+    address: "ul. Kępna, Warszawa (Praga-Północ)",
+    rating: 4.7,
+    activeRidersCount: 16,
+    hasLighting: true,
+    description: "Klimatyczny betonowy park na praskim brzegu Wisły. Gładkie krawężniki, rurki i bardzo gładka sekcja flat ground.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 78, skate: 105, shaka: 50, lightning: 25, trophy: 12 },
+    reviews: [],
+  },
+  {
+    id: "spot-wawa-ursynow",
+    name: "Kazurka Skatepark Ursynów",
+    category: "skatepark",
+    lat: 52.1384,
+    lng: 21.0426,
+    city: "Warszawa",
+    address: "Park Moczydeł / Kazury, Warszawa",
+    rating: 4.8,
+    activeRidersCount: 22,
+    hasLighting: true,
+    description: "Nowoczesny ursynowski betonowy plaza park z głębokim bowlem i poręczami schodowymi.",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 110, skate: 148, shaka: 72, lightning: 34, trophy: 20 },
+    reviews: [],
+  },
+  {
+    id: "spot-wawa-bemowo",
+    name: "Skatepark Bemowo Dywizjonu 303",
+    category: "skatepark",
+    lat: 52.2612,
+    lng: 20.9085,
+    city: "Warszawa",
+    address: "ul. Dywizjonu 303, Warszawa",
+    rating: 4.6,
+    activeRidersCount: 15,
+    description: "Popularny betonowy obiekt na Bemowie z funboxami i sekcją dla początkujących i zaawansowanych.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 65, skate: 92, shaka: 42, lightning: 18, trophy: 9 },
+    reviews: [],
+  },
 
-  // --- KRAKÓW ---
+  // ==========================================
+  // --- 2. KRAKÓW & MAŁOPOLSKA ---
+  // ==========================================
   {
     id: "spot-4",
     name: "Park Jordana Bowl & Plaza",
@@ -189,8 +240,70 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reactions: { fire: 88, skate: 110, shaka: 54, lightning: 22, trophy: 10 },
     reviews: [],
   },
+  {
+    id: "spot-kr-mistrzejowice",
+    name: "Skatepark Mistrzejowice Kraków",
+    category: "skatepark",
+    lat: 50.0982,
+    lng: 20.0051,
+    city: "Kraków",
+    address: "ul. Jancarza, Kraków (Nowa Huta)",
+    rating: 4.7,
+    activeRidersCount: 17,
+    description: "Gładki park betonowy w Nowej Hucie z rozbudowaną sekcją uliczną i minirampami.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 72, skate: 98, shaka: 44, lightning: 20, trophy: 11 },
+    reviews: [],
+  },
+  {
+    id: "spot-tarnow-strzelecki",
+    name: "Skatepark Park Strzelecki Tarnów",
+    category: "skatepark",
+    lat: 50.0180,
+    lng: 20.9880,
+    city: "Tarnów",
+    address: "Park Strzelecki, Tarnów",
+    rating: 4.7,
+    activeRidersCount: 14,
+    description: "Nowoczesny tarnowski park betonowy z bowlami, zjazdami i poręczami na woskowanie.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 68, skate: 94, shaka: 41, lightning: 18, trophy: 10 },
+    reviews: [],
+  },
+  {
+    id: "spot-nowysacz-kamienica",
+    name: "Skatepark Nad Kamienicą Nowy Sącz",
+    category: "skatepark",
+    lat: 49.6215,
+    lng: 20.7015,
+    city: "Nowy Sącz",
+    address: "ul. Kilińskiego, Nowy Sącz",
+    rating: 4.8,
+    activeRidersCount: 16,
+    description: "Super zlokalizowany park betonowy nad rzeką Kamienicą. Wyprofilowane kątowniki i sekcje schodowe.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 80, skate: 112, shaka: 52, lightning: 24, trophy: 15 },
+    reviews: [],
+  },
+  {
+    id: "spot-zakopane-krupowa",
+    name: "Górski Skatepark Równia Krupowa Zakopane",
+    category: "skatepark",
+    lat: 49.2981,
+    lng: 19.9581,
+    city: "Zakopane",
+    address: "Górna Równia Krupowa, Zakopane",
+    rating: 4.9,
+    activeRidersCount: 20,
+    description: "Najwyżej położony skatepark w Tatrach z absolutnie spektakularnym widokiem na Giewont! Gładki beton i świeże powietrze.",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 185, skate: 240, shaka: 130, lightning: 75, trophy: 50 },
+    reviews: [],
+  },
 
-  // --- WROCŁAW ---
+  // ==========================================
+  // --- 3. WROCŁAW & DOLNY ŚLĄSK ---
+  // ==========================================
   {
     id: "spot-wro-1",
     name: "Zajezdnia Legnicka Skatepark",
@@ -232,8 +345,40 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reactions: { fire: 120, skate: 165, shaka: 80, lightning: 45, trophy: 20 },
     reviews: [],
   },
+  {
+    id: "spot-jelenia-zabobrze",
+    name: "Skatepark Zabobrze Jelenia Góra",
+    category: "skatepark",
+    lat: 50.9181,
+    lng: 15.7521,
+    city: "Jelenia Góra",
+    address: "ul. Różyckiego, Jelenia Góra",
+    rating: 4.7,
+    activeRidersCount: 15,
+    description: "Fajny karkonoski park betonowy ze schodkami, rurkami i sekcją pod triki flatland.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 64, skate: 90, shaka: 40, lightning: 18, trophy: 9 },
+    reviews: [],
+  },
+  {
+    id: "spot-legnica-park",
+    name: "Skatepark Park Miejski Legnica",
+    category: "skatepark",
+    lat: 51.2051,
+    lng: 16.1651,
+    city: "Legnica",
+    address: "Park Miejski, Legnica",
+    rating: 4.8,
+    activeRidersCount: 18,
+    description: "Nowoczesny betonowy obiekt położony w sercu Parku Miejskiego w Legnicy.",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 82, skate: 110, shaka: 52, lightning: 24, trophy: 14 },
+    reviews: [],
+  },
 
-  // --- TRÓJMIASTO ---
+  // ==========================================
+  // --- 4. TRÓJMIASTO & POMORZE ---
+  // ==========================================
   {
     id: "spot-5",
     name: "Gdańsk Zaspa DIY & Plaza",
@@ -289,8 +434,41 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reactions: { fire: 75, skate: 105, shaka: 42, lightning: 18, trophy: 9 },
     reviews: [],
   },
+  {
+    id: "spot-koszalin-sportowa",
+    name: "Skatepark Sportowa Koszalin",
+    category: "skatepark",
+    lat: 54.1920,
+    lng: 16.1850,
+    city: "Koszalin",
+    address: "ul. Sportowa / Park, Koszalin",
+    rating: 4.8,
+    activeRidersCount: 18,
+    hasLighting: true,
+    description: "Nowoczesny betonowy park na Pomorzu Środkowym. Gładka nawierzchnia i rozbudowane przeszkody.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 85, skate: 114, shaka: 52, lightning: 24, trophy: 14 },
+    reviews: [],
+  },
+  {
+    id: "spot-swinoujscie-zdrojowy",
+    name: "Nadmorski Skatepark Świnoujście",
+    category: "skatepark",
+    lat: 53.9151,
+    lng: 14.2581,
+    city: "Świnoujście",
+    address: "Park Zdrojowy, Świnoujście",
+    rating: 4.8,
+    activeRidersCount: 15,
+    description: "Wyjątkowy park nad Bałtykiem otoczony zielenią Parku Zdrojowego. Świetny klimat na wakacyjne sesje.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 90, skate: 120, shaka: 60, lightning: 28, trophy: 16 },
+    reviews: [],
+  },
 
-  // --- POZNAŃ ---
+  // ==========================================
+  // --- 5. POZNAŃ & WIELKOPOLSKA ---
+  // ==========================================
   {
     id: "spot-poznan-rataje",
     name: "Park Rataje Skatepark & Bowl",
@@ -307,8 +485,25 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reactions: { fire: 132, skate: 180, shaka: 85, lightning: 50, trophy: 33 },
     reviews: [],
   },
+  {
+    id: "spot-poznan-cytadela",
+    name: "Cytadela Plaza Poznań",
+    category: "street",
+    lat: 52.4215,
+    lng: 16.9382,
+    city: "Poznań",
+    address: "Park Cytadela, Poznań",
+    rating: 4.7,
+    activeRidersCount: 19,
+    description: "Gładkie alejki i granitowe krawężniki w najsłynniejszym poznańskim parku Cytadela.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 82, skate: 110, shaka: 48, lightning: 22, trophy: 12 },
+    reviews: [],
+  },
 
-  // --- KATOWICE & ŚLĄSK ---
+  // ==========================================
+  // --- 6. KATOWICE & ŚLĄSK ---
+  // ==========================================
   {
     id: "spot-katowice-ptg",
     name: "PTG Ledges & Monument Spot",
@@ -370,180 +565,21 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reactions: { fire: 92, skate: 128, shaka: 64, lightning: 30, trophy: 17 },
     reviews: [],
   },
-
-  // --- ŁÓDŹ ---
   {
-    id: "spot-lodz-zdrowie",
-    name: "Park Zdrowie Concrete Skatepark",
+    id: "spot-sosnowiec-sielecki",
+    name: "Skatepark Park Sielecki Sosnowiec",
     category: "skatepark",
-    lat: 51.7682,
-    lng: 19.4125,
-    city: "Łódź",
-    address: "Park im. Piłsudskiego, Łódź",
-    rating: 4.8,
-    activeRidersCount: 23,
-    description: "Znakomity łódzki betonowy park z bowlami, zjazdami, schodkami i bardzo długimi rurkami na woskowanie.",
-    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 105, skate: 142, shaka: 70, lightning: 38, trophy: 24 },
-    reviews: [],
-  },
-
-  // --- BIAŁYSTOK ---
-  {
-    id: "spot-bialystok-konstytucji",
-    name: "Skatepark Park 3 Maja Białystok",
-    category: "skatepark",
-    lat: 53.1250,
-    lng: 23.1650,
-    city: "Białystok",
-    address: "Park Zwierzyniecki / 3 Maja, Białystok",
-    rating: 4.8,
-    activeRidersCount: 24,
-    hasLighting: true,
-    description: "Nowoczesny duży betonowy skatepark na Podlasiu. Ogromny bowl, rurki, piramidy i smooth podłoże.",
-    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 118, skate: 165, shaka: 78, lightning: 40, trophy: 22 },
-    reviews: [],
-  },
-
-  // --- BYDGOSZCZ ---
-  {
-    id: "spot-bydgoszcz-kanal",
-    name: "Skatepark Nad Starym Kanałem Bydgoszcz",
-    category: "skatepark",
-    lat: 53.1280,
-    lng: 17.9850,
-    city: "Bydgoszcz",
-    address: "Park nad Kanałem Bydgoskim, Bydgoszcz",
-    rating: 4.7,
-    activeRidersCount: 19,
-    description: "Świetny kompleks betonowy przy kanale z przeszkodami street i bankami. Idealna nawierzchnia pod małe kółka.",
-    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 89, skate: 122, shaka: 56, lightning: 26, trophy: 16 },
-    reviews: [],
-  },
-
-  // --- SZCZECIN ---
-  {
-    id: "spot-szczecin-arkonska",
-    name: "Skatepark Arkońska Szczecin",
-    category: "skatepark",
-    lat: 53.4512,
-    lng: 14.5420,
-    city: "Szczecin",
-    address: "Park Kasprowicza / Arkońska, Szczecin",
-    rating: 4.7,
-    activeRidersCount: 19,
-    description: "Nowoczesny betonowy obiekt w Szczecinie z rozbudowanym płaskim plaza i zadaszonymi miejscami na odpoczynek.",
-    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 85, skate: 120, shaka: 55, lightning: 28, trophy: 16 },
-    reviews: [],
-  },
-
-  // --- LUBLIN ---
-  {
-    id: "spot-lublin-rury",
-    name: "Wąwóz Rury Skatepark Lublin",
-    category: "skatepark",
-    lat: 51.2378,
-    lng: 22.5284,
-    city: "Lublin",
-    address: "Wąwóz Rury (ul. Zana), Lublin",
-    rating: 4.6,
-    activeRidersCount: 15,
-    description: "Główny punkt lubelskich skaterów! Położony w malowniczym wąwozie, z rurkami, bankami i sekcją schodową.",
-    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 72, skate: 98, shaka: 44, lightning: 20, trophy: 11 },
-    reviews: [],
-  },
-
-  // --- RZESZÓW ---
-  {
-    id: "spot-rzeszow-podpromie",
-    name: "Skatepark Podpromie Rzeszów",
-    category: "skatepark",
-    lat: 50.0312,
-    lng: 22.0018,
-    city: "Rzeszów",
-    address: "ul. Podpromie 10, Rzeszów",
-    rating: 4.7,
-    activeRidersCount: 17,
-    description: "Popularny rzeszowski park z sekcją streetową, schodami z poręczą i świetną atmosferą.",
-    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 80, skate: 105, shaka: 48, lightning: 22, trophy: 13 },
-    reviews: [],
-  },
-
-  // --- CZĘSTOCHOWA ---
-  {
-    id: "spot-czestochowa-promenada",
-    name: "Skatepark Promenada Częstochowa",
-    category: "skatepark",
-    lat: 50.8290,
-    lng: 19.1230,
-    city: "Częstochowa",
-    address: "Promenada Czesława Niemena, Częstochowa",
+    lat: 50.2800,
+    lng: 19.1350,
+    city: "Sosnowiec",
+    address: "Park Sielecki, Sosnowiec",
     rating: 4.7,
     activeRidersCount: 16,
-    hasLighting: true,
-    description: "Rozbudowany betonowy park przy Promenadzie. Wyprofilowane bowl-rampy i długa sekcja rurek.",
-    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 76, skate: 102, shaka: 46, lightning: 21, trophy: 12 },
-    reviews: [],
-  },
-
-  // --- KIELCE ---
-  {
-    id: "spot-kielce-kadzielnia",
-    name: "Skatepark Kadzielnia Kielce",
-    category: "skatepark",
-    lat: 50.8620,
-    lng: 20.6200,
-    city: "Kielce",
-    address: "ul. Krakowska / Kadzielnia, Kielce",
-    rating: 4.8,
-    activeRidersCount: 18,
-    description: "Nowoczesny betonowy skatepark z malowniczym widokiem na rezerwat Kadzielnia w Kielcach.",
-    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 82, skate: 110, shaka: 50, lightning: 24, trophy: 14 },
-    reviews: [],
-  },
-
-  // --- ZIELONA GÓRA ---
-  {
-    id: "spot-zielona-dolek",
-    name: "Skatepark Kaczy Dołek Zielona Góra",
-    category: "skatepark",
-    lat: 51.9360,
-    lng: 15.5180,
-    city: "Zielona Góra",
-    address: "ul. Wyszyńskiego / Kaczy Dołek, Zielona Góra",
-    rating: 4.7,
-    activeRidersCount: 15,
-    description: "Kultowe miejsce zielonogórskich skaterów z gładkimi profilami, piramidą i długimi krawężnikami.",
+    description: "Popularny zagłębiowski park betonowy z rozbudowaną sekcją płaską i przeszkodami ulicznymi.",
     image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 70, skate: 95, shaka: 42, lightning: 19, trophy: 11 },
+    reactions: { fire: 74, skate: 102, shaka: 46, lightning: 22, trophy: 12 },
     reviews: [],
   },
-
-  // --- OPOLE ---
-  {
-    id: "spot-opole-nadodrzanski",
-    name: "Skatepark Park Nadodrzański Opole",
-    category: "skatepark",
-    lat: 50.6650,
-    lng: 17.9210,
-    city: "Opole",
-    address: "Park Nadodrzański над Odrą, Opole",
-    rating: 4.8,
-    activeRidersCount: 17,
-    description: "Świetny park betonowy над Odrą. Smooth nawierzchnia i bardzo dobrze rozplanowane elementy streetowe.",
-    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 78, skate: 108, shaka: 49, lightning: 23, trophy: 13 },
-    reviews: [],
-  },
-
-  // --- BIELSKO-BIAŁA ---
   {
     id: "spot-bielsko-slowackiego",
     name: "Skatepark Park Słowackiego Bielsko-Biała",
@@ -561,76 +597,235 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reviews: [],
   },
 
-  // --- RADOM ---
+  // ==========================================
+  // --- 7. ŁÓDŹ & ŁÓDZKIE ---
+  // ==========================================
   {
-    id: "spot-radom-lesniczowka",
-    name: "Skatepark Leśniczówka Radom",
+    id: "spot-lodz-zdrowie",
+    name: "Park Zdrowie Concrete Skatepark",
     category: "skatepark",
-    lat: 51.4010,
-    lng: 21.1550,
-    city: "Radom",
-    address: "Park Leśniczówka, Radom",
-    rating: 4.6,
-    activeRidersCount: 13,
-    description: "Zielony park w Radomiu z sekcjami street i wyprofilowanymi rampami do nauki trików.",
-    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 62, skate: 88, shaka: 36, lightning: 17, trophy: 9 },
+    lat: 51.7682,
+    lng: 19.4125,
+    city: "Łódź",
+    address: "Park im. Piłsudskiego, Łódź",
+    rating: 4.8,
+    activeRidersCount: 23,
+    description: "Znakomity łódzki betonowy park z bowlami, zjazdami, schodkami i bardzo długimi rurkami na woskowanie.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 105, skate: 142, shaka: 70, lightning: 38, trophy: 24 },
     reviews: [],
   },
-
-  // --- TARNÓW ---
   {
-    id: "spot-tarnow-strzelecki",
-    name: "Skatepark Park Strzelecki Tarnów",
+    id: "spot-lodz-widzew",
+    name: "Skatepark Park Widzewski Łódź",
     category: "skatepark",
-    lat: 50.0180,
-    lng: 20.9880,
-    city: "Tarnów",
-    address: "Park Strzelecki, Tarnów",
-    rating: 4.7,
+    lat: 51.7612,
+    lng: 19.5121,
+    city: "Łódź",
+    address: "Park Widzewski, Łódź",
+    rating: 4.6,
     activeRidersCount: 14,
-    description: "Nowoczesny tarnowski park betonowy z bowlami, zjazdami i poręczami na woskowanie.",
-    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 68, skate: 94, shaka: 41, lightning: 18, trophy: 10 },
+    description: "Gładki osiedlowy betonowy park we wschodniej części Łodzi.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 62, skate: 88, shaka: 38, lightning: 17, trophy: 9 },
     reviews: [],
   },
 
-  // --- ELBLĄG ---
+  // ==========================================
+  // --- 8. BIAŁYSTOK & PODLASIE ---
+  // ==========================================
   {
-    id: "spot-elblag-modrzewie",
-    name: "Skatepark Park Modrzewie Elbląg",
+    id: "spot-bialystok-konstytucji",
+    name: "Skatepark Park 3 Maja Białystok",
     category: "skatepark",
-    lat: 54.1670,
-    lng: 19.4050,
-    city: "Elbląg",
-    address: "Park Modrzewie, Elbląg",
-    rating: 4.6,
-    activeRidersCount: 12,
-    description: "Fajny lokalny park betonowy z sekcją płaską i wyprofilowanymi bankami.",
+    lat: 53.1250,
+    lng: 23.1650,
+    city: "Białystok",
+    address: "Park Zwierzyniecki / 3 Maja, Białystok",
+    rating: 4.8,
+    activeRidersCount: 24,
+    hasLighting: true,
+    description: "Nowoczesny duży betonowy skatepark na Podlasiu. Ogromny bowl, rurki, piramidy i smooth podłoże.",
     image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 58, skate: 80, shaka: 32, lightning: 14, trophy: 8 },
+    reactions: { fire: 118, skate: 165, shaka: 78, lightning: 40, trophy: 22 },
+    reviews: [],
+  },
+  {
+    id: "spot-suwalki-konstytucji",
+    name: "Skatepark Suwałki Park Konstytucji",
+    category: "skatepark",
+    lat: 54.1021,
+    lng: 22.9281,
+    city: "Suwałki",
+    address: "Park Konstytucji 3 Maja, Suwałki",
+    rating: 4.7,
+    activeRidersCount: 12,
+    description: "Główny punkt suwalskich skaterów. Wyprofilowane zjazdy i spory flat ground.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 56, skate: 78, shaka: 34, lightning: 15, trophy: 8 },
     reviews: [],
   },
 
-  // --- PŁOCK ---
+  // ==========================================
+  // --- 9. BYDGOSZCZ & TORUŃ ---
+  // ==========================================
   {
-    id: "spot-plock-podolszyce",
-    name: "Skatepark Podolszyce Płock",
+    id: "spot-bydgoszcz-kanal",
+    name: "Skatepark Nad Starym Kanałem Bydgoszcz",
     category: "skatepark",
-    lat: 52.5480,
-    lng: 19.7350,
-    city: "Płock",
-    address: "Park Północny / Podolszyce, Płock",
+    lat: 53.1280,
+    lng: 17.9850,
+    city: "Bydgoszcz",
+    address: "Park nad Kanałem Bydgoskim, Bydgoszcz",
+    rating: 4.7,
+    activeRidersCount: 19,
+    description: "Świetny kompleks betonowy przy kanale z przeszkodami street i bankami. Idealna nawierzchnia pod małe kółka.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 89, skate: 122, shaka: 56, lightning: 26, trophy: 16 },
+    reviews: [],
+  },
+  {
+    id: "spot-torun-plaza",
+    name: "Skatepark Toruń Martówka",
+    category: "skatepark",
+    lat: 53.0115,
+    lng: 18.5910,
+    city: "Toruń",
+    address: "Park Miejski Martówka, Toruń",
+    rating: 4.7,
+    activeRidersCount: 18,
+    hasLighting: true,
+    description: "Betonowy plaza park w parku miejskim w Toruniu. Kątowniki, rurki, minirampy i płaskie murki.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 85, skate: 112, shaka: 50, lightning: 22, trophy: 14 },
+    reviews: [],
+  },
+
+  // ==========================================
+  // --- 10. SZCZECIN & ZACHODNIOPOMORSKIE ---
+  // ==========================================
+  {
+    id: "spot-szczecin-arkonska",
+    name: "Skatepark Arkońska Szczecin",
+    category: "skatepark",
+    lat: 53.4512,
+    lng: 14.5420,
+    city: "Szczecin",
+    address: "Park Kasprowicza / Arkońska, Szczecin",
+    rating: 4.7,
+    activeRidersCount: 19,
+    description: "Nowoczesny betonowy obiekt w Szczecinie z rozbudowanym płaskim plaza i zadaszonymi miejscami na odpoczynek.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 85, skate: 120, shaka: 55, lightning: 28, trophy: 16 },
+    reviews: [],
+  },
+
+  // ==========================================
+  // --- 11. LUBLIN & LUBELSKIE ---
+  // ==========================================
+  {
+    id: "spot-lublin-rury",
+    name: "Wąwóz Rury Skatepark Lublin",
+    category: "skatepark",
+    lat: 51.2378,
+    lng: 22.5284,
+    city: "Lublin",
+    address: "Wąwóz Rury (ul. Zana), Lublin",
+    rating: 4.6,
+    activeRidersCount: 15,
+    description: "Główny punkt lubelskich skaterów! Położony w malowniczym wąwozie, z rurkami, bankami i sekcją schodową.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 72, skate: 98, shaka: 44, lightning: 20, trophy: 11 },
+    reviews: [],
+  },
+
+  // ==========================================
+  // --- 12. RZESZÓW & PODKARPACIE ---
+  // ==========================================
+  {
+    id: "spot-rzeszow-podpromie",
+    name: "Skatepark Podpromie Rzeszów",
+    category: "skatepark",
+    lat: 50.0312,
+    lng: 22.0018,
+    city: "Rzeszów",
+    address: "ul. Podpromie 10, Rzeszów",
+    rating: 4.7,
+    activeRidersCount: 17,
+    description: "Popularny rzeszowski park z sekcją streetową, schodami z poręczą i świetną atmosferą.",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 80, skate: 105, shaka: 48, lightning: 22, trophy: 13 },
+    reviews: [],
+  },
+  {
+    id: "spot-przemysl-san",
+    name: "Skatepark Nad Sanem Przemyśl",
+    category: "skatepark",
+    lat: 49.7821,
+    lng: 22.7751,
+    city: "Przemyśl",
+    address: "ul. Wybrzeże Wilsona, Przemyśl",
+    rating: 4.7,
+    activeRidersCount: 13,
+    description: "Malowniczy betonowy park tuż nad rzeką San w Przemyślu.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 60, skate: 85, shaka: 38, lightning: 17, trophy: 9 },
+    reviews: [],
+  },
+
+  // ==========================================
+  // --- 13. CZĘSTOCHOWA & KIELCE ---
+  // ==========================================
+  {
+    id: "spot-czestochowa-promenada",
+    name: "Skatepark Promenada Częstochowa",
+    category: "skatepark",
+    lat: 50.8290,
+    lng: 19.1230,
+    city: "Częstochowa",
+    address: "Promenada Czesława Niemena, Częstochowa",
+    rating: 4.7,
+    activeRidersCount: 16,
+    hasLighting: true,
+    description: "Rozbudowany betonowy park przy Promenadzie. Wyprofilowane bowl-rampy i długa sekcja rurek.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 76, skate: 102, shaka: 46, lightning: 21, trophy: 12 },
+    reviews: [],
+  },
+  {
+    id: "spot-kielce-kadzielnia",
+    name: "Skatepark Kadzielnia Kielce",
+    category: "skatepark",
+    lat: 50.8620,
+    lng: 20.6200,
+    city: "Kielce",
+    address: "ul. Krakowska / Kadzielnia, Kielce",
+    rating: 4.8,
+    activeRidersCount: 18,
+    description: "Nowoczesny betonowy skatepark z malowniczym widokiem na rezerwat Kadzielnia w Kielcach.",
+    image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 82, skate: 110, shaka: 50, lightning: 24, trophy: 14 },
+    reviews: [],
+  },
+
+  // ==========================================
+  // --- 14. ZIELONA GÓRA & LUBUSKIE ---
+  // ==========================================
+  {
+    id: "spot-zielona-dolek",
+    name: "Skatepark Kaczy Dołek Zielona Góra",
+    category: "skatepark",
+    lat: 51.9360,
+    lng: 15.5180,
+    city: "Zielona Góra",
+    address: "ul. Wyszyńskiego / Kaczy Dołek, Zielona Góra",
     rating: 4.7,
     activeRidersCount: 15,
-    hasLighting: true,
-    description: "Znakomity płocki park betonowy z oświetleniem nocnym i rozbudowanym płaskim plaza.",
-    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 74, skate: 100, shaka: 45, lightning: 20, trophy: 11 },
+    description: "Kultowe miejsce zielonogórskich skaterów z gładkimi profilami, piramidą i długimi krawężnikami.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 70, skate: 95, shaka: 42, lightning: 19, trophy: 11 },
     reviews: [],
   },
-
-  // --- GORZÓW WIELKOPOLSKI ---
   {
     id: "spot-gorzow-kopernika",
     name: "Skatepark Park Kopernika Gorzów",
@@ -647,25 +842,62 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reviews: [],
   },
 
-  // --- KOSZALIN ---
+  // ==========================================
+  // --- 15. OPOLE & OPOLSZKIE ---
+  // ==========================================
   {
-    id: "spot-koszalin-sportowa",
-    name: "Skatepark Sportowa Koszalin",
+    id: "spot-opole-nadodrzanski",
+    name: "Skatepark Park Nadodrzański Opole",
     category: "skatepark",
-    lat: 54.1920,
-    lng: 16.1850,
-    city: "Koszalin",
-    address: "ul. Sportowa / Park, Koszalin",
+    lat: 50.6650,
+    lng: 17.9210,
+    city: "Opole",
+    address: "Park Nadodrzański nad Odrą, Opole",
     rating: 4.8,
-    activeRidersCount: 18,
-    hasLighting: true,
-    description: "Nowoczesny betonowy park na Pomorzu Środkowym. Gładka nawierzchnia i rozbudowane przeszkody.",
-    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
-    reactions: { fire: 85, skate: 114, shaka: 52, lightning: 24, trophy: 14 },
+    activeRidersCount: 17,
+    description: "Świetny park betonowy nad Odrą. Smooth nawierzchnia i bardzo dobrze rozplanowane elementy streetowe.",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 78, skate: 108, shaka: 49, lightning: 23, trophy: 13 },
     reviews: [],
   },
 
-  // --- ARCHIVED / INTERNATIONAL ---
+  // ==========================================
+  // --- 16. OLSZTYN & WARMIA ---
+  // ==========================================
+  {
+    id: "spot-olsztyn-lyna",
+    name: "Skatepark Park Podzamcze Olsztyn",
+    category: "skatepark",
+    lat: 53.7760,
+    lng: 20.4740,
+    city: "Olsztyn",
+    address: "Park Podzamcze, Olsztyn",
+    rating: 4.6,
+    activeRidersCount: 14,
+    description: "Zielony skatepark nad Łyną w Olsztynie. Dobre profile, zjazdy i spory flat do szlifowania trików.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 65, skate: 92, shaka: 38, lightning: 18, trophy: 10 },
+    reviews: [],
+  },
+  {
+    id: "spot-elblag-modrzewie",
+    name: "Skatepark Park Modrzewie Elbląg",
+    category: "skatepark",
+    lat: 54.1670,
+    lng: 19.4050,
+    city: "Elbląg",
+    address: "Park Modrzewie, Elbląg",
+    rating: 4.6,
+    activeRidersCount: 12,
+    description: "Fajny lokalny park betonowy z sekcją płaską i wyprofilowanymi bankami.",
+    image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 58, skate: 80, shaka: 32, lightning: 14, trophy: 8 },
+    reviews: [],
+  },
+
+  // ==========================================
+  // --- 17. ARCHIVED & INTERNATIONAL ---
+  // ==========================================
   {
     id: "spot-archived-1",
     name: "Otwarcie Sezonu Skate Jam 2026 (Zakończone)",
@@ -677,20 +909,11 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     rating: 4.9,
     activeRidersCount: 0,
     eventDate: "Minione wydarzenie",
-    expiresAt: Date.now() - 24 * 3600 * 1000, // Already expired (Archived)
+    expiresAt: Date.now() - 24 * 3600 * 1000,
     description: "Poprzednie wydarzenie sezonowe. Wydarzenie zakończone i przeniesione do archiwum.",
     image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
     reactions: { fire: 180, skate: 240, shaka: 110, lightning: 60, trophy: 75 },
-    reviews: [
-      {
-        id: "r5",
-        author: "Tomek 'Ollie'",
-        text: "Świetna impreza była! Czekamy na kolejną edycję!",
-        date: "Tydzień temu",
-        emoji: "🔥",
-        rating: 5,
-      },
-    ],
+    reviews: [],
   },
   {
     id: "spot-6",
@@ -708,7 +931,9 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reviews: [],
   },
 
-  // --- SKATESHOPY & SERWISY ---
+  // ==========================================
+  // --- 18. REAL SKATESHOPY & SERWISY ---
+  // ==========================================
   {
     id: "shop-sket-lab",
     name: "SKET-OK Central Lab & Skateshop",
@@ -751,6 +976,22 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     reviews: [],
   },
   {
+    id: "shop-woodys-warsaw",
+    name: "Woodys Skateshop Warszawa",
+    category: "shop",
+    lat: 52.2341,
+    lng: 21.0182,
+    city: "Warszawa",
+    address: "ul. Bracka 25, Warszawa",
+    rating: 4.9,
+    activeRidersCount: 6,
+    isCovered: true,
+    description: "Niezależny warszawski skateshop prowadzony przez skaterów. Wyselekcjonowane deski i profesjonalny montaż.",
+    image: "https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 125, skate: 175, shaka: 80, lightning: 38, trophy: 25 },
+    reviews: [],
+  },
+  {
     id: "shop-amii-krakow",
     name: "Amii Skateshop Kraków",
     category: "shop",
@@ -764,6 +1005,22 @@ export const INITIAL_SKATE_SPOTS: SkateSpot[] = [
     description: "Krakowski hub sprzętowy tworzony przez lokalną ekipę. Pełny serwis, montaż gripów, woski oraz najnowsze kółka i łożyska.",
     image: "https://images.unsplash.com/photo-1516912821115-5a835ec9ee75?auto=format&fit=crop&w=800&q=80",
     reactions: { fire: 95, skate: 130, shaka: 60, lightning: 25, trophy: 18 },
+    reviews: [],
+  },
+  {
+    id: "shop-maluch-wroclaw",
+    name: "Skateshop Szewska Wrocław",
+    category: "shop",
+    lat: 51.1105,
+    lng: 17.0321,
+    city: "Wrocław",
+    address: "ul. Szewska 18, Wrocław",
+    rating: 4.8,
+    activeRidersCount: 5,
+    isCovered: true,
+    description: "Wrocławski klasyk deskorolkowy w sercu Starego Miasta.",
+    image: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    reactions: { fire: 88, skate: 120, shaka: 54, lightning: 22, trophy: 15 },
     reviews: [],
   },
   {
