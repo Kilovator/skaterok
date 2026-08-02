@@ -39,7 +39,7 @@ export const translations = {
     "hero.buttonText": "Złóż swoją deskę",
 
     // Products / Electric Alternative
-    "products.heading": "ELEKTRYCZNA ALTERNATYWA DLA NASZYCH DESEK",
+    "products.heading": "ELEKTRYCZNA ALTERNATYWA NASZYCH DESEK",
     "products.body": "Nowoczesne pojazdy elektryczne: hulajnogi, deskorolki elektryczne, żyroskopy i monocykle dla fanów prędkości i stylu!",
 
     // Team
