@@ -37,7 +37,7 @@ export const textAndImageSections: TextAndImageSection[] = [
     heading: "Designed for the streets",
     body: "Each board is crafted with precision and passion. From the first push to the last trick, SKET-OK boards are built to perform.",
     buttonText: "Explore Boards",
-    buttonHref: "#products",
+    buttonHref: "/sklep",
     theme: "Blue",
     variation: "default",
     foregroundImage: { src: "/images/sections/tai-1-fg.png", alt: "Skater in action" },

@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [savedBuilds, setSavedBuilds] = useState<SavedBuild[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Restore session on mount
+  // Restore session on mount & auto-sync with Neon DB cloud
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedEmail = localStorage.getItem(CURRENT_USER_SESSION_KEY);
@@ -80,6 +80,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setSavedBuilds(db.getSavedBuilds(found.id));
           setOrders(db.getUserOrders(found.id));
         }
+      }
+
+      // Sync local users & database records to Neon DB PostgreSQL in background
+      try {
+        const rawDb = localStorage.getItem("sket_ok_database_v1");
+        const parsed = rawDb ? JSON.parse(rawDb) : null;
+        if (parsed) {
+          fetch("/api/auth/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(parsed),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                console.log("Neon DB cloud sync completed:", data.count, "users stored in Neon DB.");
+              }
+            })
+            .catch((e) => console.error("Neon DB sync error:", e));
+        }
+      } catch (e) {
+        console.error("Local sync error:", e);
       }
     }
   }, []);
@@ -107,20 +129,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, pass: string) => {
     const verified = db.verifyUser(email, pass);
     if (!verified) {
-      return { success: false, error: "Incorrect email or password" };
+      return { success: false, error: "Nieprawidłowy e-mail lub hasło." };
     }
     setUser(verified);
     localStorage.setItem(CURRENT_USER_SESSION_KEY, verified.email);
     setSavedBuilds(db.getSavedBuilds(verified.id));
     setOrders(db.getUserOrders(verified.id));
     setIsAuthModalOpen(false);
+
+    // Sync to Neon DB PostgreSQL
+    fetch("/api/auth/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ users: [verified] }),
+    }).catch(console.error);
+
     return { success: true };
   };
 
   const register = async (name: string, email: string, pass: string, avatar?: string) => {
     const existing = db.getUserByEmail(email);
     if (existing) {
-      return { success: false, error: "User with this email already exists" };
+      return { success: false, error: "Użytkownik o tym e-mailu już istnieje." };
     }
     const newUser = db.createUser(name, email, pass, avatar);
     setUser(newUser);
@@ -128,6 +158,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSavedBuilds(db.getSavedBuilds(newUser.id));
     setOrders(db.getUserOrders(newUser.id));
     setIsAuthModalOpen(false);
+
+    // Register & persist in Neon DB PostgreSQL
+    try {
+      await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password: pass, avatar }),
+      });
+    } catch (e) {
+      console.error("Neon DB register sync error:", e);
+    }
+
     return { success: true };
   };
 
@@ -136,6 +178,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!updated) {
       return { success: false, error: "Nie znaleziono konta z tym adresem e-mail." };
     }
+
+    // Sync to Neon DB PostgreSQL
+    fetch("/api/auth/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ users: db.getUserByEmail(email) ? [db.getUserByEmail(email)] : [] }),
+    }).catch(console.error);
+
     return { success: true };
   };
 
@@ -144,15 +194,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updated = db.updateUserAvatar(user.id, avatarUrl);
     if (updated) {
       setUser({ ...updated });
+      fetch("/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ users: [updated] }),
+      }).catch(console.error);
     }
   };
 
   const updateNickname = async (newNickname: string) => {
     if (!user) return { success: false, error: "Nie jesteś zalogowany." };
+
+    // Update in local DB & trigger 30-day cooldown check
     const res = db.updateUserNickname(user.id, newNickname);
-    if (res.success && res.user) {
+    if (!res.success) {
+      return res;
+    }
+
+    if (res.user) {
       setUser({ ...res.user });
     }
+
+    // Persist to Neon DB PostgreSQL via API
+    try {
+      const apiRes = await fetch("/api/auth/update-nickname", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, newNickname }),
+      });
+      const data = await apiRes.json();
+      if (data.success && data.user) {
+        setUser({ ...data.user });
+      }
+    } catch (e) {
+      console.error("Neon DB nickname sync error:", e);
+    }
+
     return res;
   };
 
@@ -177,6 +254,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const saved = db.addSavedBuild(user.id, build);
     setSavedBuilds(db.getSavedBuilds(user.id));
+
+    // Sync saved build to Neon DB
+    fetch("/api/auth/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ savedBuilds: [saved] }),
+    }).catch(console.error);
+
     return saved;
   };
 
@@ -201,6 +286,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) {
       setOrders(db.getUserOrders(user.id));
     }
+
+    // Sync order to Neon DB
+    fetch("/api/auth/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orders: [newOrder] }),
+    }).catch(console.error);
+
     return newOrder;
   };
 

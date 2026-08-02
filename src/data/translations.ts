@@ -47,9 +47,9 @@ export const translations = {
     "team.buildBoard": "Złóż ich deskę",
 
     // Text & Image Sections
-    "tai1.heading": "Zaprojektowane na ulice",
-    "tai1.body": "Każda deska jest tworzona z precyzją i pasją. Od pierwszego odepchnięcia do ostatniego triku, deski SKET-OK są stworzone do osiągów.",
-    "tai1.buttonText": "Odkryj deski",
+    "tai1.heading": "STWORZONE NA KAŻDĄ TRASĘ",
+    "tai1.body": "Poznaj naszą kolekcję nowoczesnych pojazdów elektrycznych. Od zwrotnych e-skate'ów i samo-balansujących hoverboardów po potężne monocykle terenowe — SKET-OK to maksymalna moc, prędkość i wolność na ulicach.",
+    "tai1.buttonText": "Odkryj Pojazdy",
 
     "tai2.heading": "Stworzone by trwać",
     "tai2.body": "Materiały premium, profesjonalna konstrukcja. Używamy tylko najlepszego klonu i osprzętu, aby Twoja deska przetrwała każdą sesję.",
@@ -198,9 +198,9 @@ export const translations = {
     "team.buildBoard": "Build their board",
 
     // Text & Image Sections
-    "tai1.heading": "Designed for the streets",
-    "tai1.body": "Each board is crafted with precision and passion. From the first push to the last trick, SKET-OK boards are built to perform.",
-    "tai1.buttonText": "Explore Boards",
+    "tai1.heading": "BUILT FOR EVERY ROUTE",
+    "tai1.body": "Explore our collection of high-performance electric vehicles. From agile e-skates and self-balancing hoverboards to powerful all-terrain monowheels — SKET-OK delivers ultimate power, speed, and street freedom.",
+    "tai1.buttonText": "Explore Vehicles",
 
     "tai2.heading": "Built to last",
     "tai2.body": "Premium materials, pro-grade construction. We use only the best maple and hardware so your board survives every session.",
