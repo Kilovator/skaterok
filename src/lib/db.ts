@@ -3,6 +3,11 @@
 import { DeckItem, WheelItem, MetalItem } from "@/data/boardCustomizer";
 import { CartItem } from "@/context/CartContext";
 
+export type NicknameHistoryItem = {
+  nickname: string;
+  changedAt: string;
+};
+
 export type User = {
   id: string;
   name: string;
@@ -10,6 +15,8 @@ export type User = {
   avatar?: string;
   passwordHash: string;
   createdAt: string;
+  lastNicknameChangeDate?: string;
+  nicknameHistory?: NicknameHistoryItem[];
 };
 
 export type SavedBuild = {
@@ -60,6 +67,7 @@ type DBStructure = {
 };
 
 const DB_KEY = "sket_ok_database_v1";
+const NICKNAME_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000; // 30 days in ms
 
 // Demo initial seed data
 const SEED_DATA: DBStructure = {
@@ -69,7 +77,12 @@ const SEED_DATA: DBStructure = {
       name: "Alex Rider",
       email: "rider@sket-ok.com",
       passwordHash: "skate123", // Simple hash/plain for demo store
-      createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+      createdAt: new Date(Date.now() - 60 * 86400000).toISOString(),
+      lastNicknameChangeDate: new Date(Date.now() - 40 * 86400000).toISOString(),
+      nicknameHistory: [
+        { nickname: "Alex_Skater", changedAt: new Date(Date.now() - 90 * 86400000).toISOString() },
+        { nickname: "Alex_Street99", changedAt: new Date(Date.now() - 40 * 86400000).toISOString() },
+      ],
     },
   ],
   savedBuilds: [
@@ -180,6 +193,7 @@ export const db = {
       avatar,
       passwordHash,
       createdAt: new Date().toISOString(),
+      nicknameHistory: [],
     };
     data.users.push(newUser);
     saveDB(data);
@@ -195,6 +209,61 @@ export const db = {
       return data.users[userIndex];
     }
     return null;
+  },
+
+  updateUserNickname(userId: string, newNickname: string): {
+    success: boolean;
+    error?: string;
+    user?: User;
+    daysRemaining?: number;
+  } {
+    const data = getDB();
+    const userIndex = data.users.findIndex((u) => u.id === userId);
+    if (userIndex === -1) {
+      return { success: false, error: "Nie znaleziono użytkownika." };
+    }
+
+    const targetUser = data.users[userIndex];
+    const cleanNick = newNickname.trim();
+
+    if (!cleanNick || cleanNick.length < 2) {
+      return { success: false, error: "Nick musi mieć co najmniej 2 znaki." };
+    }
+
+    if (cleanNick.toLowerCase() === targetUser.name.toLowerCase()) {
+      return { success: false, error: "Nowy nick musi różnić się od obecnego." };
+    }
+
+    // Check 30-day cooldown
+    if (targetUser.lastNicknameChangeDate) {
+      const lastChange = new Date(targetUser.lastNicknameChangeDate).getTime();
+      const elapsed = Date.now() - lastChange;
+      if (elapsed < NICKNAME_COOLDOWN_MS) {
+        const daysRemaining = Math.ceil((NICKNAME_COOLDOWN_MS - elapsed) / (24 * 60 * 60 * 1000));
+        return {
+          success: false,
+          error: `Nick można zmieniać raz na 30 dni. Możesz zmienić za ${daysRemaining} dni.`,
+          daysRemaining,
+        };
+      }
+    }
+
+    // Record previous nickname in history
+    const history = targetUser.nicknameHistory || [];
+    const updatedHistory: NicknameHistoryItem[] = [
+      ...history,
+      {
+        nickname: targetUser.name,
+        changedAt: new Date().toISOString(),
+      },
+    ];
+
+    data.users[userIndex].name = cleanNick;
+    data.users[userIndex].lastNicknameChangeDate = new Date().toISOString();
+    data.users[userIndex].nicknameHistory = updatedHistory;
+
+    saveDB(data);
+    return { success: true, user: data.users[userIndex] };
   },
 
   updateUserPassword(email: string, newPasswordHash: string): boolean {
@@ -218,7 +287,7 @@ export const db = {
     return null;
   },
 
-  // Saved Custom Builds=
+  // Saved Custom Builds
   getSavedBuilds(userId: string): SavedBuild[] {
     const data = getDB();
     return data.savedBuilds.filter((b) => b.userId === userId);

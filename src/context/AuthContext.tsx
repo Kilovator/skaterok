@@ -35,6 +35,7 @@ type AuthContextType = {
   resetPassword: (email: string, newPass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateAvatar: (avatarUrl: string) => void;
+  updateNickname: (newNickname: string) => Promise<{ success: boolean; error?: string; daysRemaining?: number }>;
   saveBuild: (build: {
     name?: string;
     deck: DeckItem;
@@ -85,6 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUserData = () => {
     if (user) {
+      const updated = db.getUserByEmail(user.email);
+      if (updated) {
+        setUser({ ...updated });
+      }
       setSavedBuilds(db.getSavedBuilds(user.id));
       setOrders(db.getUserOrders(user.id));
     }
@@ -140,6 +145,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (updated) {
       setUser({ ...updated });
     }
+  };
+
+  const updateNickname = async (newNickname: string) => {
+    if (!user) return { success: false, error: "Nie jesteś zalogowany." };
+    const res = db.updateUserNickname(user.id, newNickname);
+    if (res.success && res.user) {
+      setUser({ ...res.user });
+    }
+    return res;
   };
 
   const logout = () => {
@@ -206,6 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         resetPassword,
         logout,
         updateAvatar,
+        updateNickname,
         saveBuild,
         deleteBuild,
         placeOrder,

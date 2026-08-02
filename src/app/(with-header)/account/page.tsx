@@ -23,15 +23,40 @@ import {
   FaCheck,
   FaClock,
   FaCamera,
+  FaPenToSquare,
+  FaClockRotateLeft,
+  FaChevronDown,
+  FaChevronUp,
+  FaXmark,
 } from "react-icons/fa6";
 
+const NICKNAME_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
+
 export default function AccountPage() {
-  const { user, isLoggedIn, savedBuilds, orders, logout, deleteBuild, openAuthModal, updateAvatar } = useAuth();
+  const {
+    user,
+    isLoggedIn,
+    savedBuilds,
+    orders,
+    logout,
+    deleteBuild,
+    openAuthModal,
+    updateAvatar,
+    updateNickname,
+  } = useAuth();
   const { t } = useLanguage();
   const { addItem } = useCart();
 
   const [activeTab, setActiveTab] = useState<"builds" | "orders">("builds");
   const [addedBuildId, setAddedBuildId] = useState<string | null>(null);
+
+  // Nickname dropdown & edit state
+  const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
+  const [isEditNickModalOpen, setIsEditNickModalOpen] = useState(false);
+  const [newNicknameInput, setNewNicknameInput] = useState("");
+  const [nickError, setNickError] = useState("");
+  const [nickSuccess, setNickSuccess] = useState("");
+  const [isSubmittingNick, setIsSubmittingNick] = useState(false);
 
   if (!isLoggedIn || !user) {
     return (
@@ -57,6 +82,49 @@ export default function AccountPage() {
     );
   }
 
+  // Calculate 30-day nickname change cooldown
+  let canChangeNickname = true;
+  let daysUntilNextChange = 0;
+  if (user.lastNicknameChangeDate) {
+    const lastChange = new Date(user.lastNicknameChangeDate).getTime();
+    const elapsed = Date.now() - lastChange;
+    if (elapsed < NICKNAME_COOLDOWN_MS) {
+      canChangeNickname = false;
+      daysUntilNextChange = Math.ceil((NICKNAME_COOLDOWN_MS - elapsed) / (24 * 60 * 60 * 1000));
+    }
+  }
+
+  function handleOpenEditNickModal() {
+    setNewNicknameInput(user?.name || "");
+    setNickError("");
+    setNickSuccess("");
+    setIsEditNickModalOpen(true);
+  }
+
+  async function handleSaveNickname(e: React.FormEvent) {
+    e.preventDefault();
+    setNickError("");
+    setNickSuccess("");
+
+    if (!canChangeNickname) {
+      setNickError(`Nick można zmieniać raz na miesiąc. Spróbuj za ${daysUntilNextChange} dni.`);
+      return;
+    }
+
+    setIsSubmittingNick(true);
+    const res = await updateNickname(newNicknameInput);
+    setIsSubmittingNick(false);
+
+    if (!res.success) {
+      setNickError(res.error || "Wystąpił błąd podczas zmiany nicku.");
+    } else {
+      setNickSuccess("Nick został pomyślnie zmieniony!");
+      setTimeout(() => {
+        setIsEditNickModalOpen(false);
+      }, 1500);
+    }
+  }
+
   function handleAddToCart(build: typeof savedBuilds[0]) {
     addItem({
       id: `saved-build-${build.id}`,
@@ -74,6 +142,8 @@ export default function AccountPage() {
     setTimeout(() => setAddedBuildId(null), 2500);
   }
 
+  const historyList = user.nicknameHistory || [];
+
   return (
     <div className="min-h-screen pt-36 pb-24 bg-brand-black bg-texture text-white">
       <Bounded>
@@ -82,7 +152,8 @@ export default function AccountPage() {
           <div className="absolute right-0 top-0 -mr-16 -mt-16 size-64 rounded-full bg-brand-amethyst/10 blur-3xl" />
           
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-5">
+            <div className="flex items-start md:items-center gap-5">
+              {/* Avatar Uploader */}
               <label
                 title="Zmień avatar / Change Avatar"
                 className="relative size-16 md:size-20 rounded-2xl bg-gradient-to-tr from-brand-amethyst to-purple-500 text-white flex items-center justify-center text-2xl md:text-3xl font-bold font-sans shadow-lg shadow-brand-amethyst/30 border border-white/20 overflow-hidden cursor-pointer group shrink-0"
@@ -110,34 +181,207 @@ export default function AccountPage() {
                 ) : (
                   user.name.charAt(0).toUpperCase()
                 )}
-                {/* Hover Camera Overlay Badge */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white">
                   <FaCamera className="size-5 md:size-6 mb-0.5" />
                   <span className="text-[9px] font-sans uppercase font-bold tracking-tight">Zmień</span>
                 </div>
               </label>
+
+              {/* User Info & Nickname Dropdown */}
               <div>
-                <h1 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-wider text-white">
-                  {user.name}
-                </h1>
-                <p className="font-mono text-sm text-brand-pale mt-0.5">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-wider text-white">
+                    {user.name}
+                  </h1>
+
+                  {/* Edit Nickname Button */}
+                  <button
+                    onClick={handleOpenEditNickModal}
+                    title="Zmień Nick (raz na 30 dni)"
+                    className="p-2 rounded-xl bg-white/10 hover:bg-brand-amethyst text-white/80 hover:text-white transition-all cursor-pointer border border-white/15 flex items-center gap-1.5 text-xs font-bold font-sans"
+                  >
+                    <FaPenToSquare size={13} className="text-amber-400" />
+                    <span>Zmień Nick</span>
+                  </button>
+
+                  {/* Previous Nicknames Dropdown Toggle */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsHistoryDropdownOpen((prev) => !prev)}
+                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 text-white/70 hover:text-white transition-all cursor-pointer flex items-center gap-2 text-xs font-mono"
+                    >
+                      <FaClockRotateLeft size={13} className="text-purple-400" />
+                      <span>Poprzednie nicki ({historyList.length})</span>
+                      {isHistoryDropdownOpen ? <FaChevronUp size={10} /> : <FaChevronDown size={10} />}
+                    </button>
+
+                    {/* Dropdown Menu Panel */}
+                    {isHistoryDropdownOpen && (
+                      <div className="absolute left-0 mt-2 w-72 bg-brand-black/95 border border-brand-amethyst/40 rounded-2xl p-4 shadow-2xl backdrop-blur-xl z-30 animate-fade-in">
+                        <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-3">
+                          <span className="text-xs font-bold font-sans uppercase text-amber-300 flex items-center gap-1.5">
+                            <FaClockRotateLeft size={12} /> Historia Nicków
+                          </span>
+                          <button
+                            onClick={() => setIsHistoryDropdownOpen(false)}
+                            className="text-white/40 hover:text-white"
+                          >
+                            <FaXmark size={14} />
+                          </button>
+                        </div>
+
+                        {historyList.length === 0 ? (
+                          <p className="text-xs font-mono text-white/50 py-2 text-center">
+                            Brak poprzednich nicków (Twój obecny nick jest pierwszy).
+                          </p>
+                        ) : (
+                          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            {historyList.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between text-xs p-2 rounded-xl bg-white/5 border border-white/10"
+                              >
+                                <span className="font-sans font-bold text-white">
+                                  {item.nickname}
+                                </span>
+                                <span className="font-mono text-[10px] text-white/40">
+                                  {new Date(item.changedAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <p className="font-mono text-sm text-brand-pale mt-1">
                   {user.email}
                 </p>
-                <p className="font-mono text-xs text-white/40 mt-1">
-                  Member since {new Date(user.createdAt).toLocaleDateString()}
-                </p>
+
+                {/* Nickname Cooldown Status Badge */}
+                <div className="flex items-center gap-3 mt-2 flex-wrap text-xs font-mono">
+                  <span className="text-white/40">
+                    Konto od: {new Date(user.createdAt).toLocaleDateString()}
+                  </span>
+                  <span className="text-white/20">•</span>
+                  {canChangeNickname ? (
+                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                      <FaCheck size={11} /> Możesz zmienić nick
+                    </span>
+                  ) : (
+                    <span className="text-amber-400 font-bold flex items-center gap-1">
+                      <FaClock size={11} /> Zmiana nicku za {daysUntilNextChange} dni
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
             <button
               onClick={logout}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-sans font-bold uppercase tracking-wider transition-all cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-sans font-bold uppercase tracking-wider transition-all cursor-pointer self-stretch md:self-auto justify-center"
             >
               <FaRightFromBracket size={14} />
               {t("auth.logout")}
             </button>
           </div>
         </div>
+
+        {/* Edit Nickname Modal */}
+        {isEditNickModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fade-in font-sans">
+            <div className="relative w-full max-w-md bg-brand-black border border-brand-amethyst/50 rounded-3xl p-6 shadow-2xl text-white overflow-hidden">
+              <button
+                onClick={() => setIsEditNickModalOpen(false)}
+                className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              >
+                <FaXmark size={18} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300">
+                  <FaPenToSquare size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wider text-white">
+                    Zmień Nick Użytkownika
+                  </h3>
+                  <p className="text-xs text-white/60">
+                    Opcja dostępna raz na 30 dni
+                  </p>
+                </div>
+              </div>
+
+              {/* Status Banner */}
+              {!canChangeNickname ? (
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/40 mb-4 text-xs font-mono text-amber-300 leading-relaxed flex items-start gap-2.5">
+                  <FaClock size={16} className="shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block mb-0.5">Ograniczenie czasowe (Cooldown)</span>
+                    Zmieniłeś nick niedawno. Kolejna zmiana będzie dostępna za <strong>{daysUntilNextChange} dni</strong>.
+                    {user.lastNicknameChangeDate && (
+                      <span className="block text-[11px] text-white/50 mt-1">
+                        Ostatnia zmiana: {new Date(user.lastNicknameChangeDate).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mb-4 text-xs font-mono text-emerald-300 flex items-center gap-2">
+                  <FaCheck size={14} />
+                  <span>Możesz teraz wybrać nowy nick! (Następna zmiana za 30 dni)</span>
+                </div>
+              )}
+
+              {nickError && (
+                <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 mb-4 text-xs font-mono text-red-300">
+                  {nickError}
+                </div>
+              )}
+
+              {nickSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 mb-4 text-xs font-mono text-emerald-300 font-bold">
+                  {nickSuccess}
+                </div>
+              )}
+
+              <form onSubmit={handleSaveNickname} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-white/70 mb-1.5">
+                    Nowy Nick:
+                  </label>
+                  <input
+                    type="text"
+                    disabled={!canChangeNickname || isSubmittingNick}
+                    value={newNicknameInput}
+                    onChange={(e) => setNewNicknameInput(e.target.value)}
+                    placeholder="Wpisz nowy nick..."
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white font-bold focus:outline-none focus:border-brand-amethyst disabled:opacity-50"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditNickModalOpen(false)}
+                    className="px-5 py-2.5 rounded-xl border border-white/15 text-xs font-bold uppercase text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  >
+                    Anuluj
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!canChangeNickname || isSubmittingNick}
+                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-amethyst to-purple-600 hover:from-purple-600 hover:to-brand-amethyst font-sans text-xs font-bold uppercase tracking-wider text-white shadow-lg transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmittingNick ? "Zapisywanie..." : "Zapisz Nick"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex border-b border-white/15 mb-8 gap-4 md:gap-8">
