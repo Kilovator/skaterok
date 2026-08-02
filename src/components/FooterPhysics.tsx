@@ -138,6 +138,14 @@ export function FooterPhysics({
     const mouse = Mouse.create(render.canvas);
     // @ts-expect-error - matter-js has incorrect types
     mouse.element.removeEventListener("wheel", mouse.mousewheel);
+    if (isMobile) {
+      // @ts-expect-error - matter-js incorrect types
+      mouse.element.removeEventListener("touchstart", mouse.touchstart);
+      // @ts-expect-error - matter-js incorrect types
+      mouse.element.removeEventListener("touchmove", mouse.touchmove);
+      // @ts-expect-error - matter-js incorrect types
+      mouse.element.removeEventListener("touchend", mouse.touchend);
+    }
 
     // Set pixel ratio on mouse to align with High-DPI rendering (fixes offset click boxes)
     mouse.pixelRatio = window.devicePixelRatio;
@@ -200,7 +208,7 @@ export function FooterPhysics({
       render.canvas.remove();
       render.textures = {};
     };
-  }, [inView, loadedImages]);
+  }, [inView, loadedImages, isMobile]);
 
   // Create bodies once textures are loaded and physics is ready
   useEffect(() => {

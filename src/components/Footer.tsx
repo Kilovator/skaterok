@@ -12,7 +12,7 @@ export function Footer() {
   const { t } = useLanguage();
   const pathname = usePathname();
 
-  if (pathname === "/checkout" || pathname === "/sklep") return null;
+  if (pathname === "/checkout" || pathname === "/sklep" || pathname === "/account") return null;
 
   return (
     <footer className="bg-texture bg-zinc-900 text-white overflow-hidden">

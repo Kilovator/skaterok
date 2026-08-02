@@ -25,8 +25,6 @@ import {
   FaCamera,
   FaPenToSquare,
   FaClockRotateLeft,
-  FaChevronDown,
-  FaChevronUp,
   FaXmark,
 } from "react-icons/fa6";
 
@@ -50,9 +48,10 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<"builds" | "orders">("builds");
   const [addedBuildId, setAddedBuildId] = useState<string | null>(null);
 
-  // Nickname dropdown & edit state
-  const [isHistoryDropdownOpen, setIsHistoryDropdownOpen] = useState(false);
+  // Modals state
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isEditNickModalOpen, setIsEditNickModalOpen] = useState(false);
+
   const [newNicknameInput, setNewNicknameInput] = useState("");
   const [nickError, setNickError] = useState("");
   const [nickSuccess, setNickSuccess] = useState("");
@@ -147,9 +146,12 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen pt-36 pb-24 bg-brand-black bg-texture text-white">
       <Bounded>
-        {/* Profile Card Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-brand-amethyst/30 bg-gradient-to-b from-white/10 to-white/5 p-6 md:p-8 backdrop-blur-xl mb-10 shadow-2xl">
-          <div className="absolute right-0 top-0 -mr-16 -mt-16 size-64 rounded-full bg-brand-amethyst/10 blur-3xl" />
+        {/* Profile Card Header (No overflow-hidden on outer container so popovers/elements render cleanly) */}
+        <div className="relative rounded-3xl border border-brand-amethyst/30 bg-gradient-to-b from-white/10 to-white/5 p-6 md:p-8 backdrop-blur-xl mb-10 shadow-2xl">
+          {/* Background Glow Wrapper (Clipped safely inside background) */}
+          <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+            <div className="absolute right-0 top-0 -mr-16 -mt-16 size-64 rounded-full bg-brand-amethyst/10 blur-3xl" />
+          </div>
           
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-start md:items-center gap-5">
@@ -187,7 +189,7 @@ export default function AccountPage() {
                 </div>
               </label>
 
-              {/* User Info & Nickname Dropdown */}
+              {/* User Info & Nickname Controls */}
               <div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-wider text-white">
@@ -198,62 +200,20 @@ export default function AccountPage() {
                   <button
                     onClick={handleOpenEditNickModal}
                     title="Zmień Nick (raz na 30 dni)"
-                    className="p-2 rounded-xl bg-white/10 hover:bg-brand-amethyst text-white/80 hover:text-white transition-all cursor-pointer border border-white/15 flex items-center gap-1.5 text-xs font-bold font-sans"
+                    className="p-2 px-3 rounded-xl bg-white/10 hover:bg-brand-amethyst text-white/80 hover:text-white transition-all cursor-pointer border border-white/15 flex items-center gap-1.5 text-xs font-bold font-sans"
                   >
                     <FaPenToSquare size={13} className="text-amber-400" />
                     <span>Zmień Nick</span>
                   </button>
 
-                  {/* Previous Nicknames Dropdown Toggle */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsHistoryDropdownOpen((prev) => !prev)}
-                      className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 text-white/70 hover:text-white transition-all cursor-pointer flex items-center gap-2 text-xs font-mono"
-                    >
-                      <FaClockRotateLeft size={13} className="text-purple-400" />
-                      <span>Poprzednie nicki ({historyList.length})</span>
-                      {isHistoryDropdownOpen ? <FaChevronUp size={10} /> : <FaChevronDown size={10} />}
-                    </button>
-
-                    {/* Dropdown Menu Panel */}
-                    {isHistoryDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-72 bg-brand-black/95 border border-brand-amethyst/40 rounded-2xl p-4 shadow-2xl backdrop-blur-xl z-30 animate-fade-in">
-                        <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-3">
-                          <span className="text-xs font-bold font-sans uppercase text-amber-300 flex items-center gap-1.5">
-                            <FaClockRotateLeft size={12} /> Historia Nicków
-                          </span>
-                          <button
-                            onClick={() => setIsHistoryDropdownOpen(false)}
-                            className="text-white/40 hover:text-white"
-                          >
-                            <FaXmark size={14} />
-                          </button>
-                        </div>
-
-                        {historyList.length === 0 ? (
-                          <p className="text-xs font-mono text-white/50 py-2 text-center">
-                            Brak poprzednich nicków (Twój obecny nick jest pierwszy).
-                          </p>
-                        ) : (
-                          <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                            {historyList.map((item, idx) => (
-                              <div
-                                key={idx}
-                                className="flex items-center justify-between text-xs p-2 rounded-xl bg-white/5 border border-white/10"
-                              >
-                                <span className="font-sans font-bold text-white">
-                                  {item.nickname}
-                                </span>
-                                <span className="font-mono text-[10px] text-white/40">
-                                  {new Date(item.changedAt).toLocaleDateString()}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  {/* Previous Nicknames Modal Toggle Button */}
+                  <button
+                    onClick={() => setIsHistoryModalOpen(true)}
+                    className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 text-white/70 hover:text-white transition-all cursor-pointer flex items-center gap-2 text-xs font-mono"
+                  >
+                    <FaClockRotateLeft size={13} className="text-purple-400" />
+                    <span>Poprzednie nicki ({historyList.length})</span>
+                  </button>
                 </div>
 
                 <p className="font-mono text-sm text-brand-pale mt-1">
@@ -289,10 +249,74 @@ export default function AccountPage() {
           </div>
         </div>
 
-        {/* Edit Nickname Modal */}
+        {/* Modal 1: Previous Nicknames History */}
+        {isHistoryModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fade-in font-sans">
+            <div className="relative w-full max-w-md bg-brand-black border border-brand-amethyst/50 rounded-3xl p-6 shadow-2xl text-white">
+              <button
+                onClick={() => setIsHistoryModalOpen(false)}
+                className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+              >
+                <FaXmark size={18} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-3 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300">
+                  <FaClockRotateLeft size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold uppercase tracking-wider text-white">
+                    Historia Nicków Użytkownika
+                  </h3>
+                  <p className="text-xs text-white/60">
+                    Wszystkie poprzednie pseudonimy konta
+                  </p>
+                </div>
+              </div>
+
+              {historyList.length === 0 ? (
+                <div className="py-8 text-center border border-dashed border-white/15 rounded-2xl bg-white/[0.02]">
+                  <p className="text-xs font-mono text-white/50">
+                    Brak poprzednich nicków (Twój obecny nick <strong>{user.name}</strong> jest pierwszy).
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+                  {historyList.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-amethyst/40 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="size-2 rounded-full bg-amber-400" />
+                        <span className="font-sans font-bold text-sm text-white">
+                          {item.nickname}
+                        </span>
+                      </div>
+                      <span className="font-mono text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+                        {new Date(item.changedAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-6 pt-4 border-t border-white/10 flex justify-end">
+                <button
+                  onClick={() => setIsHistoryModalOpen(false)}
+                  className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold uppercase tracking-wider text-white transition-all cursor-pointer"
+                >
+                  Zamknij
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal 2: Edit Nickname */}
         {isEditNickModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fade-in font-sans">
-            <div className="relative w-full max-w-md bg-brand-black border border-brand-amethyst/50 rounded-3xl p-6 shadow-2xl text-white overflow-hidden">
+            <div className="relative w-full max-w-md bg-brand-black border border-brand-amethyst/50 rounded-3xl p-6 shadow-2xl text-white">
               <button
                 onClick={() => setIsEditNickModalOpen(false)}
                 className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
