@@ -52,8 +52,6 @@ export async function initDbTables() {
         status VARCHAR(50) NOT NULL DEFAULT 'Processing'
       );
     `;
-
-    console.log("Neon Postgres tables initialized successfully!");
   } catch (err) {
     console.error("Error initializing Neon database tables:", err);
   }

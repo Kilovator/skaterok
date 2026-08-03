@@ -92,45 +92,43 @@ export default function CheckoutPage() {
     setPaczkomatId(`${p.id} (${p.address}, ${p.city})`);
   }
 
-  function handleSubmitOrder(e: React.FormEvent) {
+  async function handleSubmitOrder(e: React.FormEvent) {
     e.preventDefault();
     if (items.length === 0) return;
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      const order = placeOrder({
-        items,
-        subtotal: totalPrice,
-        shippingFee,
-        total: finalTotal,
-        shippingMethod,
-        shippingDetails: {
-          fullName,
-          email,
-          phone,
-          address: shippingMethod !== "paczkomat" ? address : undefined,
-          city: shippingMethod !== "paczkomat" ? city : undefined,
-          postalCode: shippingMethod !== "paczkomat" ? postalCode : undefined,
-          paczkomatId: shippingMethod === "paczkomat" ? paczkomatId : undefined,
-        },
-        paymentMethod,
-        paymentInfo:
-          paymentMethod === "blik"
-            ? `BLIK (${blikCode || "654321"})`
-            : paymentMethod === "card"
-            ? "Credit Card Verified"
-            : paymentMethod === "cash"
-            ? "Cash on delivery"
-            : "Apple/Google Pay",
-      });
+    const order = await placeOrder({
+      items,
+      subtotal: totalPrice,
+      shippingFee,
+      total: finalTotal,
+      shippingMethod,
+      shippingDetails: {
+        fullName,
+        email,
+        phone,
+        address: shippingMethod !== "paczkomat" ? address : undefined,
+        city: shippingMethod !== "paczkomat" ? city : undefined,
+        postalCode: shippingMethod !== "paczkomat" ? postalCode : undefined,
+        paczkomatId: shippingMethod === "paczkomat" ? paczkomatId : undefined,
+      },
+      paymentMethod,
+      paymentInfo:
+        paymentMethod === "blik"
+          ? `BLIK (${blikCode || "654321"})`
+          : paymentMethod === "card"
+          ? "Credit Card Verified"
+          : paymentMethod === "cash"
+          ? "Cash on delivery"
+          : "Apple/Google Pay",
+    });
 
-      // Clear cart
-      clearCart();
+    // Clear cart
+    clearCart();
 
-      setPlacedOrder(order);
-      setIsSubmitting(false);
-    }, 1000);
+    setPlacedOrder(order);
+    setIsSubmitting(false);
   }
 
   // Order confirmation modal view

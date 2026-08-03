@@ -93,6 +93,7 @@ export const translations = {
     // Product Card
     "product.customize": "Dostosuj",
     "product.addToCart": "+ Dodaj do koszyka",
+    "product.goToShop": "Przejdź do Towarów",
 
     // Auth Modal
     "auth.login": "Zaloguj się",
@@ -243,7 +244,8 @@ export const translations = {
 
     // Product Card
     "product.customize": "Customize",
-    "product.addToCart": "+ Add to cart",
+    "product.addToCart": "+ Add to Cart",
+    "product.goToShop": "Explore Products",
 
     // Auth Modal
     "auth.login": "Sign In",

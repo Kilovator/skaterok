@@ -5,6 +5,7 @@ import { FaStar, FaArrowRight } from "react-icons/fa6";
 import { HorizontalLine, VerticalLine } from "@/components/Line";
 import { Scribble } from "./Scribble";
 import { type CategoryBlock } from "@/data/products";
+import { useLanguage } from "@/context/LanguageContext";
 
 type Props = {
   category: CategoryBlock;
@@ -17,6 +18,7 @@ const HORIZONTAL_LINE_CLASSES =
   "-mx-8 stroke-2 text-stone-300 transition-colors group-hover:text-stone-400";
 
 export function SkateboardProduct({ category }: Props) {
+  const { t } = useLanguage();
   return (
     <div className="group relative mx-auto w-full max-w-72 px-8 pt-4">
       <VerticalLine className={`${VERTICAL_LINE_CLASSES} left-4`} />
@@ -56,7 +58,7 @@ export function SkateboardProduct({ category }: Props) {
           href={`/sklep?cat=${category.id}`}
           className="button-cutout group/btn mx-2 inline-flex items-center justify-center gap-2 bg-gradient-to-b from-brand-amethyst to-purple-700 from-25% to-75% bg-[length:100%_400%] px-5 py-3.5 text-sm font-bold text-white transition-[background-position] duration-300 hover:bg-bottom shadow-2xl cursor-pointer uppercase tracking-wider text-center"
         >
-          <span>Przejdź do Towarów</span>
+          <span>{t("product.goToShop")}</span>
           <FaArrowRight className="size-4 group-hover/btn:translate-x-1 transition-transform" />
         </Link>
       </div>

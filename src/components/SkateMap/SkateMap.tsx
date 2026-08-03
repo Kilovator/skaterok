@@ -362,11 +362,23 @@ export function SkateMap() {
     return Array.from(citiesSet);
   }, [spots]);
 
-  // Filtered spots for Live Feed
+  // Filtered spots for Live Feed (Synchronized with Map Filters)
   const liveFeedSpots = useMemo(() => {
     return spots.filter((spot) => {
+      const expired = isSpotExpired(spot);
+
+      // Map filter sync
+      if (selectedCategory === "archive") {
+        if (!expired) return false;
+      } else {
+        if (expired) return false;
+        if (selectedCategory !== "all" && spot.category !== selectedCategory) return false;
+      }
+
+      // Sidebar specific filters
       if (feedCityFilter !== "all" && spot.city !== feedCityFilter) return false;
       if (feedCategoryFilter !== "all" && spot.category !== feedCategoryFilter) return false;
+
       if (feedSearchQuery.trim()) {
         const q = feedSearchQuery.toLowerCase();
         const matchName = spot.name.toLowerCase().includes(q);
@@ -376,7 +388,7 @@ export function SkateMap() {
       }
       return true;
     });
-  }, [spots, feedCityFilter, feedCategoryFilter, feedSearchQuery]);
+  }, [spots, selectedCategory, feedCityFilter, feedCategoryFilter, feedSearchQuery, isSpotExpired]);
 
   // Update map markers when spots, category, or mode changes
   useEffect(() => {
@@ -755,109 +767,120 @@ export function SkateMap() {
         </div>
       )}
 
-      {/* LIVE FEED LEFT SIDEBAR PANEL (Placed on the left side of the screen) */}
+      {/* Floating Toggle Button to re-open Live Feed when collapsed 100% */}
+      {!isLiveFeedOpen && (
+        <button
+          onClick={() => setIsLiveFeedOpen(true)}
+          title="Otwórz Live Feed"
+          className="absolute left-3 top-24 z-30 px-3.5 py-2.5 rounded-2xl bg-brand-black/90 hover:bg-brand-amethyst text-white border border-white/20 shadow-2xl flex items-center gap-2 cursor-pointer transition-all hover:scale-105 backdrop-blur-xl group"
+        >
+          <FaBolt className="text-amber-400 size-4 animate-pulse group-hover:scale-110" />
+          <span className="font-sans text-xs font-bold uppercase tracking-wider hidden sm:inline">Live Feed ({liveFeedSpots.length})</span>
+          <FaChevronRight size={12} className="text-white/70" />
+        </button>
+      )}
+
+      {/* LIVE FEED LEFT SIDEBAR PANEL (Clean 100% translate slide-out) */}
       <div
         className={clsx(
-          "absolute left-0 top-0 bottom-0 z-30 bg-brand-black/95 backdrop-blur-2xl border-r border-white/20 shadow-[10px_0_40px_rgba(0,0,0,0.8)] transition-all duration-500 flex flex-col pt-4",
-          isLiveFeedOpen ? "w-80 md:w-96" : "w-12"
+          "absolute left-0 top-0 bottom-0 z-40 bg-brand-black/95 backdrop-blur-2xl border-r border-white/20 shadow-[10px_0_40px_rgba(0,0,0,0.8)] transition-transform duration-300 flex flex-col pt-4 w-80 md:w-96 max-w-[85vw]",
+          isLiveFeedOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Sidebar Header & Collapse/Expand Toggle */}
-        <div className="px-3 pb-3 flex items-center justify-between border-b border-white/10 shrink-0">
-          {isLiveFeedOpen ? (
-            <div className="flex items-center gap-2 font-sans font-bold text-xs md:text-sm uppercase tracking-wider text-white">
-              <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              <FaBolt className="text-amber-400 size-4" />
-              <span>Live Feed ({liveFeedSpots.length})</span>
-            </div>
-          ) : (
-            <div className="w-full flex items-center justify-center pt-2">
-              <FaBolt className="text-amber-400 size-5 animate-pulse" />
-            </div>
-          )}
+        {/* Sidebar Header & Collapse Toggle */}
+        <div className="px-4 pb-3 flex items-center justify-between border-b border-white/10 shrink-0">
+          <div className="flex items-center gap-2 font-sans font-bold text-xs md:text-sm uppercase tracking-wider text-white">
+            <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
+            <FaBolt className="text-amber-400 size-4" />
+            <span>Live Feed ({liveFeedSpots.length})</span>
+          </div>
 
           <button
-            onClick={() => setIsLiveFeedOpen(!isLiveFeedOpen)}
-            title={isLiveFeedOpen ? "Zwiń panel" : "Rozwiń panel Live Feed"}
+            onClick={() => setIsLiveFeedOpen(false)}
+            title="Zamknij panel"
             className="size-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer transition-colors shrink-0"
           >
-            {isLiveFeedOpen ? <FaChevronLeft size={13} /> : <FaChevronRight size={13} />}
+            <FaChevronLeft size={13} />
           </button>
         </div>
 
-        {/* Live Feed Sidebar Content (Shown when expanded) */}
-        {isLiveFeedOpen && (
-          <div className="p-3.5 grow overflow-y-auto flex flex-col gap-3">
-            {/* Filter Section */}
-            <div className="flex flex-col gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
-              {/* Search Bar */}
-              <div className="relative w-full">
-                <FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 size-3.5" />
-                <input
-                  type="text"
-                  placeholder="Szukaj spotu lub wydarzenia..."
-                  value={feedSearchQuery}
-                  onChange={(e) => setFeedSearchQuery(e.target.value)}
-                  className="w-full bg-black/40 border border-white/15 rounded-xl py-1.5 pl-8 pr-3 text-xs text-white placeholder-white/40 focus:outline-none focus:border-brand-amethyst"
-                />
-              </div>
-
-              {/* City Filter Dropdown */}
-              <div className="flex items-center gap-2">
-                <FaCity className="text-brand-pale size-3.5 shrink-0" />
-                <select
-                  value={feedCityFilter}
-                  onChange={(e) => setFeedCityFilter(e.target.value)}
-                  className="w-full bg-brand-black border border-white/20 rounded-xl py-1.5 px-3 text-xs text-white font-bold focus:outline-none focus:border-brand-amethyst cursor-pointer"
-                >
-                  <option value="all">Wszystkie Miasta</option>
-                  {availableCities.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Category Filters */}
-              <div className="flex flex-wrap items-center gap-1">
-                <FaFilter className="text-amber-400 size-3 shrink-0 mr-1" />
-                {[
-                  { id: "all", label: "Wszystkie" },
-                  { id: "event", label: "🔥 Wydarzenia" },
-                  { id: "skatepark", label: "🛹 Skateparki" },
-                  { id: "street", label: "🏙️ Street" },
-                  { id: "shop", label: "🏬 Skateshopy" },
-                ].map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setFeedCategoryFilter(cat.id as SpotCategory | "all")}
-                    className={clsx(
-                      "px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer",
-                      feedCategoryFilter === cat.id
-                        ? "bg-brand-amethyst text-white shadow"
-                        : "text-white/60 hover:text-white hover:bg-white/10"
-                    )}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
+        {/* Live Feed Sidebar Content */}
+        <div className="p-3.5 grow overflow-y-auto flex flex-col gap-3">
+          {/* Filter Section */}
+          <div className="flex flex-col gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
+            {/* Search Bar */}
+            <div className="relative w-full">
+              <FaMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 size-3.5" />
+              <input
+                type="text"
+                placeholder="Szukaj spotu lub wydarzenia..."
+                value={feedSearchQuery}
+                onChange={(e) => setFeedSearchQuery(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 rounded-xl py-1.5 pl-8 pr-3 text-xs text-white placeholder-white/40 focus:outline-none focus:border-brand-amethyst"
+              />
             </div>
 
-            {/* Live Feed List Items */}
-            {liveFeedSpots.length === 0 ? (
-              <p className="text-xs text-white/40 italic text-center py-8">
-                Brak wydarzeń spełniających kryteria wyszukiwania.
-              </p>
-            ) : (
-              <div className="flex flex-col gap-2.5">
-                {liveFeedSpots.map((spot) => (
-                  <div
-                    key={spot.id}
-                    onClick={() => handleSelectSpotFromFeed(spot)}
-                    className="p-3 rounded-2xl bg-white/5 hover:bg-white/15 border border-white/10 hover:border-brand-amethyst/60 transition-all cursor-pointer flex items-center gap-3 group shadow-md"
-                  >
+            {/* City Filter Dropdown */}
+            <div className="flex items-center gap-2">
+              <FaCity className="text-brand-pale size-3.5 shrink-0" />
+              <select
+                value={feedCityFilter}
+                onChange={(e) => setFeedCityFilter(e.target.value)}
+                className="w-full bg-brand-black border border-white/20 rounded-xl py-1.5 px-3 text-xs text-white font-bold focus:outline-none focus:border-brand-amethyst cursor-pointer"
+              >
+                <option value="all">Wszystkie Miasta</option>
+                {availableCities.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category Filters */}
+            <div className="flex flex-wrap items-center gap-1">
+              <FaFilter className="text-amber-400 size-3 shrink-0 mr-1" />
+              {[
+                { id: "all", label: "Wszystkie" },
+                { id: "event", label: "🔥 Wydarzenia" },
+                { id: "skatepark", label: "🛹 Skateparki" },
+                { id: "street", label: "🏙️ Street" },
+                { id: "shop", label: "🏬 Skateshopy" },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setFeedCategoryFilter(cat.id as SpotCategory | "all")}
+                  className={clsx(
+                    "px-2 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer",
+                    feedCategoryFilter === cat.id
+                      ? "bg-brand-amethyst text-white shadow"
+                      : "text-white/60 hover:text-white hover:bg-white/10"
+                  )}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Live Feed List Items */}
+          {liveFeedSpots.length === 0 ? (
+            <p className="text-xs text-white/40 italic text-center py-8">
+              Brak wydarzeń spełniających kryteria wyszukiwania.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {liveFeedSpots.map((spot) => (
+                <div
+                  key={spot.id}
+                  onClick={() => handleSelectSpotFromFeed(spot)}
+                  className={clsx(
+                    "p-3 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 group shadow-md",
+                    selectedSpot?.id === spot.id
+                      ? "bg-brand-amethyst/30 border-brand-amethyst shadow-lg shadow-purple-950/80 ring-1 ring-brand-amethyst"
+                      : "bg-white/5 hover:bg-white/15 border-white/10 hover:border-brand-amethyst/60"
+                  )}
+                >
                     {/* Spot Thumbnail */}
                     <div className="relative size-14 rounded-xl overflow-hidden shrink-0 border border-white/10">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -904,8 +927,7 @@ export function SkateMap() {
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
 
       {/* Spot Detail Modal / Drawer */}
       {selectedSpot && (
@@ -1282,9 +1304,6 @@ export function SkateMap() {
                 Zarządzanie Dostępem Adminów
               </h2>
             </div>
-            <p className="text-xs text-white/60 mb-5 leading-relaxed">
-              Jesteś zalogowany jako administrator (<strong className="text-rose-300 font-mono">{user?.email}</strong>). Możesz przyznawać i odbierać uprawnienia moderacji innym użytkownikom według ich adresu e-mail.
-            </p>
 
             {adminManageError && (
               <div className="p-3 mb-4 rounded-xl bg-rose-900/60 border border-rose-500/60 text-rose-200 text-xs font-bold">
@@ -1331,7 +1350,7 @@ export function SkateMap() {
                       <div className="flex items-center gap-2">
                         <span className="text-amber-400">{isMainAdmin ? "👑" : "👤"}</span>
                         <span className={isMainAdmin ? "text-amber-300 font-bold" : "text-white/90"}>
-                          {emailItem}
+                          {isMainAdmin && user?.name ? user.name : emailItem}
                         </span>
                         {isMainAdmin && (
                           <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-sans font-bold">

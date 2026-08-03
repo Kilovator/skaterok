@@ -34,7 +34,7 @@ export function FloatingCartButtons() {
     addItem(customBoardProduct);
   }
 
-  function handleSaveBuild() {
+  async function handleSaveBuild() {
     if (!selectedDeck || !selectedWheel || !selectedTruck || !selectedBolt) return;
 
     if (!isLoggedIn) {
@@ -42,7 +42,7 @@ export function FloatingCartButtons() {
       return;
     }
 
-    const saved = saveBuild({
+    const saved = await saveBuild({
       name: `Custom ${selectedDeck.uid.replace(/-/g, " ")} setup`,
       deck: selectedDeck,
       wheels: selectedWheel,

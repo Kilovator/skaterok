@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import clsx from "clsx";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
@@ -24,7 +25,7 @@ import {
   FaClock,
   FaCamera,
   FaPenToSquare,
-  FaClockRotateLeft,
+  FaChevronDown,
   FaXmark,
 } from "react-icons/fa6";
 
@@ -51,6 +52,23 @@ export default function AccountPage() {
   // Modals state
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isEditNickModalOpen, setIsEditNickModalOpen] = useState(false);
+
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Close Steam-style nickname popover when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        setIsHistoryModalOpen(false);
+      }
+    }
+    if (isHistoryModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isHistoryModalOpen]);
 
   const [newNicknameInput, setNewNicknameInput] = useState("");
   const [nickError, setNickError] = useState("");
@@ -192,27 +210,75 @@ export default function AccountPage() {
               {/* User Info & Nickname Controls */}
               <div>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <h1 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-wider text-white">
-                    {user.name}
-                  </h1>
+                  {/* Steam-Style Nickname + Arrow Popover Trigger */}
+                  <div className="relative inline-block" ref={popoverRef}>
+                    <div
+                      onClick={() => setIsHistoryModalOpen(!isHistoryModalOpen)}
+                      className="flex items-center gap-1.5 cursor-pointer group"
+                      title="Kliknij, aby zobaczyć inne nazwy użytkownika"
+                    >
+                      <h1 className="font-sans text-2xl md:text-3xl font-bold uppercase tracking-wider text-white group-hover:text-brand-pale transition-colors">
+                        {user.name}
+                      </h1>
+                      <span className="text-white/60 group-hover:text-white transition-colors p-0.5">
+                        <FaChevronDown
+                          size={14}
+                          className={clsx("transition-transform duration-200", isHistoryModalOpen && "rotate-180")}
+                        />
+                      </span>
+                    </div>
+
+                    {/* Steam-Style Popover Dropdown */}
+                    {isHistoryModalOpen && (
+                      <div className="absolute left-0 top-full mt-2 w-72 md:w-80 bg-[#1e232d]/95 border border-white/20 rounded-2xl p-4 shadow-[0_12px_35px_rgba(0,0,0,0.85)] backdrop-blur-2xl z-50 animate-fade-in text-white font-sans">
+                        <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-2.5">
+                          <span className="text-xs font-bold uppercase tracking-wider text-white/80">
+                            Drugie nazwy użytkownika:
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsHistoryModalOpen(false);
+                            }}
+                            className="text-white/40 hover:text-white transition-colors cursor-pointer"
+                          >
+                            <FaXmark size={14} />
+                          </button>
+                        </div>
+
+                        {historyList.length === 0 ? (
+                          <p className="text-xs text-white/60 py-2">
+                            Ten użytkownik nie posiadał innych nazw.
+                          </p>
+                        ) : (
+                          <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                            {historyList.map((item, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-white/5 border border-white/10"
+                              >
+                                <span className="font-sans font-bold text-white">
+                                  {item.nickname}
+                                </span>
+                                <span className="font-mono text-[10px] text-white/50">
+                                  {new Date(item.changedAt).toLocaleDateString("pl-PL")}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Edit Nickname Button */}
                   <button
                     onClick={handleOpenEditNickModal}
                     title="Zmień Nick (raz na 30 dni)"
-                    className="p-2 px-3 rounded-xl bg-white/10 hover:bg-brand-amethyst text-white/80 hover:text-white transition-all cursor-pointer border border-white/15 flex items-center gap-1.5 text-xs font-bold font-sans"
+                    className="p-1.5 px-3 rounded-xl bg-white/10 hover:bg-brand-amethyst text-white/80 hover:text-white transition-all cursor-pointer border border-white/15 flex items-center gap-1.5 text-xs font-bold font-sans"
                   >
                     <FaPenToSquare size={13} className="text-amber-400" />
                     <span>Zmień Nick</span>
-                  </button>
-
-                  {/* Previous Nicknames Modal Toggle Button */}
-                  <button
-                    onClick={() => setIsHistoryModalOpen(true)}
-                    className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 text-white/70 hover:text-white transition-all cursor-pointer flex items-center gap-2 text-xs font-mono"
-                  >
-                    <FaClockRotateLeft size={13} className="text-purple-400" />
-                    <span>Poprzednie nicki ({historyList.length})</span>
                   </button>
                 </div>
 
@@ -244,74 +310,10 @@ export default function AccountPage() {
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-sans font-bold uppercase tracking-wider transition-all cursor-pointer self-stretch md:self-auto justify-center"
             >
               <FaRightFromBracket size={14} />
-              {t("auth.logout")}
+              <span>{t("auth.logout")}</span>
             </button>
           </div>
         </div>
-
-        {/* Modal 1: Previous Nicknames History */}
-        {isHistoryModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fade-in font-sans">
-            <div className="relative w-full max-w-md bg-brand-black border border-brand-amethyst/50 rounded-3xl p-6 shadow-2xl text-white">
-              <button
-                onClick={() => setIsHistoryModalOpen(false)}
-                className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-              >
-                <FaXmark size={18} />
-              </button>
-
-              <div className="flex items-center gap-3 mb-5">
-                <div className="p-3 rounded-2xl bg-purple-500/20 border border-purple-500/40 text-purple-300">
-                  <FaClockRotateLeft size={20} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold uppercase tracking-wider text-white">
-                    Historia Nicków Użytkownika
-                  </h3>
-                  <p className="text-xs text-white/60">
-                    Wszystkie poprzednie pseudonimy konta
-                  </p>
-                </div>
-              </div>
-
-              {historyList.length === 0 ? (
-                <div className="py-8 text-center border border-dashed border-white/15 rounded-2xl bg-white/[0.02]">
-                  <p className="text-xs font-mono text-white/50">
-                    Brak poprzednich nicków (Twój obecny nick <strong>{user.name}</strong> jest pierwszy).
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
-                  {historyList.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-amethyst/40 transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="size-2 rounded-full bg-amber-400" />
-                        <span className="font-sans font-bold text-sm text-white">
-                          {item.nickname}
-                        </span>
-                      </div>
-                      <span className="font-mono text-xs text-white/50 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
-                        {new Date(item.changedAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="mt-6 pt-4 border-t border-white/10 flex justify-end">
-                <button
-                  onClick={() => setIsHistoryModalOpen(false)}
-                  className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold uppercase tracking-wider text-white transition-all cursor-pointer"
-                >
-                  Zamknij
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Modal 2: Edit Nickname */}
         {isEditNickModalOpen && (

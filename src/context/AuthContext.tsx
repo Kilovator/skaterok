@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  db,
   User,
   SavedBuild,
   Order,
@@ -34,7 +33,7 @@ type AuthContextType = {
   register: (name: string, email: string, pass: string, avatar?: string) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (email: string, newPass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  updateAvatar: (avatarUrl: string) => void;
+  updateAvatar: (avatarUrl: string) => Promise<void>;
   updateNickname: (newNickname: string) => Promise<{ success: boolean; error?: string; daysRemaining?: number }>;
   saveBuild: (build: {
     name?: string;
@@ -43,8 +42,8 @@ type AuthContextType = {
     truck: MetalItem;
     bolt: MetalItem;
     price?: number;
-  }) => SavedBuild | null;
-  deleteBuild: (id: string) => void;
+  }) => Promise<SavedBuild | null>;
+  deleteBuild: (id: string) => Promise<void>;
   placeOrder: (orderData: {
     items: CartItem[];
     subtotal: number;
@@ -54,8 +53,8 @@ type AuthContextType = {
     shippingDetails: ShippingDetails;
     paymentMethod: PaymentMethod;
     paymentInfo?: string;
-  }) => Order;
-  refreshUserData: () => void;
+  }) => Promise<Order | null>;
+  refreshUserData: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -69,51 +68,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [savedBuilds, setSavedBuilds] = useState<SavedBuild[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Restore session on mount & auto-sync with Neon DB cloud
+  // Fetch session & user data from Neon DB PostgreSQL on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedEmail = localStorage.getItem(CURRENT_USER_SESSION_KEY);
       if (storedEmail) {
-        const found = db.getUserByEmail(storedEmail);
-        if (found) {
-          setUser(found);
-          setSavedBuilds(db.getSavedBuilds(found.id));
-          setOrders(db.getUserOrders(found.id));
-        }
-      }
-
-      // Sync local users & database records to Neon DB PostgreSQL in background
-      try {
-        const rawDb = localStorage.getItem("sket_ok_database_v1");
-        const parsed = rawDb ? JSON.parse(rawDb) : null;
-        if (parsed) {
-          fetch("/api/auth/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(parsed),
+        fetch(`/api/auth/user?email=${encodeURIComponent(storedEmail)}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.user) {
+              setUser(data.user);
+              setSavedBuilds(data.savedBuilds || []);
+              setOrders(data.orders || []);
+            }
           })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data.success) {
-                console.log("Neon DB cloud sync completed:", data.count, "users stored in Neon DB.");
-              }
-            })
-            .catch((e) => console.error("Neon DB sync error:", e));
-        }
-      } catch (e) {
-        console.error("Local sync error:", e);
+          .catch((e) => console.error("Neon DB user restore error:", e));
       }
     }
   }, []);
 
-  const refreshUserData = () => {
-    if (user) {
-      const updated = db.getUserByEmail(user.email);
-      if (updated) {
-        setUser({ ...updated });
+  const refreshUserData = async () => {
+    if (user?.email) {
+      try {
+        const res = await fetch(`/api/auth/user?email=${encodeURIComponent(user.email)}`);
+        const data = await res.json();
+        if (data.success && data.user) {
+          setUser(data.user);
+          setSavedBuilds(data.savedBuilds || []);
+          setOrders(data.orders || []);
+        }
+      } catch (e) {
+        console.error("Neon DB refresh error:", e);
       }
-      setSavedBuilds(db.getSavedBuilds(user.id));
-      setOrders(db.getUserOrders(user.id));
     }
   };
 
@@ -127,110 +113,116 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, pass: string) => {
-    const verified = db.verifyUser(email, pass);
-    if (!verified) {
-      return { success: false, error: "Nieprawidłowy e-mail lub hasło." };
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: pass }),
+      });
+      const data = await res.json();
+      if (!data.success || !data.user) {
+        return { success: false, error: data.error || "Nieprawidłowy e-mail lub hasło." };
+      }
+
+      setUser(data.user);
+      localStorage.setItem(CURRENT_USER_SESSION_KEY, data.user.email);
+      setIsAuthModalOpen(false);
+
+      // Fetch user builds and orders from Neon DB
+      refreshUserData();
+
+      return { success: true };
+    } catch (e: unknown) {
+      const err = e as Error;
+      return { success: false, error: err.message || "Błąd połączenia z bazą Neon DB." };
     }
-    setUser(verified);
-    localStorage.setItem(CURRENT_USER_SESSION_KEY, verified.email);
-    setSavedBuilds(db.getSavedBuilds(verified.id));
-    setOrders(db.getUserOrders(verified.id));
-    setIsAuthModalOpen(false);
-
-    // Sync to Neon DB PostgreSQL
-    fetch("/api/auth/sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ users: [verified] }),
-    }).catch(console.error);
-
-    return { success: true };
   };
 
   const register = async (name: string, email: string, pass: string, avatar?: string) => {
-    const existing = db.getUserByEmail(email);
-    if (existing) {
-      return { success: false, error: "Użytkownik o tym e-mailu już istnieje." };
-    }
-    const newUser = db.createUser(name, email, pass, avatar);
-    setUser(newUser);
-    localStorage.setItem(CURRENT_USER_SESSION_KEY, newUser.email);
-    setSavedBuilds(db.getSavedBuilds(newUser.id));
-    setOrders(db.getUserOrders(newUser.id));
-    setIsAuthModalOpen(false);
-
-    // Register & persist in Neon DB PostgreSQL
     try {
-      await fetch("/api/auth/register", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password: pass, avatar }),
       });
-    } catch (e) {
-      console.error("Neon DB register sync error:", e);
-    }
+      const data = await res.json();
 
-    return { success: true };
+      if (!data.success || !data.user) {
+        return { success: false, error: data.error || "Nie udało się utworzyć konta w Neon DB." };
+      }
+
+      setUser(data.user);
+      localStorage.setItem(CURRENT_USER_SESSION_KEY, data.user.email);
+      setSavedBuilds([]);
+      setOrders([]);
+      setIsAuthModalOpen(false);
+
+      return { success: true };
+    } catch (e: unknown) {
+      const err = e as Error;
+      return { success: false, error: err.message || "Błąd rejestracji w bazie Neon DB." };
+    }
   };
 
   const resetPassword = async (email: string, newPass: string) => {
-    const updated = db.updateUserPassword(email, newPass);
-    if (!updated) {
-      return { success: false, error: "Nie znaleziono konta z tym adresem e-mail." };
-    }
-
-    // Sync to Neon DB PostgreSQL
-    fetch("/api/auth/sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ users: db.getUserByEmail(email) ? [db.getUserByEmail(email)] : [] }),
-    }).catch(console.error);
-
-    return { success: true };
-  };
-
-  const updateAvatar = (avatarUrl: string) => {
-    if (!user) return;
-    const updated = db.updateUserAvatar(user.id, avatarUrl);
-    if (updated) {
-      setUser({ ...updated });
-      fetch("/api/auth/sync", {
+    try {
+      const res = await fetch("/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ users: [updated] }),
-      }).catch(console.error);
+        body: JSON.stringify({
+          users: [{ email, passwordHash: newPass }],
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        return { success: false, error: "Nie znaleziono konta w bazie Neon DB." };
+      }
+      return { success: true };
+    } catch (e: unknown) {
+      const err = e as Error;
+      return { success: false, error: err.message };
+    }
+  };
+
+  const updateAvatar = async (avatarUrl: string) => {
+    if (!user) return;
+    try {
+      const res = await fetch("/api/auth/update-avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, avatarUrl }),
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        setUser(data.user);
+      }
+    } catch (e) {
+      console.error("Neon DB avatar update error:", e);
     }
   };
 
   const updateNickname = async (newNickname: string) => {
     if (!user) return { success: false, error: "Nie jesteś zalogowany." };
 
-    // Update in local DB & trigger 30-day cooldown check
-    const res = db.updateUserNickname(user.id, newNickname);
-    if (!res.success) {
-      return res;
-    }
-
-    if (res.user) {
-      setUser({ ...res.user });
-    }
-
-    // Persist to Neon DB PostgreSQL via API
     try {
-      const apiRes = await fetch("/api/auth/update-nickname", {
+      const res = await fetch("/api/auth/update-nickname", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, newNickname }),
       });
-      const data = await apiRes.json();
-      if (data.success && data.user) {
-        setUser({ ...data.user });
+      const data = await res.json();
+      if (!data.success) {
+        return { success: false, error: data.error, daysRemaining: data.daysRemaining };
       }
-    } catch (e) {
-      console.error("Neon DB nickname sync error:", e);
-    }
 
-    return res;
+      if (data.user) {
+        setUser(data.user);
+      }
+      return { success: true };
+    } catch (e: unknown) {
+      const err = e as Error;
+      return { success: false, error: err.message || "Błąd aktualizacji nicku w Neon DB." };
+    }
   };
 
   const logout = () => {
@@ -240,7 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(CURRENT_USER_SESSION_KEY);
   };
 
-  const saveBuild = (build: {
+  const saveBuild = async (build: {
     name?: string;
     deck: DeckItem;
     wheels: WheelItem;
@@ -252,26 +244,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       openAuthModal("login");
       return null;
     }
-    const saved = db.addSavedBuild(user.id, build);
-    setSavedBuilds(db.getSavedBuilds(user.id));
 
-    // Sync saved build to Neon DB
-    fetch("/api/auth/sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ savedBuilds: [saved] }),
-    }).catch(console.error);
-
-    return saved;
+    try {
+      const res = await fetch("/api/builds", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "add", userId: user.id, build }),
+      });
+      const data = await res.json();
+      if (data.success && data.build) {
+        setSavedBuilds((prev) => [data.build, ...prev]);
+        return data.build;
+      }
+    } catch (e) {
+      console.error("Neon DB save build error:", e);
+    }
+    return null;
   };
 
-  const deleteBuild = (buildId: string) => {
+  const deleteBuild = async (buildId: string) => {
     if (!user) return;
-    db.deleteSavedBuild(user.id, buildId);
-    setSavedBuilds(db.getSavedBuilds(user.id));
+    setSavedBuilds((prev) => prev.filter((b) => b.id !== buildId));
+    try {
+      await fetch("/api/builds", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", userId: user.id, buildId }),
+      });
+    } catch (e) {
+      console.error("Neon DB delete build error:", e);
+    }
   };
 
-  const placeOrder = (orderData: {
+  const placeOrder = async (orderData: {
     items: CartItem[];
     subtotal: number;
     shippingFee: number;
@@ -282,19 +287,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     paymentInfo?: string;
   }) => {
     const userId = user ? user.id : "guest_order";
-    const newOrder = db.createOrder(userId, orderData);
-    if (user) {
-      setOrders(db.getUserOrders(user.id));
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, orderData }),
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        if (user) {
+          setOrders((prev) => [data.order, ...prev]);
+        }
+        return data.order;
+      }
+    } catch (e) {
+      console.error("Neon DB place order error:", e);
     }
-
-    // Sync order to Neon DB
-    fetch("/api/auth/sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orders: [newOrder] }),
-    }).catch(console.error);
-
-    return newOrder;
+    return null;
   };
 
   return (
