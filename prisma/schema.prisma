@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String       @id @default(uuid())
+  name                   String
+  email                  String       @unique
+  passwordHash           String       @map("password_hash")
+  avatar                 String?
+  createdAt              DateTime     @default(now()) @map("created_at")
+  lastNicknameChangeDate DateTime?    @map("last_nickname_change_date")
+  nicknameHistory        Json?        @default("[]") @map("nickname_history")
+  savedBuilds            SavedBuild[]
+  orders                 Order[]
+
+  @@map("users")
+}
+
+model SavedBuild {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  deck      Json
+  wheels    Json
+  truck     Json
+  bolt      Json
+  price     Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("saved_builds")
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date            DateTime @default(now())
+  items           Json
+  subtotal        Int
+  shippingFee     Int      @map("shipping_fee")
+  total           Int
+  shippingMethod  String   @map("shipping_method")
+  shippingDetails Json     @map("shipping_details")
+  paymentMethod   String   @map("payment_method")
+  paymentInfo     String?  @map("payment_info")
+  status          String   @default("Processing")
+
+  @@map("orders")
+}
