@@ -153,6 +153,12 @@ export default function AccountPage() {
       },
       dominantColor: "#7B72B5",
       customizerLink: `/build?deck=${build.deck.uid}&wheel=${build.wheels.uid}&truck=${build.truck.uid}&bolt=${build.bolt.uid}`,
+      buildDetails: {
+        deck: build.deck,
+        wheels: build.wheels,
+        truck: build.truck,
+        bolt: build.bolt,
+      },
     });
 
     setAddedBuildId(build.id);

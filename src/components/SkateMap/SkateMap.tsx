@@ -77,11 +77,11 @@ export function SkateMap() {
   const [newReviewAuthor, setNewReviewAuthor] = useState("");
   const [newReviewEmoji, setNewReviewEmoji] = useState("🔥");
 
-  // Live 1-second ticker for real-time UTC countdown
-  const [, setTicker] = useState(0);
+  // Live 1-second ticker for real-time UTC countdown & auto-expiration
+  const [nowTimestamp, setNowTimestamp] = useState(Date.now());
   useEffect(() => {
     const timer = setInterval(() => {
-      setTicker((t) => t + 1);
+      setNowTimestamp(Date.now());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
@@ -346,12 +346,10 @@ export function SkateMap() {
   }, [activeMode, isAdmin]);
 
   // Filter spots into Active vs Archived
-  const now = Date.now();
-
   const isSpotExpired = useCallback((spot: SkateSpot) => {
     if (!spot.expiresAt) return false;
-    return now >= spot.expiresAt;
-  }, [now]);
+    return nowTimestamp >= spot.expiresAt;
+  }, [nowTimestamp]);
 
   // Unique list of cities from spots
   const availableCities = useMemo(() => {
@@ -592,7 +590,7 @@ export function SkateMap() {
   // Format remaining time for temporary events tied to global UTC clock
   function formatRemainingTime(expiresAt?: number) {
     if (!expiresAt) return null;
-    const diff = expiresAt - Date.now();
+    const diff = expiresAt - nowTimestamp;
     if (diff <= 0) return "Wydarzenie zakończone (W archiwum)";
     const hours = Math.floor(diff / (1000 * 3600));
     const mins = Math.floor((diff % (1000 * 3600)) / (1000 * 60));

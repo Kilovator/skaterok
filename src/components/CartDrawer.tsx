@@ -132,58 +132,157 @@ export function CartDrawer() {
                 </p>
               </div>
             ) : (
-              <ul className="flex flex-col gap-2">
-                {items.map((item) => (
-                  <li
-                    key={item.id}
-                    className={removingIds.has(item.id) ? "cart-item-removing" : ""}
-                  >
-                    <div className="flex items-center gap-3 border border-brand-deep/50 bg-white/[0.04] p-3">
-                      {/* Dominant-color accent stripe */}
-                      <div
-                        className="w-[3px] self-stretch shrink-0 rounded-full"
-                        style={{ backgroundColor: item.dominantColor }}
-                      />
+              <ul className="flex flex-col gap-3">
+                {items.map((item) => {
+                  const isCustomBuild = !!item.buildDetails;
 
-                      {/* Product image - Circular Swatch Style matching Photo 2 */}
-                      <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-zinc-900 border border-white/20 shadow-md flex items-center justify-center">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={item.image.src}
-                          alt={item.image.alt}
-                          className="pointer-events-none absolute inset-0 h-full w-full object-cover scale-[1.65] translate-x-[34%] translate-y-[5%] object-center"
-                        />
-                      </div>
+                  return (
+                    <li
+                      key={item.id}
+                      className={removingIds.has(item.id) ? "cart-item-removing" : ""}
+                    >
+                      {isCustomBuild && item.buildDetails ? (
+                        /* ── Custom Build Card (Ultra-Sleek Single Card with Square Photo & 2x2 Parts Grid) ── */
+                        <div className="flex flex-col gap-3 border border-brand-amethyst/40 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-3.5 rounded-2xl relative shadow-xl backdrop-blur-xl hover:border-brand-amethyst/70 transition-all">
+                          {/* Header row: Deck Square Photo, Title, Price & Delete */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex gap-3 min-w-0 items-center">
+                              {/* Main Square Photo Frame for Custom Deck */}
+                              <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-zinc-950 border border-brand-amethyst/50 shadow-lg flex items-center justify-center">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={item.buildDetails.deck.textureUrl || item.image.src}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover object-[80%_center] scale-110"
+                                />
+                              </div>
 
-                      {/* Product info */}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-sans text-xs font-bold uppercase tracking-wider text-white">
-                          {item.name}
-                        </p>
-                        <p className="mt-0.5 font-sans text-sm text-brand-amethyst">
-                          ${(item.price / 100).toFixed(2)}
-                        </p>
-                        {item.quantity > 1 && (
-                          <p className="mt-0.5 font-sans text-xs text-white/35">
-                            {t("cart.qty")}: {item.quantity}
-                          </p>
-                        )}
-                      </div>
+                              <div className="min-w-0 flex-1">
+                                <span className="inline-block px-2 py-0.5 rounded-md text-[9px] font-sans font-bold uppercase tracking-widest bg-brand-amethyst/30 text-purple-300 border border-brand-amethyst/40 mb-1">
+                                  Custom Setup
+                                </span>
+                                <h4 className="truncate font-sans text-xs font-bold uppercase tracking-wider text-white">
+                                  {item.name}
+                                </h4>
+                                <p className="mt-0.5 font-mono text-sm font-bold text-brand-amethyst">
+                                  ${(item.price / 100).toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
 
-                      {/* Remove button */}
-                      <button
-                        onClick={() => handleRemove(item.id)}
-                        aria-label={t("cart.remove").replace("{name}", item.name)}
-                        className="group/del shrink-0 p-1 text-brand-deep transition-colors hover:text-red-500"
-                      >
-                        <FaTrash
-                          size={13}
-                          className="transition-transform duration-150 group-hover/del:scale-110"
-                        />
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                            <button
+                              onClick={() => handleRemove(item.id)}
+                              aria-label={t("cart.remove").replace("{name}", item.name)}
+                              className="group/del shrink-0 p-1.5 text-white/40 transition-colors hover:text-red-400 hover:bg-rose-500/10 rounded-lg cursor-pointer"
+                            >
+                              <FaTrash
+                                size={13}
+                                className="transition-transform duration-150 group-hover/del:scale-110"
+                              />
+                            </button>
+                          </div>
+
+                          {/* Component Breakdown (Clean 2x2 Grid of Square Photo Chips) */}
+                          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-[11px] font-sans">
+                            {/* 1. Deck */}
+                            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-black/40 border border-white/10">
+                              <div className="size-6 rounded-lg overflow-hidden bg-zinc-900 border border-white/20 shrink-0 flex items-center justify-center">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={item.buildDetails.deck.textureUrl || item.image.src} alt="Deck" className="w-full h-full object-cover object-[80%_center]" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[9px] text-white/40 block font-mono leading-tight uppercase">Deska</span>
+                                <span className="font-bold text-white truncate block text-[10px]">{item.buildDetails.deck.uid.replace(/-/g, " ")}</span>
+                              </div>
+                            </div>
+
+                            {/* 2. Wheels */}
+                            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-black/40 border border-white/10">
+                              <div className="size-6 rounded-lg overflow-hidden bg-zinc-900 border border-white/20 shrink-0 flex items-center justify-center">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={item.buildDetails.wheels.textureUrl || "/skateboard/SkateWheel1.png"} alt="Wheels" className="w-full h-full object-cover" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[9px] text-white/40 block font-mono leading-tight uppercase">Kółka</span>
+                                <span className="font-bold text-white truncate block text-[10px]">{item.buildDetails.wheels.uid.replace(/-/g, " ")}</span>
+                              </div>
+                            </div>
+
+                            {/* 3. Trucks */}
+                            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-black/40 border border-white/10">
+                              <div
+                                className="size-6 rounded-lg border border-white/30 shrink-0 shadow-inner"
+                                style={{ backgroundColor: item.buildDetails.truck.color }}
+                              />
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[9px] text-white/40 block font-mono leading-tight uppercase">Traki</span>
+                                <span className="font-bold text-white truncate block text-[10px]">{item.buildDetails.truck.uid}</span>
+                              </div>
+                            </div>
+
+                            {/* 4. Bolts */}
+                            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-black/40 border border-white/10">
+                              <div
+                                className="size-6 rounded-full border border-white/30 shrink-0 shadow-inner"
+                                style={{ backgroundColor: item.buildDetails.bolt.color }}
+                              />
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[9px] text-white/40 block font-mono leading-tight uppercase">Śruby</span>
+                                <span className="font-bold text-white truncate block text-[10px]">{item.buildDetails.bolt.uid}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        /* ── Standard Product Card (Square Frame Photo) ── */
+                        <div className="flex items-center gap-3 border border-brand-deep/50 bg-white/[0.04] p-3 rounded-2xl hover:border-white/20 transition-all">
+                          {/* Dominant-color accent stripe */}
+                          <div
+                            className="w-[3px] self-stretch shrink-0 rounded-full"
+                            style={{ backgroundColor: item.dominantColor }}
+                          />
+
+                          {/* Product image - Square Frame Style */}
+                          <div className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-zinc-950 border border-white/20 shadow-md flex items-center justify-center">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={item.image.src}
+                              alt={item.image.alt}
+                              className="pointer-events-none w-full h-full object-cover"
+                            />
+                          </div>
+
+                          {/* Product info */}
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-sans text-xs font-bold uppercase tracking-wider text-white">
+                              {item.name}
+                            </p>
+                            <p className="mt-1 font-mono text-sm font-bold text-brand-amethyst">
+                              ${(item.price / 100).toFixed(2)}
+                            </p>
+                            {item.quantity > 1 && (
+                              <p className="mt-0.5 font-mono text-xs text-white/40">
+                                {t("cart.qty")}: {item.quantity}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Remove button */}
+                          <button
+                            onClick={() => handleRemove(item.id)}
+                            aria-label={t("cart.remove").replace("{name}", item.name)}
+                            className="group/del shrink-0 p-1.5 text-white/40 transition-colors hover:text-red-400 cursor-pointer"
+                          >
+                            <FaTrash
+                              size={13}
+                              className="transition-transform duration-150 group-hover/del:scale-110"
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

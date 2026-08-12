@@ -29,6 +29,12 @@ export function FloatingCartButtons() {
       },
       dominantColor: "#7B72B5",
       customizerLink: "/build",
+      buildDetails: {
+        deck: selectedDeck,
+        wheels: selectedWheel,
+        truck: selectedTruck,
+        bolt: selectedBolt,
+      },
     };
 
     addItem(customBoardProduct);
@@ -58,46 +64,49 @@ export function FloatingCartButtons() {
   }
 
   return (
-    <div className="absolute bottom-3 inset-x-3 lg:inset-x-auto lg:bottom-6 lg:right-6 z-30 flex flex-col gap-2.5 lg:gap-3 w-auto lg:w-72 p-3 lg:p-4 rounded-2xl lg:rounded-3xl bg-brand-black/90 lg:bg-brand-black/85 backdrop-blur-2xl border border-brand-amethyst/35 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(123,114,181,0.25)] transition-all">
+    <div className="absolute top-2 inset-x-2 lg:top-auto lg:bottom-6 lg:right-6 lg:inset-x-auto z-30 flex flex-row lg:flex-col items-center lg:items-stretch justify-between gap-2 lg:gap-3 w-auto lg:w-72 p-2 lg:p-4 rounded-2xl lg:rounded-3xl bg-brand-black/95 lg:bg-brand-black/85 backdrop-blur-2xl border border-brand-amethyst/35 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(123,114,181,0.25)] transition-all">
       
       {/* Integrated Header Row with Price */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 lg:justify-between lg:border-b lg:border-white/10 lg:pb-2.5 shrink-0">
+        <div className="flex items-center gap-1.5">
           <div className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-sans text-xs font-bold uppercase tracking-wider text-white/90">
-            SKET-OK CUSTOM
+          <span className="font-sans text-[10px] lg:text-xs font-bold uppercase tracking-wider text-white/90">
+            SKET-OK
           </span>
         </div>
-        <span className="font-mono text-sm font-bold text-brand-pale">
+        <span className="font-mono text-xs lg:text-sm font-bold text-brand-pale">
           $89.99
         </span>
       </div>
 
       {/* Toast alert for build saved */}
       {saveSuccess && (
-        <div className="p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-sans text-xs flex items-center justify-center gap-2 animate-fade-in backdrop-blur-md">
-          <FaCheck className="size-4 shrink-0 text-emerald-400" />
+        <div className="p-1.5 lg:p-2 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-sans text-[11px] lg:text-xs flex items-center justify-center gap-2 animate-fade-in backdrop-blur-md">
+          <FaCheck className="size-3.5 shrink-0 text-emerald-400" />
           <span>{t("build.savedSuccess")}</span>
         </div>
       )}
 
-      {/* Add to Cart button */}
-      <button
-        onClick={handleAddToCart}
-        className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-amethyst to-purple-600 hover:from-purple-600 hover:to-brand-amethyst border border-brand-amethyst/60 font-sans text-xs font-bold uppercase tracking-wider text-white transition-all flex items-center justify-center gap-2.5 shadow-md shadow-purple-950/30 hover:scale-[1.02] cursor-pointer"
-      >
-        <FaCartPlus size={16} className="text-white shrink-0" />
-        <span>{t("build.addToCart")}</span>
-      </button>
+      <div className="flex items-center gap-1.5 lg:flex-col lg:w-full shrink-0">
+        {/* Add to Cart button */}
+        <button
+          onClick={handleAddToCart}
+          className="py-1.5 px-3 lg:py-3 lg:px-4 lg:w-full rounded-xl bg-gradient-to-r from-brand-amethyst to-purple-600 hover:from-purple-600 hover:to-brand-amethyst border border-brand-amethyst/60 font-sans text-[11px] lg:text-xs font-bold uppercase tracking-wider text-white transition-all flex items-center justify-center gap-1.5 lg:gap-2.5 shadow-md shadow-purple-950/30 hover:scale-[1.02] cursor-pointer whitespace-nowrap"
+        >
+          <FaCartPlus size={14} className="text-white shrink-0" />
+          <span>{t("build.addToCart")}</span>
+        </button>
 
-      {/* Save setup button */}
-      <button
-        onClick={handleSaveBuild}
-        className="w-full py-2.5 px-4 rounded-xl border border-white/20 bg-white/5 hover:bg-white/15 text-white font-sans text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
-      >
-        <FaBookmark size={13} className="text-brand-amethyst shrink-0" />
-        <span>{t("build.saveBuild")}</span>
-      </button>
+        {/* Save setup button */}
+        <button
+          onClick={handleSaveBuild}
+          title={t("build.saveBuild")}
+          className="py-1.5 px-2.5 lg:py-2.5 lg:px-4 lg:w-full rounded-xl border border-white/20 bg-white/5 hover:bg-white/15 text-white font-sans text-[11px] lg:text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.01] whitespace-nowrap"
+        >
+          <FaBookmark size={12} className="text-brand-amethyst shrink-0" />
+          <span className="hidden lg:inline">{t("build.saveBuild")}</span>
+        </button>
+      </div>
     </div>
   );
 }

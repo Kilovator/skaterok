@@ -20,12 +20,26 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="header absolute left-0 right-0 top-0 z-50 px-2.5 sm:px-4 py-2.5 lg:py-6 text-white max-w-full overflow-hidden">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-1.5 sm:gap-4">
+    <header className="header absolute left-0 right-0 top-0 z-50 px-3 sm:px-6 py-3 lg:py-6 text-white max-w-full overflow-x-clip">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between relative">
         
-        {/* Left: Logo */}
-        <Link href="/" className="shrink-0 max-w-[110px] sm:max-w-none">
-          <Logo className="text-brand-amethyst h-6 sm:h-8 lg:h-12 w-auto" />
+        {/* Mobile Left: Hamburger Menu Button */}
+        <div className="flex items-center lg:hidden z-10">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all cursor-pointer shrink-0 shadow-md"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <FaXmark size={18} /> : <FaBars size={18} />}
+          </button>
+        </div>
+
+        {/* Center Logo on Mobile / Left Logo on Desktop */}
+        <Link 
+          href="/" 
+          className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 shrink-0 z-10 transition-transform hover:scale-105"
+        >
+          <Logo className="text-brand-amethyst h-7 sm:h-8 lg:h-12 w-auto" />
         </Link>
 
         {/* Center: Desktop Navigation */}
@@ -44,9 +58,10 @@ export function Header() {
           </ul>
         </nav>
 
-        {/* Right: Controls, Account & Mobile Menu Toggle */}
-        <div className="flex items-center justify-end gap-1.5 sm:gap-3 lg:gap-5 shrink-0">
-          <div className="scale-80 sm:scale-100 origin-right shrink-0">
+        {/* Right: Account & Cart Button */}
+        <div className="flex items-center justify-end gap-2 sm:gap-3 lg:gap-5 shrink-0 z-10">
+          {/* Language Switcher (Desktop Only) */}
+          <div className="hidden lg:block shrink-0">
             <LanguageSwitcher />
           </div>
 
@@ -54,7 +69,7 @@ export function Header() {
           {isLoggedIn && user ? (
             <Link
               href="/account"
-              className="flex items-center gap-1.5 sm:gap-2.5 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-brand-amethyst/25 hover:bg-brand-amethyst/40 border border-brand-amethyst/50 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all shadow-md hover:scale-105 shrink-0 whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-brand-amethyst/25 hover:bg-brand-amethyst/40 border border-brand-amethyst/50 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all shadow-md hover:scale-105 shrink-0 whitespace-nowrap"
               title={t("nav.account")}
             >
               <div className="size-5 sm:size-6 md:size-7 rounded-full bg-brand-amethyst text-white flex items-center justify-center text-[10px] sm:text-xs font-mono shrink-0 shadow-inner overflow-hidden border border-white/20">
@@ -79,7 +94,7 @@ export function Header() {
           ) : (
             <button
               onClick={() => openAuthModal("login")}
-              className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
             >
               <FaRightToBracket size={12} className="text-brand-amethyst shrink-0 sm:text-[14px]" />
               <span className="hidden sm:inline">{t("nav.login")}</span>
@@ -87,23 +102,19 @@ export function Header() {
           )}
 
           {!isMapPage && <CartButton />}
-
-          {/* Mobile Hamburger Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 sm:p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-all cursor-pointer shrink-0"
-            aria-label="Toggle Navigation Menu"
-          >
-            {mobileMenuOpen ? <FaXmark size={18} /> : <FaBars size={18} />}
-          </button>
         </div>
       </div>
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-14 sm:top-16 z-40 bg-brand-black/95 backdrop-blur-2xl border-b border-brand-amethyst/30 p-5 shadow-2xl shadow-purple-950/50 animate-fade-in max-w-full overflow-hidden">
-          <nav aria-label="Mobile Main">
-            <ul className="flex flex-col gap-3 text-center">
+        <div className="lg:hidden fixed inset-x-0 top-14 sm:top-16 z-40 bg-brand-black/95 backdrop-blur-2xl border-b border-brand-amethyst/30 p-5 shadow-2xl shadow-purple-950/50 animate-fade-in max-w-full overflow-hidden flex flex-col items-center gap-4">
+          {/* Language Switcher moved into mobile menu */}
+          <div className="pb-2 border-b border-white/10 w-full flex justify-center">
+            <LanguageSwitcher />
+          </div>
+
+          <nav aria-label="Mobile Main" className="w-full">
+            <ul className="flex flex-col gap-2.5 text-center w-full">
               {siteSettings.navigation.map((item) => (
                 <li key={item.labelKey}>
                   <Link

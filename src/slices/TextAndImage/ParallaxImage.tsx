@@ -87,11 +87,9 @@ export function ParallaxImage({
     return () => clearTimeout(timeoutId);
   }, [useGifs, getNextGif]);
 
-  // Parallax mouse effect
+  // Parallax effect: mouse movement on desktop + scroll position on mobile
   useEffect(() => {
     let frameId: number;
-    window.addEventListener("mousemove", onMouseMove);
-    frameId = requestAnimationFrame(animationFrame);
 
     function onMouseMove(event: MouseEvent) {
       const { innerWidth, innerHeight } = window;
@@ -99,6 +97,20 @@ export function ParallaxImage({
       const yPercent = (event.clientY / innerHeight - 0.5) * 2;
       targetPosition.current = { x: xPercent * -20, y: yPercent * -20 };
     }
+
+    function onScroll() {
+      if (!backgroundRef.current) return;
+      const rect = backgroundRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      // Calculate position relative to viewport center (-1 to 1)
+      const scrollProgress = (rect.top + rect.height / 2 - viewportHeight / 2) / viewportHeight;
+      const scrollYOffset = Math.max(-25, Math.min(25, scrollProgress * -30));
+      targetPosition.current = { x: targetPosition.current.x, y: scrollYOffset };
+    }
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    frameId = requestAnimationFrame(animationFrame);
 
     function animationFrame() {
       const { x: targetX, y: targetY } = targetPosition.current;
@@ -121,12 +133,13 @@ export function ParallaxImage({
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(frameId);
     };
   }, []);
 
   const imgClassName = clsx(
-    "h-full max-h-[600px] w-auto drop-shadow-[0_20px_20px_rgba(0,0,0,0.5)] transition-all duration-500 ease-out group-hover:-translate-y-2",
+    "h-full max-h-[600px] w-auto drop-shadow-[0_20px_20px_rgba(0,0,0,0.5)] transition-all duration-500 ease-out group-hover:-translate-y-2 pointer-events-none select-none",
     id === "tai-2"
       ? "scale-[1.1] md:scale-[1.15] origin-bottom group-hover:scale-[1.2]"
       : id === "tai-3"
@@ -137,7 +150,7 @@ export function ParallaxImage({
   return (
     <div
       className={clsx(
-        "grid grid-cols-1 place-items-center group relative rounded-3xl p-8 bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all duration-500",
+        "grid grid-cols-1 place-items-center group relative rounded-3xl p-8 bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all duration-500 pointer-events-none select-none",
         className
       )}
     >

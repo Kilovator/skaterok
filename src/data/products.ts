@@ -10,6 +10,13 @@ export type CategoryBlock = {
   dominantColor: string;
 };
 
+export type CustomBuildDetails = {
+  deck: { uid: string; textureUrl: string; name?: string };
+  wheels: { uid: string; textureUrl: string; name?: string };
+  truck: { uid: string; color: string; name?: string };
+  bolt: { uid: string; color: string; name?: string };
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -28,6 +35,7 @@ export type Product = {
   images?: string[]; // Array of gallery photos for swiping
   customizerLink?: string;
   dominantColor?: string;
+  buildDetails?: CustomBuildDetails;
 };
 
 // 3 Main Electric Categories displayed on home page

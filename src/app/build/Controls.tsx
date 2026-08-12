@@ -222,8 +222,14 @@ function UploadCustomDeckButton({ onUpload, selected }: { onUpload: (url: string
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      onUpload(url);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Url = event.target?.result as string;
+        if (base64Url) {
+          onUpload(base64Url);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 

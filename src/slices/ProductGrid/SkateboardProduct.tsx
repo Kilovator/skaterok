@@ -52,11 +52,11 @@ export function SkateboardProduct({ category }: Props) {
         {category.name}
       </h3>
 
-      {/* Hover Overlay: ONLY ONE BUTTON "PRZEJDŹ DO TOWARÓW" -> High z-index, no backdrop blur */}
-      <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-4 bg-black/70 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      {/* Smooth Light-Grey Blended Radial Vignette Overlay (Shadow centered perfectly under button) */}
+      <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-4 rounded-3xl opacity-0 transition-all duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_20%,_rgba(30,25,50,0.45)_0%,_rgba(110,110,130,0.25)_45%,_rgba(220,220,230,0.40)_100%)]">
         <Link
           href={`/sklep?cat=${category.id}`}
-          className="button-cutout group/btn mx-2 inline-flex items-center justify-center gap-2 bg-gradient-to-b from-brand-amethyst to-purple-700 from-25% to-75% bg-[length:100%_400%] px-5 py-3.5 text-sm font-bold text-white transition-[background-position] duration-300 hover:bg-bottom shadow-2xl cursor-pointer uppercase tracking-wider text-center"
+          className="button-cutout group/btn mx-2 inline-flex items-center justify-center gap-2 bg-gradient-to-b from-brand-amethyst to-purple-700 from-25% to-75% bg-[length:100%_400%] px-5 py-3.5 text-sm font-bold text-white transition-[background-position,transform] duration-300 hover:bg-bottom shadow-2xl cursor-pointer uppercase tracking-wider text-center"
         >
           <span>{t("product.goToShop")}</span>
           <FaArrowRight className="size-4 group-hover/btn:translate-x-1 transition-transform" />
