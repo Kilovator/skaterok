@@ -64,7 +64,7 @@ export function FloatingCartButtons() {
   }
 
   return (
-    <div className="absolute top-2 inset-x-2 lg:top-auto lg:bottom-6 lg:right-6 lg:inset-x-auto z-30 flex flex-row lg:flex-col items-center lg:items-stretch justify-between gap-2 lg:gap-3 w-auto lg:w-72 p-2 lg:p-4 rounded-2xl lg:rounded-3xl bg-brand-black/95 lg:bg-brand-black/85 backdrop-blur-2xl border border-brand-amethyst/35 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(123,114,181,0.25)] transition-all">
+    <div className="absolute bottom-2 inset-x-2 lg:bottom-6 lg:right-6 lg:inset-x-auto z-30 flex flex-row lg:flex-col items-center lg:items-stretch justify-between gap-2 lg:gap-3 w-auto lg:w-72 p-2 lg:p-4 rounded-2xl lg:rounded-3xl bg-brand-black/95 lg:bg-brand-black/85 backdrop-blur-2xl border border-brand-amethyst/35 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(123,114,181,0.25)] transition-all">
       
       {/* Integrated Header Row with Price */}
       <div className="flex items-center gap-2 lg:justify-between lg:border-b lg:border-white/10 lg:pb-2.5 shrink-0">
@@ -115,7 +115,7 @@ export function BuildPageClient({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
 
   return (
-    <div className="relative z-20 rounded-t-3xl lg:rounded-none bg-texture bg-brand-deep text-white p-5 lg:p-6 lg:w-96 lg:shrink-0 lg:grow-0 flex flex-col justify-start shadow-[0_-12px_40px_rgba(0,0,0,0.7)] border-t border-white/15 lg:border-t-0 h-[50vh] lg:h-full overflow-y-auto lg:overflow-visible">
+    <div className="relative z-20 rounded-t-3xl lg:rounded-none bg-texture bg-brand-deep text-white p-5 pb-8 lg:p-6 lg:w-96 lg:shrink-0 lg:grow-0 flex-1 grow flex flex-col justify-start shadow-[0_-12px_40px_rgba(0,0,0,0.7)] border-t border-white/15 lg:border-t-0 h-auto lg:h-full overflow-y-auto lg:overflow-visible">
       {/* Mobile Bottom Sheet Drag Handle */}
       <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-4 lg:hidden shrink-0" />
       <div>

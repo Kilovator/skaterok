@@ -611,6 +611,49 @@ export function SkateMap() {
     }
   }
 
+  const [liveFeedBtnY, setLiveFeedBtnY] = useState(170);
+  const isDraggingBtn = useRef(false);
+  const startYRef = useRef(0);
+  const startTopRef = useRef(170);
+  const hasMovedRef = useRef(false);
+
+  const handleStartDrag = (e: React.MouseEvent | React.TouchEvent) => {
+    isDraggingBtn.current = true;
+    hasMovedRef.current = false;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    startYRef.current = clientY;
+    startTopRef.current = liveFeedBtnY;
+  };
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDraggingBtn.current) return;
+      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+      const deltaY = clientY - startYRef.current;
+      if (Math.abs(deltaY) > 4) {
+        hasMovedRef.current = true;
+      }
+      const newY = Math.max(70, Math.min(window.innerHeight - 140, startTopRef.current + deltaY));
+      setLiveFeedBtnY(newY);
+    };
+
+    const handleEnd = () => {
+      isDraggingBtn.current = false;
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("touchmove", handleMove, { passive: false });
+    window.addEventListener("mouseup", handleEnd);
+    window.addEventListener("touchend", handleEnd);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("mouseup", handleEnd);
+      window.removeEventListener("touchend", handleEnd);
+    };
+  }, [liveFeedBtnY]);
+
   const archivedCount = spots.filter(isSpotExpired).length;
 
   return (
@@ -765,16 +808,23 @@ export function SkateMap() {
         </div>
       )}
 
-      {/* Floating Toggle Button to re-open Live Feed when collapsed 100% */}
+      {/* Floating Draggable Toggle Button to re-open Live Feed when collapsed 100% */}
       {!isLiveFeedOpen && (
         <button
-          onClick={() => setIsLiveFeedOpen(true)}
-          title="Otwórz Live Feed"
-          className="absolute left-3 top-24 z-30 px-3.5 py-2.5 rounded-2xl bg-brand-black/90 hover:bg-brand-amethyst text-white border border-white/20 shadow-2xl flex items-center gap-2 cursor-pointer transition-all hover:scale-105 backdrop-blur-xl group"
+          onClick={() => {
+            if (!hasMovedRef.current) {
+              setIsLiveFeedOpen(true);
+            }
+          }}
+          onMouseDown={handleStartDrag}
+          onTouchStart={handleStartDrag}
+          style={{ top: `${liveFeedBtnY}px` }}
+          title="Otwórz Live Feed (Перетащите вверх/вниз)"
+          className="absolute left-3 z-30 px-3.5 py-2.5 rounded-2xl bg-brand-black/90 hover:bg-brand-amethyst text-white border border-white/20 shadow-2xl flex items-center gap-2 cursor-grab active:cursor-grabbing transition-shadow hover:scale-105 backdrop-blur-xl group select-none touch-none"
         >
-          <FaBolt className="text-amber-400 size-4 animate-pulse group-hover:scale-110" />
-          <span className="font-sans text-xs font-bold uppercase tracking-wider hidden sm:inline">Live Feed ({liveFeedSpots.length})</span>
-          <FaChevronRight size={12} className="text-white/70" />
+          <FaBolt className="text-amber-400 size-4 animate-pulse group-hover:scale-110 pointer-events-none" />
+          <span className="font-sans text-xs font-bold uppercase tracking-wider hidden sm:inline pointer-events-none">Live Feed ({liveFeedSpots.length})</span>
+          <FaChevronRight size={12} className="text-white/70 pointer-events-none" />
         </button>
       )}
 

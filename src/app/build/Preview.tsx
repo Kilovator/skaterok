@@ -118,6 +118,17 @@ export default function Preview({ wheelTextureURLs, deckTextureURLs }: Props) {
           minDistance={0.2}
           maxDistance={4}
           onStart={onCameraControlStart}
+          mouseButtons={{
+            left: 1,   // ACTION.ROTATE
+            middle: 2, // ACTION.TRUCK (Pan)
+            right: 2,  // ACTION.TRUCK (Right-click drag pan move like PC!)
+            wheel: 8,  // ACTION.DOLLY (Zoom)
+          }}
+          touches={{
+            one: 1,    // ACTION.ROTATE (1-finger rotate)
+            two: 2,    // ACTION.TRUCK (2-finger drag pan move on mobile!)
+            three: 0,
+          }}
         />
       </Suspense>
       <Preload all />

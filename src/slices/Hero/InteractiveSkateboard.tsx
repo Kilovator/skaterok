@@ -25,9 +25,9 @@ export function InteractiveSkateboard({
   boltColor,
 }: Props) {
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center">
+    <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
       <Canvas
-        className="min-h-[60rem] w-full"
+        className="min-h-[60rem] w-full pointer-events-none"
         camera={{ position: INITIAL_CAMERA_POSITION, fov: 55 }}
       >
         <Suspense>

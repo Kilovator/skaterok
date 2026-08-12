@@ -59,7 +59,7 @@ export function Header() {
         </nav>
 
         {/* Right: Account & Cart Button */}
-        <div className="flex items-center justify-end gap-2 sm:gap-3 lg:gap-5 shrink-0 z-10">
+        <div className="flex items-center justify-end gap-2 sm:gap-3.5 lg:gap-5 shrink-0 z-10">
           {/* Language Switcher (Desktop Only) */}
           <div className="hidden lg:block shrink-0">
             <LanguageSwitcher />
@@ -69,10 +69,10 @@ export function Header() {
           {isLoggedIn && user ? (
             <Link
               href="/account"
-              className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-brand-amethyst/25 hover:bg-brand-amethyst/40 border border-brand-amethyst/50 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all shadow-md hover:scale-105 shrink-0 whitespace-nowrap"
+              className="flex items-center justify-center p-1 sm:px-3.5 sm:py-2 md:px-4 rounded-full bg-brand-amethyst/25 hover:bg-brand-amethyst/40 border border-brand-amethyst/50 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all shadow-md hover:scale-105 shrink-0 whitespace-nowrap"
               title={t("nav.account")}
             >
-              <div className="size-5 sm:size-6 md:size-7 rounded-full bg-brand-amethyst text-white flex items-center justify-center text-[10px] sm:text-xs font-mono shrink-0 shadow-inner overflow-hidden border border-white/20">
+              <div className="size-6 sm:size-6 md:size-7 rounded-full bg-brand-amethyst text-white flex items-center justify-center text-[10px] sm:text-xs font-mono shrink-0 shadow-inner overflow-hidden border border-white/20">
                 {user.avatar && !user.avatar.startsWith("blob:") ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
@@ -87,21 +87,26 @@ export function Header() {
                   user.name.charAt(0).toUpperCase()
                 )}
               </div>
-              <span className="hidden sm:inline max-w-[110px] truncate">
+              <span className="hidden sm:inline-block max-w-[110px] truncate text-xs font-mono font-bold text-white/95 ml-2">
                 {user.name.split(" ")[0]}
               </span>
             </Link>
           ) : (
             <button
               onClick={() => openAuthModal("login")}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
+              className="flex items-center justify-center p-2 sm:px-3.5 sm:py-2 md:px-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
+              title={t("nav.login")}
             >
-              <FaRightToBracket size={12} className="text-brand-amethyst shrink-0 sm:text-[14px]" />
-              <span className="hidden sm:inline">{t("nav.login")}</span>
+              <FaRightToBracket size={14} className="text-brand-amethyst shrink-0 sm:text-[14px]" />
+              <span className="hidden sm:inline-block text-xs font-mono font-bold ml-1.5">{t("nav.login")}</span>
             </button>
           )}
 
-          {!isMapPage && <CartButton />}
+          {!isMapPage && (
+            <div className="ml-4 sm:ml-5 shrink-0">
+              <CartButton />
+            </div>
+          )}
         </div>
       </div>
 
