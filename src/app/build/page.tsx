@@ -37,7 +37,7 @@ export default async function Page(props: {
         defaultBolt={defaultBolt}
       >
         {/* 3D Preview Viewport */}
-        <div className="relative h-[45vh] lg:h-full w-full lg:w-auto lg:grow bg-brand-black shrink-0">
+        <div className="relative h-[45vh] lg:h-full w-full lg:w-0 flex-1 min-w-0 lg:grow bg-brand-black">
           <div className="absolute inset-0">
             <Preview
               deckTextureURLs={deckTextureURLs}

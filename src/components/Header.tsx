@@ -94,11 +94,11 @@ export function Header() {
           ) : (
             <button
               onClick={() => openAuthModal("login")}
-              className="flex items-center justify-center p-2 sm:px-3.5 sm:py-2 md:px-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] sm:text-xs md:text-sm font-mono font-medium tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-brand-black/90 hover:bg-brand-amethyst/30 border border-brand-amethyst/60 text-xs font-mono font-bold tracking-wide text-white transition-all cursor-pointer whitespace-nowrap hover:scale-105 shadow-md shrink-0"
               title={t("nav.login")}
             >
-              <FaRightToBracket size={14} className="text-brand-amethyst shrink-0 sm:text-[14px]" />
-              <span className="hidden sm:inline-block text-xs font-mono font-bold ml-1.5">{t("nav.login")}</span>
+              <FaRightToBracket size={14} className="text-brand-amethyst shrink-0" />
+              <span className="inline-block text-xs font-mono font-bold">{t("nav.login")}</span>
             </button>
           )}
 

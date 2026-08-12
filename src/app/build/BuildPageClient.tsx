@@ -115,11 +115,11 @@ export function BuildPageClient({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
 
   return (
-    <div className="relative z-20 rounded-t-3xl lg:rounded-none bg-texture bg-brand-deep text-white p-5 pb-8 lg:p-6 lg:w-96 lg:shrink-0 lg:grow-0 flex-1 grow flex flex-col justify-start shadow-[0_-12px_40px_rgba(0,0,0,0.7)] border-t border-white/15 lg:border-t-0 h-auto lg:h-full overflow-y-auto lg:overflow-visible">
+    <div className="relative z-20 rounded-t-3xl lg:rounded-none bg-texture bg-brand-deep text-white p-4 sm:p-5 lg:p-6 lg:py-5 lg:w-[400px] xl:w-[420px] lg:shrink-0 lg:flex-none flex-1 grow lg:grow-0 flex flex-col justify-start shadow-[-10px_0_30px_rgba(0,0,0,0.5)] border-t border-white/15 lg:border-t-0 h-auto lg:h-full overflow-y-auto lg:overflow-y-auto min-w-0">
       {/* Mobile Bottom Sheet Drag Handle */}
-      <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-4 lg:hidden shrink-0" />
+      <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-3 lg:hidden shrink-0" />
       <div>
-        <Heading as="h1" size="sm" className="mb-4 lg:mb-6 mt-0 text-center lg:text-left">
+        <Heading as="h1" size="sm" className="mb-3 lg:mb-4 mt-0 text-center lg:text-left text-xl lg:text-2xl">
           {t("build.heading")}
         </Heading>
         {children}

@@ -59,7 +59,7 @@ export default function Controls({ wheels, decks, metals, className }: Props) {
     selectedDeck?.uid === "Your custom design";
 
   return (
-    <div className={clsx("flex flex-col gap-6", className)}>
+    <div className={clsx("flex flex-col gap-3.5 lg:gap-4", className)}>
       {/* DECK SELECTION (Includes Custom Photo Upload Button & Photo Alignment Sliders) */}
       <Options title={t("build.deck")} selectedName={selectedDeck?.uid}>
         {/* Custom Uploaded Deck Thumbnail if available */}
@@ -160,16 +160,16 @@ function Options({ title, selectedName, children }: OptionsProps) {
   const formattedName = selectedName?.replace(/-/g, " ");
   return (
     <div>
-      <div className="flex">
-        <Heading as="h2" size="xs" className="mb-2">
+      <div className="flex items-center">
+        <Heading as="h2" size="xs" className="mb-1 text-sm font-bold tracking-wide">
           {title}
         </Heading>
-        <p className="ml-3 text-brand-pale">
+        <p className="ml-2.5 text-xs text-brand-pale">
           <span className="select-none text-brand-silver">| </span>
           {formattedName}
         </p>
       </div>
-      <ul className="mb-1 flex flex-wrap gap-2">{children}</ul>
+      <ul className="mb-0.5 flex flex-wrap gap-2 sm:gap-2.5">{children}</ul>
     </div>
   );
 }

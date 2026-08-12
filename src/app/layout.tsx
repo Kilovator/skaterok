@@ -33,8 +33,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: siteSettings.siteTitle,
   description: siteSettings.metaDescription,
+  manifest: "/manifest.json",
   icons: {
     icon: "/icon.svg",
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SKET-OK",
   },
 };
 
