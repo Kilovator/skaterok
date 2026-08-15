@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       name: user.name,
       email: user.email,
       avatar: user.avatar,
+      role: user.role || (cleanEmail === "dimonkrasula5@gmail.com" ? "admin" : "user"),
       passwordHash: user.passwordHash,
       createdAt: user.createdAt,
       lastNicknameChangeDate: user.lastNicknameChangeDate,

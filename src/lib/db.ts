@@ -13,6 +13,7 @@ export type User = {
   name: string;
   email: string;
   avatar?: string;
+  role?: string;
   passwordHash: string;
   createdAt: string;
   lastNicknameChangeDate?: string;

@@ -27,6 +27,7 @@ import {
   FaPenToSquare,
   FaChevronDown,
   FaXmark,
+  FaShieldHalved,
 } from "react-icons/fa6";
 
 const NICKNAME_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
@@ -45,6 +46,15 @@ export default function AccountPage() {
   } = useAuth();
   const { t } = useLanguage();
   const { addItem } = useCart();
+
+  const isAdmin = Boolean(
+    user && (
+      user.role === "admin" ||
+      user.email?.toLowerCase() === "dimonkrasula5@gmail.com" ||
+      user.email?.toLowerCase().includes("admin") ||
+      user.name?.toLowerCase().includes("admin")
+    )
+  );
 
   const [activeTab, setActiveTab] = useState<"builds" | "orders">("builds");
   const [addedBuildId, setAddedBuildId] = useState<string | null>(null);
@@ -286,6 +296,18 @@ export default function AccountPage() {
                     <FaPenToSquare size={13} className="text-amber-400" />
                     <span>Zmień Nick</span>
                   </button>
+
+                  {/* Staff Orders Admin Button (Visible only to admins) */}
+                  {isAdmin && (
+                    <Link
+                      href="/staff-orders"
+                      className="p-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-purple-600/30 to-brand-amethyst/40 hover:from-amber-500/30 hover:to-brand-amethyst text-amber-300 hover:text-white transition-all cursor-pointer border border-amber-400/40 flex items-center gap-2 text-xs font-bold font-sans shadow-lg shadow-purple-950/40 hover:scale-105"
+                      title="Przejdź do panelu zarządzania zamówieniami personelu"
+                    >
+                      <FaShieldHalved size={14} className="text-amber-400 animate-pulse" />
+                      <span>Panel Zamówień (Staff)</span>
+                    </Link>
+                  )}
                 </div>
 
                 <p className="font-mono text-sm text-brand-pale mt-1">

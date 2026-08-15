@@ -305,7 +305,7 @@ export default function StaffOrdersPage() {
               Panel Pracowników
             </h1>
             <p className="text-xs text-white/50 mt-1 font-mono">
-              Wprowadź PIN dostępu dla personelu (Domyślny PIN: 7777)
+              Wprowadź PIN
             </p>
           </div>
           {authError && (
@@ -318,7 +318,6 @@ export default function StaffOrdersPage() {
             maxLength={15}
             value={pinInput}
             onChange={(e) => setPinInput(e.target.value)}
-            placeholder="Wpisz PIN pracownika..."
             className="w-full text-center tracking-[0.5em] font-mono text-2xl bg-black/50 border border-white/20 rounded-2xl py-3 text-brand-amethyst placeholder-white/20 focus:outline-none focus:border-brand-amethyst"
           />
           <button

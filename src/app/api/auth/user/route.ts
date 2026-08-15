@@ -33,6 +33,7 @@ export async function GET(req: Request) {
       name: u.name,
       email: u.email,
       avatar: u.avatar,
+      role: u.role || (cleanEmail === "dimonkrasula5@gmail.com" ? "admin" : "user"),
       passwordHash: u.passwordHash,
       createdAt: u.createdAt,
       lastNicknameChangeDate: u.lastNicknameChangeDate,
