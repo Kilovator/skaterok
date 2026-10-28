@@ -1,4 +1,4 @@
-export type Language = "pl" | "en";
+export type Language = "pl" | "en" | "ru";
 
 export const translations = {
   pl: {
@@ -304,5 +304,157 @@ export const translations = {
     "checkout.cardExp": "MM/YY",
     "checkout.cardCvc": "CVC",
     "checkout.blikCode": "Enter 6-digit BLIK code",
+  },
+  ru: {
+    // Navigation
+    "nav.boards": "Доски",
+    "nav.sklep": "Электро Магазин",
+    "nav.map": "Карта",
+    "nav.team": "Команда",
+    "nav.about": "О нас",
+    "nav.build": "Конструктор",
+    "nav.account": "Аккаунт",
+    "nav.login": "Войти",
+
+    // Skate Map
+    "map.heading": "Скейт Карта",
+    "map.subheading": "Находи лучшие споты, события и катайся вместе со скейт-комьюнити",
+    "map.modeSpots": "Споты и События",
+    "map.modeEditor": "Редактор и Комьюнити",
+    "map.all": "Все",
+    "map.skateparks": "Скейтпарки",
+    "map.street": "Стрит-споты",
+    "map.events": "События и Сходки",
+    "map.addSpotBtn": "+ Добавить спот на карту",
+    "map.clickToPlace": "Кликните в любое место на карте, чтобы добавить новый спот!",
+    "map.spotName": "Название спота / события",
+    "map.spotType": "Тип места",
+    "map.spotDescription": "Описание и подсказки",
+    "map.addReviewTitle": "Оставить отзыв / реакцию",
+    "map.writeComment": "Напишите комментарий или отзыв...",
+    "map.sendReview": "Отправить",
+    "map.buildBoardHere": "Собрать скейт под этот спот",
+    "map.geoBannerText": "Мы хотим знать, где вы любите кататься! 🛹",
+    "map.enableGeoBtn": "Поделиться геолокацией",
+
+    // Hero
+    "hero.heading": "Твоя доска, твой стиль",
+    "hero.body": "Премиальные скейтборды для улиц. Созданы для трюков, сделаны на века.",
+    "hero.buttonText": "Собрать свой скейт",
+
+    // Products
+    "products.heading": "ЭЛЕКТРИЧЕСКАЯ АЛЬТЕРНАТИВА НАШИХ ДОСОК",
+    "products.body": "Современный электротранспорт: электроскейты, гироскутеры и моноколёса для ценителей скорости и свободы!",
+
+    // Team
+    "team.heading": "Наша команда",
+    "team.buildBoard": "Собрать их комплит",
+
+    // Text & Image Sections
+    "tai1.heading": "СОЗДАНЫ ДЛЯ ЛЮБЫХ МАРШРУТОВ",
+    "tai1.body": "Откройте для себя линейку мощного электротранспорта. От маневренных электроскейтов до мощных моноколёс для бездорожья — SKET-OK дарит драйв и скорость на улицах города.",
+    "tai1.buttonText": "Смотреть транспорт",
+
+    "tai2.heading": "Сделано на совесть",
+    "tai2.body": "Премиальные материалы, профессиональная сборка. Лучший канадский клён и надёжная фурнитура, чтобы доска выдержала любые споты.",
+    "tai2.buttonText": "Кастомизировать",
+
+    "tai3.heading": "Катай с командой",
+    "tai3.body": "Присоединяйся к комьюнити тех, кто дышит скейтбордингом. Райдеры SKET-OK несут дух уличной культуры.",
+    "tai3.buttonText": "Узнать о команде",
+
+    // Cart / Checkout
+    "cart.title": "Корзина",
+    "cart.empty": "Пусто",
+    "cart.total": "Итого",
+    "cart.checkout": "Оформить заказ",
+    "cart.button": "Корзина",
+    "cart.items": "шт.",
+    "cart.open": "Открыть корзину, {count} шт.",
+    "cart.close": "Закрыть корзину",
+    "cart.remove": "Удалить {name} из корзины",
+    "cart.qty": "кол-во",
+
+    // Build Page
+    "build.heading": "Собери свой скейтборд",
+    "build.deck": "Дека",
+    "build.wheels": "Колёса",
+    "build.trucks": "Траки",
+    "build.bolts": "Болты",
+    "build.addToCart": "Добавить в корзину",
+    "build.saveBuild": "Сохранить сборку",
+    "build.savedSuccess": "Сборка сохранена в профиле!",
+    "build.photoTitle": "Настройка принта на деке",
+    "build.photoScale": "Масштаб / Размер",
+    "build.photoPosX": "Позиция X (Влево / Вправо)",
+    "build.photoPosY": "Позиция Y (Вверх / Вниз)",
+    "build.photoRotation": "Поворот",
+    "build.photoReset": "Сбросить",
+    "build.colorTitle": "Выбрать цвет",
+    "build.uploadPhoto": "Загрузить свой арт на деку",
+    "build.yourPattern": "Твой индивидуальный принт",
+
+    // Product Card
+    "product.customize": "Кастомизировать",
+    "product.addToCart": "+ В корзину",
+    "product.goToShop": "Перейти в каталог",
+
+    // Auth Modal
+    "auth.login": "Вход",
+    "auth.register": "Регистрация",
+    "auth.email": "Электронная почта",
+    "auth.password": "Пароль",
+    "auth.name": "Никнейм райдера",
+    "auth.submitLogin": "Войти",
+    "auth.submitRegister": "Создать аккаунт",
+    "auth.noAccount": "Нет аккаунта? Зарегистрируйтесь",
+    "auth.hasAccount": "Уже есть аккаунт? Войдите",
+    "auth.logout": "Выйти",
+    "auth.welcome": "Привет,",
+    "auth.invalidEmail": "Введите корректный email (например, rider@sket-ok.com)",
+    "auth.invalidPassword": "Пароль должен содержать минимум 8 символов и хотя бы одну заглавную букву (A-Z)",
+    "auth.passMinChars": "Минимум 8 символов",
+    "auth.passUppercase": "Хотя бы одна заглавная буква (A-Z)",
+
+    // Account Page
+    "account.title": "Личный кабинет",
+    "account.savedBuilds": "Сохранённые доски",
+    "account.orderHistory": "История заказов",
+    "account.noBuilds": "Нет сохранённых сборок. Соберите свой кастом в Конструкторе!",
+    "account.noOrders": "У вас пока нет оформленных заказов.",
+    "account.loadBuild": "Открыть в Конструкторе",
+    "account.deleteBuild": "Удалить",
+    "account.orderId": "Заказ #",
+    "account.orderDate": "Дата",
+    "account.status": "Статус",
+    "account.total": "Сумма",
+    "account.items": "Товары",
+
+    // Checkout Page
+    "checkout.title": "Оформление заказа",
+    "checkout.shippingTitle": "Способ доставки и адрес",
+    "checkout.paymentTitle": "Способ оплаты",
+    "checkout.summaryTitle": "Состав заказа",
+    "checkout.courier": "Курьерская доставка",
+    "checkout.paczkomat": "Почтомат InPost",
+    "checkout.postal": "Почта",
+    "checkout.card": "Банковская карта (Visa / Mastercard)",
+    "checkout.blik": "BLIK (код)",
+    "checkout.cash": "Оплата при получении",
+    "checkout.applepay": "Apple Pay / Google Pay",
+    "checkout.placeOrder": "Подтвердить и оплатить",
+    "checkout.successTitle": "Спасибо за заказ!",
+    "checkout.successMsg": "Ваш заказ успешно принят и передан в обработку. Номер заказа:",
+    "checkout.backHome": "На главную",
+    "checkout.paczkomatPlaceholder": "Код почтомата (напр. WAW01M)",
+    "checkout.fullName": "Имя и фамилия",
+    "checkout.phone": "Номер телефона",
+    "checkout.address": "Улица, дом, квартира",
+    "checkout.city": "Город",
+    "checkout.postalCode": "Индекс",
+    "checkout.cardNumber": "Номер карты",
+    "checkout.cardExp": "ММ/ГГ",
+    "checkout.cardCvc": "CVC",
+    "checkout.blikCode": "Введите 6-значный код BLIK",
   },
 };

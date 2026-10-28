@@ -297,15 +297,15 @@ export default function AccountPage() {
                     <span>Zmień Nick</span>
                   </button>
 
-                  {/* Staff Orders Admin Button (Visible only to admins) */}
+                  {/* Monaco POS Admin Button (Visible only to admins) */}
                   {isAdmin && (
                     <Link
                       href="/staff-orders"
-                      className="p-1.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500/20 via-purple-600/30 to-brand-amethyst/40 hover:from-amber-500/30 hover:to-brand-amethyst text-amber-300 hover:text-white transition-all cursor-pointer border border-amber-400/40 flex items-center gap-2 text-xs font-bold font-sans shadow-lg shadow-purple-950/40 hover:scale-105"
-                      title="Przejdź do panelu zarządzania zamówieniami personelu"
+                      className="p-1.5 px-3.5 rounded-xl bg-gradient-to-r from-red-600/30 via-red-500/20 to-amber-500/30 hover:from-red-600 hover:to-amber-500 text-amber-200 hover:text-white transition-all cursor-pointer border border-red-500/40 flex items-center gap-2 text-xs font-bold font-sans shadow-lg shadow-red-950/40 hover:scale-105"
+                      title="Przejdź do Monaco POS / Panel Administratora"
                     >
-                      <FaShieldHalved size={14} className="text-amber-400 animate-pulse" />
-                      <span>Panel Zamówień (Staff)</span>
+                      <FaShieldHalved size={14} className="text-red-400 animate-pulse" />
+                      <span>Monaco POS (Admin)</span>
                     </Link>
                   )}
                 </div>

@@ -14,6 +14,8 @@ model User {
   passwordHash           String       @map("password_hash")
   role                   String       @default("user")
   avatar                 String?
+  posPin                 String?      @map("pos_pin")
+  posAccess              Boolean      @default(false) @map("pos_access")
   createdAt              DateTime     @default(now()) @map("created_at")
   lastNicknameChangeDate DateTime?    @map("last_nickname_change_date")
   nicknameHistory        Json?        @default("[]") @map("nickname_history")
